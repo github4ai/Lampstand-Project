@@ -14,9 +14,7 @@ AIOS Studio is a local React workspace for chatting with AIOS agents, browsing i
 ```powershell
 npm install
 npm run setup:whisper
-npm run whisper
-npm run api
-npm run dev
+npm run start:local
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
@@ -40,6 +38,7 @@ Restart the development server after changing environment variables.
 ## Commands
 
 - `npm run dev` — start the development server
+- `npm run start:local` — start all local AIOS services and the web app
 - `npm run api` — start the hybrid AIOS backend
 - `npm run setup:whisper` — create the isolated local transcription environment
 - `npm run whisper` — start the local transcription service
