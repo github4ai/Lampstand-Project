@@ -30,6 +30,7 @@ import {
 
 import KnowledgeCategoryPage from './pages/KnowledgeCategoryPage'
 import HistoryPage from './pages/HistoryPage'
+import DocumentsPage from './pages/DocumentsPage'
 import KnowledgePage from './pages/KnowledgePage'
 import KnowledgeSearchPage from './pages/knowledge/KnowledgeSearchPage'
 
@@ -376,6 +377,8 @@ function App() {
           path="/"
           element={chatPage}
         />
+
+        <Route path="/documents" element={<main className="workspace-panel"><DocumentsPage /></main>} />
 
         <Route
           path="/history"

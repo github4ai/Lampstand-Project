@@ -467,6 +467,10 @@ function Sidebar({
           </span>
         </NavLink>
 
+        <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <FileText size={17} /><span>Documents</span>
+        </NavLink>
+
         <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Clock3 size={17} /><span>History</span>
         </NavLink>

@@ -2,6 +2,7 @@ import {
   Bot,
   Clock3,
   Database,
+  FileText,
   MessageSquare,
   MessagesSquare,
   Plus,
@@ -132,6 +133,7 @@ function CommandPalette({
               onClose()
             },
           },
+          { id: 'command-open-documents', title: 'Open Documents', description: 'Browse indexed Knowledge documents', keywords: 'documents files library indexed', kind: 'command', icon: FileText, action: () => { onNavigate('/documents'); onClose() } },
           { id: 'command-open-history', title: 'Open Conversation History', description: 'Search and manage saved conversations', keywords: 'history saved conversations pinned', kind: 'command', icon: Clock3, action: () => { onNavigate('/history'); onClose() } },
         ]
 
