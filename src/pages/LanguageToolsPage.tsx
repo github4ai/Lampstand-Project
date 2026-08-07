@@ -1,8 +1,8 @@
-import { Copy, FileAudio, Languages, LoaderCircle } from 'lucide-react'
+import { ArrowLeftRight, Copy, Download, FileAudio, Languages, LoaderCircle } from 'lucide-react'
 import { useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import { transcribeAudio, translateText } from '../api/languageTools'
-import type { SupportedLanguage } from '../types/languageTools'
+import type { SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
 
 const languages: Array<{ code: SupportedLanguage; label: string }> = [
   { code: 'en', label: 'English' }, { code: 'zh', label: 'Chinese' },
@@ -11,18 +11,19 @@ const languages: Array<{ code: SupportedLanguage; label: string }> = [
   { code: 'ml', label: 'Malayalam' },
 ]
 
-function LanguageSelect({ value, onChange, label }: {
-  value: SupportedLanguage; onChange: (value: SupportedLanguage) => void; label: string
+function LanguageSelect({ value, onChange, label, allowAuto = false }: {
+  value: TranslationSourceLanguage; onChange: (value: SupportedLanguage) => void; label: string; allowAuto?: boolean
 }) {
   return <label>{label}<select value={value}
     onChange={(event) => onChange(event.target.value as SupportedLanguage)}>
+    {allowAuto && <option value="auto">Detect automatically</option>}
     {languages.map((language) => <option value={language.code} key={language.code}>{language.label}</option>)}
   </select></label>
 }
 
 function LanguageToolsPage() {
   const [tool, setTool] = useState<'translation' | 'transcription'>('translation')
-  const [sourceLanguage, setSourceLanguage] = useState<SupportedLanguage>('en')
+  const [sourceLanguage, setSourceLanguage] = useState<TranslationSourceLanguage>('auto')
   const [targetLanguage, setTargetLanguage] = useState<SupportedLanguage>('ml')
   const [text, setText] = useState('')
   const [audioLanguage, setAudioLanguage] = useState<SupportedLanguage>('en')
@@ -30,6 +31,24 @@ function LanguageToolsPage() {
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  function swapLanguages() {
+    if (sourceLanguage === 'auto') return
+    setSourceLanguage(targetLanguage)
+    setTargetLanguage(sourceLanguage)
+    setText(result || text)
+    setResult('')
+  }
+
+  function downloadResult() {
+    const blob = new Blob([result], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = tool === 'translation' ? 'translation.txt' : 'transcription.txt'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   async function run() {
     if (loading) return
@@ -61,7 +80,11 @@ function LanguageToolsPage() {
     <div className="language-tools-grid">
       <section className="language-input-panel">
         {tool === 'translation' ? <>
-          <div className="language-selects"><LanguageSelect label="From" value={sourceLanguage} onChange={setSourceLanguage} />
+          <div className="language-selects"><LanguageSelect label="From" value={sourceLanguage} onChange={setSourceLanguage} allowAuto />
+            <button className="language-swap" type="button" disabled={sourceLanguage === 'auto'} onClick={swapLanguages}
+              aria-label="Swap translation languages" title={sourceLanguage === 'auto' ? 'Choose a source language to swap' : 'Swap languages'}>
+              <ArrowLeftRight size={17} />
+            </button>
             <LanguageSelect label="To" value={targetLanguage} onChange={setTargetLanguage} /></div>
           <label className="language-text-input">Text to translate<textarea rows={11} value={text}
             onChange={(event) => setText(event.target.value)} placeholder="Enter text..." /></label>
@@ -77,7 +100,10 @@ function LanguageToolsPage() {
         </button>
       </section>
       <section className="language-result-panel"><header><h2>Result</h2>
-        {result && <button type="button" onClick={() => void navigator.clipboard.writeText(result)}><Copy size={14} /> Copy</button>}</header>
+        {result && <div className="language-result-actions">
+          <button type="button" onClick={() => void navigator.clipboard.writeText(result)}><Copy size={14} /> Copy</button>
+          <button type="button" onClick={downloadResult}><Download size={14} /> Download</button>
+        </div>}</header>
         <div className={result ? 'language-result-content' : 'language-result-content empty'}>
           {result || 'Your translated or transcribed text will appear here.'}</div>
       </section>
