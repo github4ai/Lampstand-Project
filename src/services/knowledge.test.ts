@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { formatCount, formatFileSize, formatKnowledgeDate } from './knowledge'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { formatCount, formatFileSize, formatKnowledgeDate, getKnowledgeDocument } from './knowledge'
 
 describe('formatFileSize', () => {
   it('handles empty and invalid sizes', () => {
@@ -30,5 +30,66 @@ describe('formatKnowledgeDate', () => {
 
   it('formats a valid date', () => {
     expect(formatKnowledgeDate('2026-08-07T00:00:00Z')).not.toBe('Not available')
+  })
+})
+
+describe('getKnowledgeDocument', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('encodes category and document route values', async () => {
+    const payload = { id: 'Ministry Notes/Test File', name: 'Test File.pdf' }
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify(payload), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      getKnowledgeDocument('Ministry Notes', 'Test File'),
+    ).resolves.toEqual(payload)
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:8765/knowledge/Ministry%20Notes/Test%20File',
+      expect.objectContaining({ method: 'GET' }),
+    )
+  })
+
+  it('forwards an abort signal', async () => {
+    const controller = new AbortController()
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response('{}', { status: 200 }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await getKnowledgeDocument('Ministry', 'Test', controller.signal)
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ signal: controller.signal }),
+    )
+  })
+
+  it('includes status and detail in API errors', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ detail: 'Document was not found.' }),
+          { status: 404, headers: { 'Content-Type': 'application/json' } },
+        ),
+      ),
+    )
+
+    await expect(
+      getKnowledgeDocument('Ministry', 'Missing'),
+    ).rejects.toMatchObject({
+      name: 'KnowledgeApiError',
+      message: 'Document was not found.',
+      status: 404,
+    })
   })
 })
