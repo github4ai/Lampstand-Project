@@ -1,6 +1,8 @@
 import { BookOpen, FileUp, Heart, Music2, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
+import PianoSheet from '../components/Hymnal/PianoSheet'
+import TunePlayer from '../components/Hymnal/TunePlayer'
 import { HYMNS } from '../data/hymns'
 import { CHROMATIC_KEYS, extractChords, semitonesBetween, stripChords, transposeChordLine } from '../utils/chords'
 import { parseHymnImport } from '../utils/importHymn'
@@ -29,7 +31,7 @@ function loadFavorites(): string[] {
 }
 
 function HymnalPage() {
-  const [view, setView] = useState<'lyrics' | 'chords' | 'guitar'>('chords')
+  const [view, setView] = useState<'lyrics' | 'chords' | 'piano' | 'guitar'>('chords')
   const [query, setQuery] = useState('')
   const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
   const [importStatus, setImportStatus] = useState('')
@@ -145,9 +147,11 @@ function HymnalPage() {
             </button>
           </header>
 
+          <div className="hymnal-playback"><TunePlayer hymn={selected} /></div>
+
           <div className="hymnal-controls">
             <div className="hymnal-view-switcher" aria-label="Hymn view">
-              {(['lyrics', 'chords', 'guitar'] as const).map((option) => (
+              {(['lyrics', 'chords', 'piano', 'guitar'] as const).map((option) => (
                 <button className={view === option ? 'active' : ''} type="button"
                   onClick={() => setView(option)} key={option}>{option}</button>
               ))}
@@ -185,14 +189,14 @@ function HymnalPage() {
             <span>Chords in this arrangement</span>
             <div>{chordPalette.map((chord) => <strong key={chord}>{chord}</strong>)}</div>
           </div>}
-          <div className="hymnal-sections">
+          {view === 'piano' ? <PianoSheet hymn={selected} /> : <div className="hymnal-sections">
             {selected.sections.map((section) => (
               <section key={section.label}>
                 <h3>{section.label}</h3>
                 {section.lines.map((line, index) => <p key={index}>{renderLine(line)}</p>)}
               </section>
             ))}
-          </div>
+          </div>}
         </article>
       </div>
     </WorkspaceLayout>

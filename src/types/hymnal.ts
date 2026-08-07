@@ -10,6 +10,9 @@ export interface Hymn {
   tempo: number
   timeSignature: string
   rightsStatus?: 'public-domain' | 'user-provided'
+  audioUrl?: string
+  pianoSheetUrl?: string
+  tune?: { bpm: number; notes: Array<{ midi: number; beats: number }> }
   sections: Array<{
     label: string
     lines: string[]

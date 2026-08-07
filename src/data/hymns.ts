@@ -12,6 +12,17 @@ export const HYMNS: Hymn[] = [
     originalKey: 'G',
     tempo: 72,
     timeSignature: '3/4',
+    tune: {
+      bpm: 72,
+      notes: [
+        { midi: 62, beats: 1 }, { midi: 67, beats: 2 }, { midi: 71, beats: 1 },
+        { midi: 67, beats: 1 }, { midi: 71, beats: 2 }, { midi: 69, beats: 1 },
+        { midi: 67, beats: 2 }, { midi: 64, beats: 1 }, { midi: 62, beats: 2 },
+        { midi: 62, beats: 1 }, { midi: 67, beats: 2 }, { midi: 71, beats: 1 },
+        { midi: 67, beats: 1 }, { midi: 71, beats: 2 }, { midi: 69, beats: 1 },
+        { midi: 74, beats: 3 },
+      ],
+    },
     sections: [
       { label: 'Verse 1', lines: [
         '[G]Amazing grace, how [C]sweet the [G]sound',

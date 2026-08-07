@@ -51,5 +51,8 @@ function normalizeHymn(value: Partial<Hymn>): Hymn {
     originalKey: typeof value.originalKey === 'string' ? value.originalKey : 'C',
     tempo: Number.isFinite(value.tempo) ? value.tempo as number : 80,
     timeSignature: typeof value.timeSignature === 'string' ? value.timeSignature : '4/4',
-    rightsStatus: 'user-provided', sections: value.sections ?? [] }
+    rightsStatus: 'user-provided',
+    audioUrl: typeof value.audioUrl === 'string' ? value.audioUrl : undefined,
+    pianoSheetUrl: typeof value.pianoSheetUrl === 'string' ? value.pianoSheetUrl : undefined,
+    tune: value.tune, sections: value.sections ?? [] }
 }
