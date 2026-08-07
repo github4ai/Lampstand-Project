@@ -45,6 +45,8 @@ function LanguageToolsPage() {
   const [history, setHistory] = useState<LanguageHistoryItem[]>(loadHistory)
   const [providerStatus, setProviderStatus] = useState<LanguageProviderStatus | null>(null)
   const [recording, setRecording] = useState(false)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
+  const [audioPreviewUrl, setAudioPreviewUrl] = useState('')
   const recorderRef = useRef<MediaRecorder | null>(null)
   const recordingChunksRef = useRef<Blob[]>([])
 
@@ -57,6 +59,23 @@ function LanguageToolsPage() {
   useEffect(() => () => {
     recorderRef.current?.stream.getTracks().forEach((track) => track.stop())
   }, [])
+
+  useEffect(() => {
+    if (!recording) return
+    const timer = window.setInterval(() => setRecordingSeconds((seconds) => seconds + 1), 1000)
+    return () => window.clearInterval(timer)
+  }, [recording])
+
+  useEffect(() => {
+    if (!audioFile) { setAudioPreviewUrl(''); return }
+    const url = URL.createObjectURL(audioFile)
+    setAudioPreviewUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [audioFile])
+
+  function formatRecordingTime(seconds: number) {
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
+  }
 
   async function startRecording() {
     setError('')
@@ -80,6 +99,7 @@ function LanguageToolsPage() {
       }
       recorderRef.current = recorder
       recorder.start()
+      setRecordingSeconds(0)
       setRecording(true)
     } catch {
       setError('Microphone access was not granted.')
@@ -190,8 +210,10 @@ function LanguageToolsPage() {
           <button className={recording ? 'language-record recording' : 'language-record'} type="button"
             onClick={recording ? stopRecording : () => void startRecording()}>
             {recording ? <Square size={16} /> : <Mic size={16} />}
-            {recording ? 'Stop Recording' : 'Record with Microphone'}
+            {recording ? `Stop Recording · ${formatRecordingTime(recordingSeconds)}` : 'Record with Microphone'}
           </button>
+          {audioPreviewUrl && <div className="language-audio-preview"><span>Preview recording</span>
+            <audio controls preload="metadata" src={audioPreviewUrl}>Audio preview is not supported by this browser.</audio></div>}
         </>}
         {error && <p className="language-error">{error}</p>}
         <button className="language-run" type="button" disabled={loading} onClick={() => void run()}>
