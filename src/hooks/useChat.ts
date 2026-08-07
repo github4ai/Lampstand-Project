@@ -22,6 +22,10 @@ import type {
   StreamMetadata,
 } from '../types/chat'
 
+import {
+  parseImportedConversation,
+} from '../utils/importConversation'
+
 const STORAGE_KEY =
   'aios-studio-conversations-v1'
 
@@ -642,26 +646,13 @@ export function useChat(
   function importConversation(
     value: unknown,
   ): boolean {
-    if (isLoading || typeof value !== 'object' || value === null) return false
-    const candidate = value as Partial<ChatConversation>
-    if (typeof candidate.title !== 'string' || typeof candidate.agentId !== 'string' || !Array.isArray(candidate.messages)) return false
-    const validMessages = candidate.messages.every((message) =>
-      typeof message === 'object' && message !== null &&
-      (message.role === 'user' || message.role === 'assistant') &&
-      typeof message.content === 'string' &&
-      (message.sources === undefined || Array.isArray(message.sources)),
-    )
-    if (!validMessages) return false
-    const now = new Date().toISOString()
-    const imported: ChatConversation = {
-      id: crypto.randomUUID(),
-      title: candidate.title.trim() || 'Imported conversation',
-      agentId: candidate.agentId,
-      createdAt: typeof candidate.createdAt === 'string' ? candidate.createdAt : now,
-      updatedAt: now,
-      pinned: false,
-      messages: candidate.messages.map(cloneMessage),
-    }
+    if (isLoading) return false
+    const imported =
+      parseImportedConversation(
+        value,
+      )
+    if (!imported) return false
+
     setConversations((current) => [imported, ...current])
     setActiveConversationId(imported.id)
     setQuestion('')
