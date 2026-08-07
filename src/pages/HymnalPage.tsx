@@ -5,6 +5,7 @@ import { HYMNS } from '../data/hymns'
 import { CHROMATIC_KEYS, extractChords, semitonesBetween, stripChords, transposeChordLine } from '../utils/chords'
 import { parseHymnImport } from '../utils/importHymn'
 import type { Hymn } from '../types/hymnal'
+import { getRelatedHymns } from '../utils/relatedHymns'
 
 const FAVORITES_KEY = 'aios-studio-hymnal-favorites-v1'
 const IMPORTED_KEY = 'aios-studio-imported-hymns-v1'
@@ -59,6 +60,7 @@ function HymnalPage() {
     selected.sections.flatMap((section) => section.lines),
     shapeShift,
   )
+  const related = getRelatedHymns(selected, hymns)
 
   function chooseHymn(id: string) {
     const hymn = hymns.find((item) => item.id === id)
@@ -160,6 +162,25 @@ function HymnalPage() {
           </div>
 
           <div className="hymnal-themes">{selected.themes.map((theme) => <span key={theme}>{theme}</span>)}</div>
+          <div className="hymnal-info-grid">
+            <section className="hymnal-info-card">
+              <h3>Details</h3><dl>
+                <div><dt>Category</dt><dd>{selected.category || 'Uncategorized'}</dd></div>
+                <div><dt>Key</dt><dd>{targetKey} major</dd></div>
+                <div><dt>Meter</dt><dd>{selected.timeSignature}</dd></div>
+                <div><dt>Rights</dt><dd>{selected.rightsStatus === 'user-provided' ? 'User provided' : 'Public domain'}</dd></div>
+                <div><dt>Scripture</dt><dd>{selected.scriptures?.join(', ') || 'Not specified'}</dd></div>
+              </dl>
+            </section>
+            <section className="hymnal-info-card">
+              <h3>Related Hymns</h3>
+              {related.length > 0 ? <div className="hymnal-related-list">
+                {related.map((hymn) => <button type="button" onClick={() => chooseHymn(hymn.id)} key={hymn.id}>
+                  <strong>{hymn.title}</strong><span>{hymn.themes.slice(0, 2).join(' - ')}</span>
+                </button>)}
+              </div> : <p className="hymnal-related-empty">No related hymns in this collection yet.</p>}
+            </section>
+          </div>
           {view === 'guitar' && <div className="hymnal-chord-palette">
             <span>Chords in this arrangement</span>
             <div>{chordPalette.map((chord) => <strong key={chord}>{chord}</strong>)}</div>

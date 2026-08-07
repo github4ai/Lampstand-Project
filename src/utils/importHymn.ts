@@ -38,13 +38,16 @@ function parseChordProHymn(text: string): Hymn | null {
   if (!title || sections.length === 0) return null
   return normalizeHymn({ title, author: metadata.get('artist') ?? metadata.get('a'),
     originalKey: metadata.get('key'), tempo: Number(metadata.get('tempo')),
-    timeSignature: metadata.get('time'), themes: metadata.get('theme')?.split(','), sections })
+    timeSignature: metadata.get('time'), themes: metadata.get('theme')?.split(','),
+    category: metadata.get('category'), scriptures: metadata.get('scripture')?.split(','), sections })
 }
 
 function normalizeHymn(value: Partial<Hymn>): Hymn {
   return { id: crypto.randomUUID(), title: value.title?.trim() || 'Imported hymn',
     author: value.author?.trim() || 'Unknown', year: Number.isFinite(value.year) ? value.year as number : 0,
     themes: value.themes?.filter((theme): theme is string => typeof theme === 'string').map((theme) => theme.trim()).filter(Boolean) ?? [],
+    category: typeof value.category === 'string' ? value.category.trim() : undefined,
+    scriptures: value.scriptures?.filter((item): item is string => typeof item === 'string').map((item) => item.trim()).filter(Boolean),
     originalKey: typeof value.originalKey === 'string' ? value.originalKey : 'C',
     tempo: Number.isFinite(value.tempo) ? value.tempo as number : 80,
     timeSignature: typeof value.timeSignature === 'string' ? value.timeSignature : '4/4',

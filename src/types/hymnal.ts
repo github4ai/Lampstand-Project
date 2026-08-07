@@ -4,6 +4,8 @@ export interface Hymn {
   author: string
   year: number
   themes: string[]
+  category?: string
+  scriptures?: string[]
   originalKey: string
   tempo: number
   timeSignature: string
