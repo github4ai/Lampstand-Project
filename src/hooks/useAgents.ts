@@ -1,35 +1,30 @@
-import { useEffect, useState } from "react";
-
-import {
-    getAgents,
-    type AgentSummary,
-} from "../services/api";
+import { useCallback, useEffect, useState } from 'react'
+import { getAgents } from '../services/api'
+import type { AgentSummary } from '../services/api'
 
 export function useAgents() {
-    const [agents, setAgents] = useState<AgentSummary[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [agents, setAgents] = useState<AgentSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-    useEffect(() => {
-        async function load() {
-            try {
-                const result = await getAgents();
-                setAgents(result);
-            } catch {
-                setError(
-                    "Unable to load AIOS agents.",
-                );
-            } finally {
-                setLoading(false);
-            }
-        }
+  const refresh = useCallback(async (): Promise<boolean> => {
+    setLoading(true)
+    setError('')
 
-        load();
-    }, []);
+    try {
+      setAgents(await getAgents())
+      return true
+    } catch {
+      setError('Unable to load AIOS agents.')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-    return {
-        agents,
-        loading,
-        error,
-    };
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
+
+  return { agents, loading, error, refresh }
 }

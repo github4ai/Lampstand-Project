@@ -94,6 +94,7 @@ function App() {
     agents,
     loading: agentsLoading,
     error: agentsError,
+    refresh: refreshAgents,
   } = useAgents()
 
   const [
@@ -420,7 +421,7 @@ function App() {
 
         <Route path="/settings" element={<main className="workspace-panel"><SettingsPage /></main>} />
 
-        <Route path="/agents" element={<main className="workspace-panel"><AgentsPage agents={agents} selectedAgentId={selectedAgentId} loading={agentsLoading} error={agentsError} onSelectAgent={handleSelectAgent} onStartChat={() => navigate("/")} /></main>} />
+        <Route path="/agents" element={<main className="workspace-panel"><AgentsPage agents={agents} selectedAgentId={selectedAgentId} loading={agentsLoading} error={agentsError} onRetry={refreshAgents} onSelectAgent={handleSelectAgent} onStartChat={() => navigate("/")} /></main>} />
 
         <Route path="/documents" element={<main className="workspace-panel"><DocumentsPage /></main>} />
 

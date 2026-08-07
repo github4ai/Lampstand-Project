@@ -1,4 +1,4 @@
-import { Bot, Check, MessageSquare, Search } from 'lucide-react'
+import { Bot, Check, MessageSquare, RefreshCw, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { AgentSummary } from '../services/api'
 
@@ -7,11 +7,12 @@ interface AgentsPageProps {
   selectedAgentId: string
   loading: boolean
   error: string
+  onRetry: () => Promise<boolean>
   onSelectAgent: (id: string) => void
   onStartChat: () => void
 }
 
-function AgentsPage({ agents, selectedAgentId, loading, error, onSelectAgent, onStartChat }: AgentsPageProps) {
+function AgentsPage({ agents, selectedAgentId, loading, error, onRetry, onSelectAgent, onStartChat }: AgentsPageProps) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
   const categories = useMemo(() => [...new Set(agents.map((agent) => agent.category))].sort(), [agents])
@@ -49,7 +50,7 @@ function AgentsPage({ agents, selectedAgentId, loading, error, onSelectAgent, on
       </div>
 
       {loading ? <div className="agents-state">Loading agents...</div> :
-       error ? <div className="agents-state agents-error"><h2>Unable to load agents</h2><p>{error}</p></div> :
+       error ? <div className="agents-state agents-error"><h2>Unable to load agents</h2><p>{error}</p><button type="button" className="agents-retry-button" onClick={() => void onRetry()}><RefreshCw size={15} /> Retry</button></div> :
        visible.length === 0 ? <div className="agents-state"><h2>No matching agents</h2><p>Try another search or category.</p></div> :
        <div className="agents-grid">{visible.map((agent) => {
         const active = agent.id === selectedAgentId
