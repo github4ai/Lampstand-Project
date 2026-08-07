@@ -38,6 +38,7 @@ const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
 const DocumentDetailPage = lazy(() => import('./pages/DocumentDetailPage'))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const HymnalPage = lazy(() => import('./pages/HymnalPage'))
+const MediaStudioPage = lazy(() => import('./pages/MediaStudioPage'))
 const KnowledgeCategoryPage = lazy(() => import('./pages/KnowledgeCategoryPage'))
 const KnowledgePage = lazy(() => import('./pages/KnowledgePage'))
 const KnowledgeSearchPage = lazy(() => import('./pages/knowledge/KnowledgeSearchPage'))
@@ -442,6 +443,8 @@ function App() {
         <Route path="/documents" element={<main className="workspace-panel"><DocumentsPage /></main>} />
 
         <Route path="/hymnal" element={<main className="workspace-panel"><HymnalPage /></main>} />
+
+        <Route path="/media" element={<main className="workspace-panel"><MediaStudioPage /></main>} />
 
         <Route
           path="/history"

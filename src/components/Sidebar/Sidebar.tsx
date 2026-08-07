@@ -24,6 +24,7 @@ import {
   Search,
   Settings,
   Trash2,
+  WandSparkles,
 } from 'lucide-react'
 
 import {
@@ -468,6 +469,10 @@ function Sidebar({
 
         <NavLink to="/hymnal" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Music2 size={17} /><span>Hymnal</span>
+        </NavLink>
+
+        <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <WandSparkles size={17} /><span>Media Studio</span>
         </NavLink>
 
         <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
