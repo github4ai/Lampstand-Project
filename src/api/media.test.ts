@@ -12,7 +12,7 @@ describe('generateMedia', () => {
     vi.stubGlobal('fetch', fetchMock)
     await expect(generateMedia({ kind: 'image', prompt: 'A lamp', aspectRatio: '16:9' }))
       .resolves.toEqual(payload)
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8765/media/generate',
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8766/media/generate',
       expect.objectContaining({ method: 'POST', body: JSON.stringify({ kind: 'image', prompt: 'A lamp', aspectRatio: '16:9' }) }))
   })
 
@@ -24,7 +24,7 @@ describe('generateMedia', () => {
     vi.stubGlobal('fetch', fetchMock)
     await expect(getMediaGeneration('job/1')).resolves.toEqual(payload)
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:8765/media/generations/job%2F1', expect.objectContaining({ signal: undefined }))
+      'http://127.0.0.1:8766/media/generations/job%2F1', expect.objectContaining({ signal: undefined }))
   })
 
   it('reports backend errors', async () => {

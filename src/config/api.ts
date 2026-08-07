@@ -1,4 +1,4 @@
-const DEFAULT_AIOS_API_URL = 'http://127.0.0.1:8765'
+const DEFAULT_AIOS_API_URL = 'http://127.0.0.1:8766'
 
 const configuredUrl =
   import.meta.env.VITE_AIOS_API_URL?.trim()

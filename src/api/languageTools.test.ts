@@ -9,7 +9,7 @@ describe('language tools API', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
     await expect(getLanguageProviderStatus()).resolves.toEqual(payload)
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8765/language/providers', { signal: undefined })
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8766/language/providers', { signal: undefined })
   })
 
   it('sends translation requests as JSON', async () => {
@@ -20,7 +20,7 @@ describe('language tools API', () => {
     vi.stubGlobal('fetch', fetchMock)
     await expect(translateText({ text: 'Hello', sourceLanguage: 'en', targetLanguage: 'mr' }))
       .resolves.toEqual(payload)
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8765/language/translate',
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8766/language/translate',
       expect.objectContaining({ method: 'POST', body: JSON.stringify({ text: 'Hello', sourceLanguage: 'en', targetLanguage: 'mr' }) }))
   })
 
@@ -29,7 +29,7 @@ describe('language tools API', () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
     await translateText({ text: 'Namaste', sourceLanguage: 'auto', targetLanguage: 'en' })
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8765/language/translate',
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8766/language/translate',
       expect.objectContaining({ body: JSON.stringify({ text: 'Namaste', sourceLanguage: 'auto', targetLanguage: 'en' }) }))
   })
 

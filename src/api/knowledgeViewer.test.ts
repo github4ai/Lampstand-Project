@@ -21,7 +21,7 @@ describe('getKnowledgeViewer', () => {
     ).resolves.toEqual(payload)
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:8765/knowledge/Ministry%20Notes/Test%20File/viewer/7',
+      'http://127.0.0.1:8766/knowledge/Ministry%20Notes/Test%20File/viewer/7',
       expect.objectContaining({ method: 'GET' }),
     )
   })
@@ -59,7 +59,7 @@ describe('getChunkContext', () => {
     ).resolves.toEqual(payload)
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:8765/knowledge/Ministry/Test/viewer/12/context?radius=3',
+      'http://127.0.0.1:8766/knowledge/Ministry/Test/viewer/12/context?radius=3',
       expect.objectContaining({ method: 'GET' }),
     )
   })

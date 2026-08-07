@@ -21,7 +21,7 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
-The frontend expects the AIOS API at `http://127.0.0.1:8765` by default.
+The frontend expects the unified AIOS gateway at `http://127.0.0.1:8766` by default. The gateway forwards existing features to the original API on port `8765`.
 
 The included API runs in hybrid mode: it tries local Ollama and Whisper providers first, then uses OpenAI only when an `OPENAI_API_KEY` is configured. Copy `.env.example` to `.env.local` to customize providers. Secrets in `.env.local` are ignored by Git.
 
@@ -32,7 +32,7 @@ The first transcription downloads the multilingual Faster Whisper `small` model.
 To use another API address, copy `.env.example` to `.env.local` and change:
 
 ```text
-VITE_AIOS_API_URL=http://127.0.0.1:8765
+VITE_AIOS_API_URL=http://127.0.0.1:8766
 ```
 
 Restart the development server after changing environment variables.
