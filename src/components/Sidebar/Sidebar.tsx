@@ -17,6 +17,7 @@ import {
   FileText,
   MessageSquare,
   MessagesSquare,
+  Music2,
   Pencil,
   Pin,
   PinOff,
@@ -463,6 +464,10 @@ function Sidebar({
 
         <NavLink to="/agents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Bot size={17} /><span>Agents</span>
+        </NavLink>
+
+        <NavLink to="/hymnal" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Music2 size={17} /><span>Hymnal</span>
         </NavLink>
 
         <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>

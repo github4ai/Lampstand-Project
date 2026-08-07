@@ -1,0 +1,181 @@
+import { BookOpen, FileUp, Heart, Music2, Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import WorkspaceLayout from '../layouts/WorkspaceLayout'
+import { HYMNS } from '../data/hymns'
+import { CHROMATIC_KEYS, extractChords, semitonesBetween, stripChords, transposeChordLine } from '../utils/chords'
+import { parseHymnImport } from '../utils/importHymn'
+import type { Hymn } from '../types/hymnal'
+
+const FAVORITES_KEY = 'aios-studio-hymnal-favorites-v1'
+const IMPORTED_KEY = 'aios-studio-imported-hymns-v1'
+
+function loadImportedHymns(): Hymn[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(IMPORTED_KEY) ?? '[]')
+    return Array.isArray(value) ? value.filter((item): item is Hymn =>
+      typeof item === 'object' && item !== null && typeof item.title === 'string' &&
+      typeof item.id === 'string' && Array.isArray(item.sections)) : []
+  } catch { return [] }
+}
+
+function loadFavorites(): string[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]')
+    return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+  } catch {
+    return []
+  }
+}
+
+function HymnalPage() {
+  const [view, setView] = useState<'lyrics' | 'chords' | 'guitar'>('chords')
+  const [query, setQuery] = useState('')
+  const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
+  const [importStatus, setImportStatus] = useState('')
+  const [selectedId, setSelectedId] = useState(HYMNS[0].id)
+  const [favorites, setFavorites] = useState(loadFavorites)
+  const [targetKey, setTargetKey] = useState(HYMNS[0].originalKey)
+  const [capo, setCapo] = useState(0)
+  const selected = hymns.find((hymn) => hymn.id === selectedId) ?? hymns[0]
+
+  useEffect(() => {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+  }, [favorites])
+
+  const visible = useMemo(() => {
+    const term = query.trim().toLowerCase()
+    if (!term) return hymns
+    return hymns.filter((hymn) =>
+      [hymn.title, hymn.author, ...hymn.themes].some((value) =>
+        value.toLowerCase().includes(term)))
+  }, [hymns, query])
+
+  const soundingShift = semitonesBetween(selected.originalKey, targetKey)
+  const shapeShift = (soundingShift - capo + 12) % 12
+  const shapeKey = CHROMATIC_KEYS[
+    (CHROMATIC_KEYS.indexOf(selected.originalKey as typeof CHROMATIC_KEYS[number]) + shapeShift) % 12
+  ]
+  const chordPalette = extractChords(
+    selected.sections.flatMap((section) => section.lines),
+    shapeShift,
+  )
+
+  function chooseHymn(id: string) {
+    const hymn = hymns.find((item) => item.id === id)
+    if (!hymn) return
+    setSelectedId(id)
+    setTargetKey(hymn.originalKey)
+    setCapo(0)
+  }
+
+  async function importHymn(file: File) {
+    const hymn = parseHymnImport(await file.text(), file.name)
+    if (!hymn) {
+      setImportStatus('Import failed. Choose a valid JSON or ChordPro hymn.')
+      return
+    }
+    const imported = [...loadImportedHymns(), hymn]
+    localStorage.setItem(IMPORTED_KEY, JSON.stringify(imported))
+    setHymns([...HYMNS, ...imported])
+    setSelectedId(hymn.id)
+    setTargetKey(hymn.originalKey)
+    setCapo(0)
+    setImportStatus(hymn.title + ' imported.')
+  }
+
+  function toggleFavorite(id: string) {
+    setFavorites((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
+  }
+
+  function renderLine(line: string) {
+    if (view === 'lyrics') return stripChords(line)
+    return transposeChordLine(line, shapeShift).split(/(\[[^\]]+\])/g).map((part, index) =>
+      part.startsWith('[') && part.endsWith(']')
+        ? <span className="hymnal-chord" key={index}>{part.slice(1, -1)}</span>
+        : <span key={index}>{part}</span>)
+  }
+
+  return (
+    <WorkspaceLayout
+      title="Ministry Hymnal"
+      subtitle="Public-domain hymns with searchable lyrics and guitar-ready chord sheets."
+      icon={<BookOpen size={25} />}
+      statusBar={<span>{hymns.length} hymns - Imports and favorites are stored on this device</span>}
+      className="hymnal-page"
+    >
+      <div className="hymnal-grid">
+        <aside className="hymnal-library">
+          <label className="hymnal-search">
+            <Search size={17} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)}
+              type="search" placeholder="Search hymns or themes" />
+          </label>
+          <label className="hymnal-import">
+            <FileUp size={15} /> Import JSON or ChordPro
+            <input type="file" accept=".json,.cho,.chordpro,.pro,.crd,text/plain,application/json"
+              onChange={(event) => { const file = event.target.files?.[0]; if (file) void importHymn(file); event.target.value = '' }} />
+          </label>
+          {importStatus && <p className="hymnal-import-status">{importStatus}</p>}
+          <div className="hymnal-list">
+            {visible.map((hymn) => (
+              <button className={hymn.id === selected.id ? 'active' : ''} type="button"
+                onClick={() => chooseHymn(hymn.id)} key={hymn.id}>
+                <span><strong>{hymn.title}</strong><small>{hymn.author} - {hymn.year}</small></span>
+                {favorites.includes(hymn.id) && <Heart size={14} fill="currentColor" />}
+              </button>
+            ))}
+            {visible.length === 0 && <p className="hymnal-empty">No matching hymns.</p>}
+          </div>
+        </aside>
+
+        <article className="hymnal-sheet">
+          <header className="hymnal-sheet-header">
+            <div>
+              <p className="hymnal-eyebrow"><Music2 size={14} /> {selected.rightsStatus === 'user-provided' ? 'User provided' : 'Public domain'}</p>
+              <h2>{selected.title}</h2>
+              <p>{selected.author}{selected.year > 0 ? ' - ' + selected.year : ''} - {selected.tempo} BPM - {selected.timeSignature}</p>
+            </div>
+            <button className={favorites.includes(selected.id) ? 'favorite active' : 'favorite'}
+              type="button" onClick={() => toggleFavorite(selected.id)}
+              aria-label={favorites.includes(selected.id) ? 'Remove favorite' : 'Add favorite'}>
+              <Heart size={18} fill={favorites.includes(selected.id) ? 'currentColor' : 'none'} />
+            </button>
+          </header>
+
+          <div className="hymnal-controls">
+            <div className="hymnal-view-switcher" aria-label="Hymn view">
+              {(['lyrics', 'chords', 'guitar'] as const).map((option) => (
+                <button className={view === option ? 'active' : ''} type="button"
+                  onClick={() => setView(option)} key={option}>{option}</button>
+              ))}
+            </div>
+            <label>Sounding key<select value={targetKey} onChange={(event) => setTargetKey(event.target.value)}>
+              {CHROMATIC_KEYS.map((key) => <option key={key}>{key}</option>)}
+            </select></label>
+            <label>Capo<select value={capo} onChange={(event) => setCapo(Number(event.target.value))}>
+              {Array.from({ length: 8 }, (_, value) => <option value={value} key={value}>{value}</option>)}
+            </select></label>
+            <div className="hymnal-shape-guide"><span>Play shapes</span><strong>{shapeKey}</strong></div>
+          </div>
+
+          <div className="hymnal-themes">{selected.themes.map((theme) => <span key={theme}>{theme}</span>)}</div>
+          {view === 'guitar' && <div className="hymnal-chord-palette">
+            <span>Chords in this arrangement</span>
+            <div>{chordPalette.map((chord) => <strong key={chord}>{chord}</strong>)}</div>
+          </div>}
+          <div className="hymnal-sections">
+            {selected.sections.map((section) => (
+              <section key={section.label}>
+                <h3>{section.label}</h3>
+                {section.lines.map((line, index) => <p key={index}>{renderLine(line)}</p>)}
+              </section>
+            ))}
+          </div>
+        </article>
+      </div>
+    </WorkspaceLayout>
+  )
+}
+
+export default HymnalPage

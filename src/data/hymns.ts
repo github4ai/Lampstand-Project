@@ -1,0 +1,92 @@
+import type { Hymn } from '../types/hymnal'
+
+export const HYMNS: Hymn[] = [
+  {
+    id: 'amazing-grace',
+    title: 'Amazing Grace',
+    author: 'John Newton',
+    year: 1779,
+    themes: ['Grace', 'Salvation', 'Testimony'],
+    originalKey: 'G',
+    tempo: 72,
+    timeSignature: '3/4',
+    sections: [
+      { label: 'Verse 1', lines: [
+        '[G]Amazing grace, how [C]sweet the [G]sound',
+        'That [G]saved a wretch like [D]me',
+        'I [G]once was lost, but [C]now am [G]found',
+        'Was [G]blind, but [D]now I [G]see',
+      ] },
+      { label: 'Verse 2', lines: [
+        "'Twas [G]grace that taught my [C]heart to [G]fear",
+        'And [G]grace my fears re[D]lieved',
+        'How [G]precious did that [C]grace ap[G]pear',
+        'The [G]hour I [D]first be[G]lieved',
+      ] },
+    ],
+  },
+  {
+    id: 'blessed-assurance',
+    title: 'Blessed Assurance',
+    author: 'Fanny J. Crosby',
+    year: 1873,
+    themes: ['Assurance', 'Praise', 'Testimony'],
+    originalKey: 'D',
+    tempo: 96,
+    timeSignature: '9/8',
+    sections: [
+      { label: 'Verse 1', lines: [
+        '[D]Blessed assurance, [G]Jesus is [D]mine',
+        '[D]Oh, what a foretaste of [E7]glory di[A]vine',
+        '[D]Heir of salvation, [G]purchase of [D]God',
+        '[D]Born of His Spirit, [A]washed in His [D]blood',
+      ] },
+      { label: 'Chorus', lines: [
+        '[D]This is my story, [G]this is my [D]song',
+        '[D]Praising my Savior [E7]all the day [A]long',
+        '[D]This is my story, [G]this is my [D]song',
+        '[D]Praising my Savior [A]all the day [D]long',
+      ] },
+    ],
+  },
+  {
+    id: 'holy-holy-holy',
+    title: 'Holy, Holy, Holy',
+    author: 'Reginald Heber',
+    year: 1826,
+    themes: ['Holiness', 'Trinity', 'Worship'],
+    originalKey: 'D',
+    tempo: 84,
+    timeSignature: '4/4',
+    sections: [
+      { label: 'Verse 1', lines: [
+        '[D]Holy, holy, [Bm]holy, [A]Lord God Al[D]mighty',
+        '[A]Early in the [D]morning our [E7]song shall rise to [A]Thee',
+        '[D]Holy, holy, [Bm]holy, [A]merciful and [D]mighty',
+        '[Bm]God in three [G]Persons, [D]blessed [A]Trini[D]ty',
+      ] },
+    ],
+  },
+  {
+    id: 'what-a-friend',
+    title: 'What a Friend We Have in Jesus',
+    author: 'Joseph M. Scriven',
+    year: 1855,
+    themes: ['Prayer', 'Comfort', 'Jesus'],
+    originalKey: 'F',
+    tempo: 88,
+    timeSignature: '4/4',
+    sections: [
+      { label: 'Verse 1', lines: [
+        '[F]What a friend we have in [Bb]Jesus',
+        '[F]All our sins and griefs to [C]bear',
+        '[F]What a privilege to [Bb]carry',
+        '[F]Everything to [C]God in [F]prayer',
+        '[C]Oh, what peace we often [F]forfeit',
+        '[Bb]Oh, what needless pain we [C]bear',
+        '[F]All because we do not [Bb]carry',
+        '[F]Everything to [C]God in [F]prayer',
+      ] },
+    ],
+  },
+]
