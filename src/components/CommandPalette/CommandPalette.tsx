@@ -7,6 +7,7 @@ import {
   MessagesSquare,
   Plus,
   Search,
+  Settings,
   X,
 } from 'lucide-react'
 
@@ -133,6 +134,7 @@ function CommandPalette({
               onClose()
             },
           },
+          { id: 'command-open-settings', title: 'Open Settings', description: 'Manage preferences and API status', keywords: 'settings preferences api connection', kind: 'command', icon: Settings, action: () => { onNavigate('/settings'); onClose() } },
           { id: 'command-open-agents', title: 'Open AI Agents', description: 'Browse available specialist assistants', keywords: 'agents assistants specialists', kind: 'command', icon: Bot, action: () => { onNavigate('/agents'); onClose() } },
           { id: 'command-open-documents', title: 'Open Documents', description: 'Browse indexed Knowledge documents', keywords: 'documents files library indexed', kind: 'command', icon: FileText, action: () => { onNavigate('/documents'); onClose() } },
           { id: 'command-open-history', title: 'Open Conversation History', description: 'Search and manage saved conversations', keywords: 'history saved conversations pinned', kind: 'command', icon: Clock3, action: () => { onNavigate('/history'); onClose() } },

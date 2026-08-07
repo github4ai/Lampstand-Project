@@ -21,6 +21,7 @@ import {
   Pin,
   PinOff,
   Search,
+  Settings,
   Trash2,
 } from 'lucide-react'
 
@@ -477,6 +478,10 @@ function Sidebar({
 
         <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Clock3 size={17} /><span>History</span>
+        </NavLink>
+
+        <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Settings size={17} /><span>Settings</span>
         </NavLink>
 
         <button

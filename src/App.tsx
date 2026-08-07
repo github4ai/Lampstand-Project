@@ -32,6 +32,7 @@ import KnowledgeCategoryPage from './pages/KnowledgeCategoryPage'
 import HistoryPage from './pages/HistoryPage'
 import DocumentsPage from './pages/DocumentsPage'
 import AgentsPage from './pages/AgentsPage'
+import SettingsPage from './pages/SettingsPage'
 import KnowledgePage from './pages/KnowledgePage'
 import KnowledgeSearchPage from './pages/knowledge/KnowledgeSearchPage'
 
@@ -378,6 +379,8 @@ function App() {
           path="/"
           element={chatPage}
         />
+
+        <Route path="/settings" element={<main className="workspace-panel"><SettingsPage /></main>} />
 
         <Route path="/agents" element={<main className="workspace-panel"><AgentsPage agents={agents} selectedAgentId={selectedAgentId} loading={agentsLoading} error={agentsError} onSelectAgent={handleSelectAgent} onStartChat={() => navigate("/")} /></main>} />
 
