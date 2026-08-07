@@ -1,4 +1,4 @@
-import { Clock3, MessageSquare, Pin, Plus, Search, Trash2 } from 'lucide-react'
+import { Clock3, MessageSquare, Pin, Plus, Search, Trash2, Upload } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { ChatConversation } from '../types/chat'
 
@@ -8,11 +8,24 @@ interface HistoryPageProps {
   onNewConversation: () => void
   onOpenConversation: (id: string) => void
   onDeleteConversation: (id: string) => boolean
+  onImportConversation: (value: unknown) => boolean
 }
 
-function HistoryPage({ conversations, isLoading, onNewConversation, onOpenConversation, onDeleteConversation }: HistoryPageProps) {
+function HistoryPage({ conversations, isLoading, onNewConversation, onOpenConversation, onDeleteConversation, onImportConversation }: HistoryPageProps) {
   const [query, setQuery] = useState('')
   const [pinnedOnly, setPinnedOnly] = useState(false)
+  const [importError, setImportError] = useState('')
+
+  async function importFile(file: File | undefined) {
+    if (!file) return
+    setImportError('')
+    try {
+      const imported = onImportConversation(JSON.parse(await file.text()))
+      if (!imported) setImportError('This file is not a valid AIOS conversation export.')
+    } catch {
+      setImportError('The selected file does not contain valid JSON.')
+    }
+  }
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase()
     return conversations.filter((item) =>
@@ -30,10 +43,12 @@ function HistoryPage({ conversations, isLoading, onNewConversation, onOpenConver
           <span className="history-page-icon"><Clock3 size={24} /></span>
           <div><h1>Conversation History</h1><p>Search, revisit, and manage your saved AIOS conversations.</p></div>
         </div>
-        <button className="history-new-button" type="button" onClick={onNewConversation} disabled={isLoading}>
-          <Plus size={17} /> New conversation
-        </button>
+        <div className="history-header-actions">
+          <label className="history-import-button"><Upload size={16} /> Import JSON<input type="file" accept="application/json,.json" onChange={(event) => { void importFile(event.target.files?.[0]); event.target.value = '' }} /></label>
+          <button className="history-new-button" type="button" onClick={onNewConversation} disabled={isLoading}><Plus size={17} /> New conversation</button>
+        </div>
       </header>
+      {importError && <p className="history-import-error">{importError}</p>}
       <div className="history-summary">
         <span><strong>{conversations.length}</strong> saved</span>
         <span><strong>{pinnedCount}</strong> pinned</span>

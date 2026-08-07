@@ -135,6 +135,7 @@ function App() {
     renameConversation,
     duplicateConversation,
     togglePinConversation,
+    importConversation,
     deleteConversation,
   } = useChat(
     selectedAgent,
@@ -272,6 +273,17 @@ function App() {
         duration: 2800,
       })
     }
+  }
+
+  function handleImportConversation(value: unknown): boolean {
+    const imported = importConversation(value)
+    addToast({
+      title: imported ? 'Conversation imported' : 'Import failed',
+      message: imported ? 'The conversation is ready in History.' : 'Choose a valid AIOS conversation JSON file.',
+      variant: imported ? 'success' : 'error',
+      duration: 3500,
+    })
+    return imported
   }
 
   function handleDeleteConversation(
@@ -430,7 +442,7 @@ function App() {
 
         <Route
           path="/history"
-          element={<main className="workspace-panel"><HistoryPage conversations={conversations} isLoading={isLoading} onNewConversation={handleNewConversation} onOpenConversation={handleSelectConversation} onDeleteConversation={handleDeleteConversation} /></main>}
+          element={<main className="workspace-panel"><HistoryPage conversations={conversations} isLoading={isLoading} onNewConversation={handleNewConversation} onOpenConversation={handleSelectConversation} onDeleteConversation={handleDeleteConversation} onImportConversation={handleImportConversation} /></main>}
         />
 
         <Route
