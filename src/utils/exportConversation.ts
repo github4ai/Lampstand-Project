@@ -6,12 +6,14 @@ import type {
 function sanitizeFilename(
   value: string,
 ): string {
-  const sanitized = value
-    .trim()
-    .replace(
-      /[<>:"/\\|?*\u0000-\u001F]/g,
-      '',
+  const sanitized = Array.from(
+    value.trim(),
+  )
+    .filter((character) =>
+      character.charCodeAt(0) >= 32,
     )
+    .join('')
+    .replace(/[<>:"/\\|?*]/g, '')
     .replace(/\s+/g, ' ')
     .slice(0, 80)
     .trim()

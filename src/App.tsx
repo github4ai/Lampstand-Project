@@ -44,6 +44,25 @@ function App() {
   const navigate =
     useNavigate()
 
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem('aios-studio-settings-v1') ?? '{}',
+      ) as { compactUi?: boolean; reducedMotion?: boolean }
+
+      document.documentElement.classList.toggle(
+        'compact-ui',
+        stored.compactUi === true,
+      )
+      document.documentElement.classList.toggle(
+        'reduced-motion',
+        stored.reducedMotion === true,
+      )
+    } catch {
+      localStorage.removeItem('aios-studio-settings-v1')
+    }
+  }, [])
+
   const commandPaletteOpen =
     useAppStore(
       (state) =>
