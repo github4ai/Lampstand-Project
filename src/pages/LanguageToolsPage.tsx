@@ -1,5 +1,5 @@
-import { ArrowLeftRight, Copy, Download, FileAudio, History, Languages, LoaderCircle, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowLeftRight, Copy, Download, FileAudio, History, Languages, LoaderCircle, Mic, Square, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import { getLanguageProviderStatus, transcribeAudio, translateText } from '../api/languageTools'
 import type { LanguageHistoryItem, LanguageProviderStatus, SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
@@ -44,12 +44,51 @@ function LanguageToolsPage() {
   const [error, setError] = useState('')
   const [history, setHistory] = useState<LanguageHistoryItem[]>(loadHistory)
   const [providerStatus, setProviderStatus] = useState<LanguageProviderStatus | null>(null)
+  const [recording, setRecording] = useState(false)
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const recordingChunksRef = useRef<Blob[]>([])
 
   useEffect(() => {
     const controller = new AbortController()
     void getLanguageProviderStatus(controller.signal).then(setProviderStatus).catch(() => setProviderStatus(null))
     return () => controller.abort()
   }, [])
+
+  useEffect(() => () => {
+    recorderRef.current?.stream.getTracks().forEach((track) => track.stop())
+  }, [])
+
+  async function startRecording() {
+    setError('')
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      setError('Microphone recording is not supported by this browser.')
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const preferredType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : ''
+      const recorder = new MediaRecorder(stream, preferredType ? { mimeType: preferredType } : undefined)
+      recordingChunksRef.current = []
+      recorder.ondataavailable = (event) => { if (event.data.size) recordingChunksRef.current.push(event.data) }
+      recorder.onstop = () => {
+        const mimeType = recorder.mimeType || 'audio/webm'
+        const extension = mimeType.includes('ogg') ? 'ogg' : 'webm'
+        const blob = new Blob(recordingChunksRef.current, { type: mimeType })
+        setAudioFile(new File([blob], `recording-${new Date().toISOString().replace(/[:.]/g, '-')}.${extension}`, { type: mimeType }))
+        recorder.stream.getTracks().forEach((track) => track.stop())
+        setRecording(false)
+      }
+      recorderRef.current = recorder
+      recorder.start()
+      setRecording(true)
+    } catch {
+      setError('Microphone access was not granted.')
+    }
+  }
+
+  function stopRecording() {
+    if (recorderRef.current?.state === 'recording') recorderRef.current.stop()
+  }
 
   function saveHistory(item: Omit<LanguageHistoryItem, 'id' | 'createdAt'>) {
     const next = [{ ...item, id: crypto.randomUUID(), createdAt: new Date().toISOString() }, ...history].slice(0, 20)
@@ -148,6 +187,11 @@ function LanguageToolsPage() {
           <label className="language-file-input"><FileAudio size={25} /><strong>{audioFile?.name ?? 'Choose an audio file'}</strong>
             <span>MP3, WAV, M4A, or another format supported by AIOS</span>
             <input type="file" accept="audio/*" onChange={(event) => setAudioFile(event.target.files?.[0] ?? null)} /></label>
+          <button className={recording ? 'language-record recording' : 'language-record'} type="button"
+            onClick={recording ? stopRecording : () => void startRecording()}>
+            {recording ? <Square size={16} /> : <Mic size={16} />}
+            {recording ? 'Stop Recording' : 'Record with Microphone'}
+          </button>
         </>}
         {error && <p className="language-error">{error}</p>}
         <button className="language-run" type="button" disabled={loading} onClick={() => void run()}>
