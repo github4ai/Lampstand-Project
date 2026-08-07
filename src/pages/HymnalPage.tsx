@@ -1,5 +1,5 @@
-import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Pencil, Plus, Search, Trash2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { BookOpen, FileUp, Heart, LayoutGrid, Maximize2, Music2, Pencil, Plus, Printer, Search, Trash2 } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import PianoSheet from '../components/Hymnal/PianoSheet'
 import TunePlayer from '../components/Hymnal/TunePlayer'
@@ -32,6 +32,7 @@ function loadFavorites(): string[] {
 }
 
 function HymnalPage() {
+  const sheetRef = useRef<HTMLElement | null>(null)
   const [view, setView] = useState<'lyrics' | 'chords' | 'piano' | 'guitar'>('chords')
   const [query, setQuery] = useState('')
   const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
@@ -134,6 +135,15 @@ function HymnalPage() {
         : <span key={index}>{part}</span>)
   }
 
+  async function openFullscreen() {
+    if (!sheetRef.current || document.fullscreenElement) return
+    try {
+      await sheetRef.current.requestFullscreen()
+    } catch {
+      setImportStatus('Fullscreen is not available in this browser.')
+    }
+  }
+
   return (
     <WorkspaceLayout
       title="Ministry Hymnal"
@@ -178,7 +188,7 @@ function HymnalPage() {
             {visible.length === 0 && <p className="hymnal-empty">No matching hymns.</p>}
           </div>
         </section> :
-        <article className="hymnal-sheet">
+        <article className="hymnal-sheet" ref={sheetRef}>
           <header className="hymnal-sheet-header">
             <div>
               <p className="hymnal-eyebrow"><Music2 size={14} /> {selected.rightsStatus === 'user-provided' ? 'User provided' : 'Public domain'}</p>
@@ -187,6 +197,14 @@ function HymnalPage() {
               </span>}
               <h2>{selected.title}</h2>
               <p>{selected.author}{selected.year > 0 ? ' - ' + selected.year : ''} - {selected.tempo} BPM - {selected.timeSignature}</p>
+            </div>
+            <div className="hymnal-output-actions">
+              <button type="button" onClick={() => void openFullscreen()} aria-label="Open fullscreen hymn">
+                <Maximize2 size={16} /> Fullscreen
+              </button>
+              <button type="button" onClick={() => window.print()} aria-label="Print hymn">
+                <Printer size={16} /> Print
+              </button>
             </div>
             <button className={favorites.includes(selected.id) ? 'favorite active' : 'favorite'}
               type="button" onClick={() => toggleFavorite(selected.id)}
