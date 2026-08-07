@@ -16,3 +16,14 @@ export interface TranscriptionResult {
   language: SupportedLanguage
   durationSeconds?: number
 }
+
+export interface LanguageHistoryItem {
+  id: string
+  tool: 'translation' | 'transcription'
+  input: string
+  result: string
+  sourceLanguage?: TranslationSourceLanguage
+  targetLanguage?: SupportedLanguage
+  audioLanguage?: SupportedLanguage
+  createdAt: string
+}

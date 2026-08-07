@@ -1,8 +1,19 @@
-import { ArrowLeftRight, Copy, Download, FileAudio, Languages, LoaderCircle } from 'lucide-react'
+import { ArrowLeftRight, Copy, Download, FileAudio, History, Languages, LoaderCircle, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import { transcribeAudio, translateText } from '../api/languageTools'
-import type { SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
+import type { LanguageHistoryItem, SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
+
+const LANGUAGE_HISTORY_KEY = 'aios-studio-language-history-v1'
+
+function loadHistory(): LanguageHistoryItem[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(LANGUAGE_HISTORY_KEY) ?? '[]')
+    return Array.isArray(value) ? value.slice(0, 20) as LanguageHistoryItem[] : []
+  } catch {
+    return []
+  }
+}
 
 const languages: Array<{ code: SupportedLanguage; label: string }> = [
   { code: 'en', label: 'English' }, { code: 'zh', label: 'Chinese' },
@@ -31,6 +42,32 @@ function LanguageToolsPage() {
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [history, setHistory] = useState<LanguageHistoryItem[]>(loadHistory)
+
+  function saveHistory(item: Omit<LanguageHistoryItem, 'id' | 'createdAt'>) {
+    const next = [{ ...item, id: crypto.randomUUID(), createdAt: new Date().toISOString() }, ...history].slice(0, 20)
+    setHistory(next)
+    localStorage.setItem(LANGUAGE_HISTORY_KEY, JSON.stringify(next))
+  }
+
+  function removeHistory(id: string) {
+    const next = history.filter((item) => item.id !== id)
+    setHistory(next)
+    localStorage.setItem(LANGUAGE_HISTORY_KEY, JSON.stringify(next))
+  }
+
+  function restoreHistory(item: LanguageHistoryItem) {
+    setTool(item.tool)
+    setResult(item.result)
+    setError('')
+    if (item.tool === 'translation') {
+      setText(item.input)
+      if (item.sourceLanguage) setSourceLanguage(item.sourceLanguage)
+      if (item.targetLanguage) setTargetLanguage(item.targetLanguage)
+    } else if (item.audioLanguage) {
+      setAudioLanguage(item.audioLanguage)
+    }
+  }
 
   function swapLanguages() {
     if (sourceLanguage === 'auto') return
@@ -58,10 +95,12 @@ function LanguageToolsPage() {
         if (!text.trim()) throw new Error('Enter text to translate.')
         const response = await translateText({ text: text.trim(), sourceLanguage, targetLanguage })
         setResult(response.translatedText)
+        saveHistory({ tool, input: text.trim(), result: response.translatedText, sourceLanguage, targetLanguage })
       } else {
         if (!audioFile) throw new Error('Choose an audio file to transcribe.')
         const response = await transcribeAudio(audioFile, audioLanguage)
         setResult(response.text)
+        saveHistory({ tool, input: audioFile.name, result: response.text, audioLanguage })
       }
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Language request failed.') }
     finally { setLoading(false) }
@@ -108,6 +147,18 @@ function LanguageToolsPage() {
           {result || 'Your translated or transcribed text will appear here.'}</div>
       </section>
     </div>
+    <section className="language-history-panel">
+      <header><div><History size={18} /><h2>Recent Results</h2></div><span>Stored locally · latest 20</span></header>
+      {history.length === 0 ? <p className="language-history-empty">Completed translations and transcriptions will appear here.</p> :
+        <div className="language-history-list">{history.map((item) => <article key={item.id}>
+          <button className="language-history-open" type="button" onClick={() => restoreHistory(item)}>
+            <strong>{item.tool === 'translation' ? 'Translation' : 'Transcription'}</strong>
+            <span>{item.input}</span><small>{new Date(item.createdAt).toLocaleString()}</small>
+          </button>
+          <button className="language-history-delete" type="button" onClick={() => removeHistory(item.id)}
+            aria-label={`Delete ${item.tool} history item`}><Trash2 size={15} /></button>
+        </article>)}</div>}
+    </section>
   </WorkspaceLayout>
 }
 
