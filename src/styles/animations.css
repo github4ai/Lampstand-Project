@@ -1,0 +1,87 @@
+.spinner {
+  animation: spin 850ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sidebar,
+.messages,
+.conversation-list,
+.composer textarea {
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(255, 255, 255, 0.16)
+    transparent;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .conversation-section {
+    max-height: 240px;
+  }
+
+  .chat-panel {
+    min-height: 720px;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar {
+    padding: 18px 14px;
+  }
+
+  .chat-header {
+    padding: 20px 16px;
+  }
+
+  .chat-header h2 {
+    font-size: 25px;
+  }
+
+  .messages {
+    padding: 20px 14px;
+  }
+
+  .composer-area {
+    padding: 12px 14px 16px;
+  }
+
+  .message {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .message.user {
+    grid-template-columns: minmax(0, 1fr) 30px;
+  }
+
+  .message-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .message-content {
+    padding: 13px 14px;
+  }
+
+  .message.user .message-content {
+    max-width: 94%;
+  }
+}

@@ -1,0 +1,121 @@
+.knowledge-workspace {
+  width: 100%;
+  min-width: 0;
+}
+
+.knowledge-workspace .workspace-layout-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.knowledge-result-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: -4px 0 16px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.knowledge-error {
+  margin-bottom: 18px;
+  padding: 11px 13px;
+  border: 1px solid rgba(239, 83, 80, 0.32);
+  border-radius: 10px;
+  background: rgba(239, 83, 80, 0.09);
+  color: #ffb3b1;
+  font-size: 12px;
+}
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(310px, 1fr)
+    );
+  gap: 16px;
+}
+
+.knowledge-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+  color: #75839a;
+  font-size: 12px;
+}
+
+.knowledge-breadcrumb strong {
+  color: #cbd5e8;
+}
+
+.knowledge-category-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(270px, 340px);
+  align-items: start;
+  gap: 18px;
+}
+
+.knowledge-category-main,
+.knowledge-category-sidebar {
+  min-width: 0;
+}
+
+.knowledge-category-sidebar {
+  display: grid;
+  gap: 14px;
+}
+
+.knowledge-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 13px;
+}
+
+.knowledge-section-heading h2 {
+  margin: 0;
+  color: #e4eaf5;
+  font-size: 16px;
+}
+
+.knowledge-section-heading p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 1180px) {
+  .knowledge-category-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .knowledge-category-sidebar {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+}
+
+@media (max-width: 760px) {
+  .knowledge-result-summary {
+    justify-content: flex-start;
+  }
+
+  .knowledge-category-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .knowledge-grid {
+    grid-template-columns: 1fr;
+  }
+}

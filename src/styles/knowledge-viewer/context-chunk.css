@@ -1,0 +1,38 @@
+.viewer-context {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  background: #1b2230;
+  margin-bottom: 18px;
+}
+
+.viewer-context-current {
+  border: 2px solid #4f7cff;
+  background: rgba(79, 124, 255, 0.08);
+}
+
+.viewer-context-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.viewer-context-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 18px;
+}
+
+.viewer-context-header p {
+  margin-top: 4px;
+  color: #8ea0b7;
+  font-size: 12px;
+}
+
+.viewer-context-body {
+  white-space: pre-wrap;
+  line-height: 1.75;
+  color: #d4dde9;
+  font-size: 14px;
+}

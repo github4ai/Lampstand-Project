@@ -1,0 +1,36 @@
+:root{
+
+--bg:#161b22;
+--panel:#1f2632;
+--panel-light:#262f3f;
+
+--border:#323d50;
+
+--text:#f4f7fb;
+--text-muted:#a9b5c7;
+
+--primary:#4f7cff;
+--primary-hover:#648cff;
+
+--success:#36c275;
+--warning:#f5c84c;
+--danger:#ef5350;
+
+--radius:18px;
+
+--sidebar-width:270px;
+
+--shadow:
+0 10px 30px rgba(0,0,0,.35);
+
+font-family:
+
+Inter,
+Segoe UI,
+Roboto,
+sans-serif;
+
+color:var(--text);
+background:var(--bg);
+
+}

@@ -1,0 +1,144 @@
+.workspace-layout {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  flex-direction: column;
+  color: var(--text);
+}
+
+.workspace-layout-breadcrumbs {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 16px 30px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.workspace-layout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 24px 30px;
+  border-bottom: 1px solid var(--border);
+  background:
+    rgba(17, 22, 31, 0.74);
+  backdrop-filter: blur(10px);
+}
+
+.workspace-layout-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 15px;
+}
+
+.workspace-layout-icon {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  place-items: center;
+  border: 1px solid
+    rgba(79, 124, 255, 0.3);
+  border-radius: 14px;
+  background:
+    rgba(79, 124, 255, 0.12);
+  color: #a9bbff;
+}
+
+.workspace-layout-title {
+  min-width: 0;
+}
+
+.workspace-layout-title h1 {
+  margin: 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 27px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-layout-title p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.workspace-layout-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.workspace-layout-content {
+  min-width: 0;
+  flex: 1;
+  padding: 26px 30px 32px;
+}
+
+.workspace-layout-status {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 30px;
+  border-top: 1px solid var(--border);
+  background:
+    rgba(17, 22, 31, 0.88);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .workspace-layout-breadcrumbs {
+    padding:
+      14px
+      18px
+      0;
+  }
+
+  .workspace-layout-header {
+    align-items: stretch;
+    flex-direction: column;
+    padding:
+      20px
+      18px;
+  }
+
+  .workspace-layout-toolbar {
+    justify-content:
+      flex-start;
+  }
+
+  .workspace-layout-content {
+    padding:
+      22px
+      18px
+      28px;
+  }
+
+  .workspace-layout-status {
+    padding:
+      0
+      18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .workspace-layout-title h1 {
+    font-size: 23px;
+  }
+
+  .workspace-layout-icon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+}

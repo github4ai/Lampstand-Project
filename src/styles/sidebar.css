@@ -1,0 +1,429 @@
+.sidebar {
+  display: flex;
+  width: 300px;
+  min-width: 300px;
+  min-height: 0;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 16px;
+  overflow: hidden;
+  border-right: 1px solid #303b4d;
+  background: #1d2430;
+}
+
+/* Brand */
+
+.brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  display: flex;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #4f7cff;
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 24px
+    rgba(79, 124, 255, 0.25);
+}
+
+.brand-copy {
+  min-width: 0;
+}
+
+.brand h1 {
+  margin: 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 23px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: #97a5bb;
+  font-size: 13px;
+}
+
+/* New conversation */
+
+.new-chat-button {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 14px;
+  background: #4f7cff;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.new-chat-button:hover:not(:disabled) {
+  background: #648cff;
+  transform: translateY(-1px);
+}
+
+.new-chat-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.new-chat-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Command palette trigger */
+
+.command-palette-trigger {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  padding: 0 10px;
+  border: 1px solid #38465d;
+  border-radius: 10px;
+  background: #242d3c;
+  color: #9eabc0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.command-palette-trigger:hover {
+  border-color:
+    rgba(
+      79,
+      124,
+      255,
+      0.45
+    );
+
+  background:
+    rgba(
+      79,
+      124,
+      255,
+      0.1
+    );
+
+  color: #ffffff;
+}
+
+.command-palette-trigger span {
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+
+.command-palette-trigger kbd {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border: 1px solid #44536a;
+  border-radius: 6px;
+  background: #1a202b;
+  color: #78879e;
+  font-family: inherit;
+  font-size: 9px;
+}
+
+/* Workspace navigation */
+
+.workspace-navigation {
+  display: grid;
+  gap: 6px;
+}
+
+.workspace-navigation-link {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #9eabc0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.workspace-navigation-link:hover {
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.045
+    );
+
+  color: #ffffff;
+}
+
+.workspace-navigation-link.active {
+  border-color:
+    rgba(
+      79,
+      124,
+      255,
+      0.3
+    );
+
+  background:
+    rgba(
+      79,
+      124,
+      255,
+      0.14
+    );
+
+  color: #dce5ff;
+}
+
+.workspace-command-link {
+  appearance: none;
+}
+
+/* Assistant selector */
+
+.category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-section label {
+  color: #aeb7c8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.category-section select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid #38465d;
+  border-radius: 10px;
+  outline: 0;
+  background: #262f3f;
+  color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.category-section select:focus {
+  border-color:
+    rgba(
+      100,
+      140,
+      255,
+      0.72
+    );
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      79,
+      124,
+      255,
+      0.1
+    );
+}
+
+.category-section select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.agent-description {
+  margin: 0;
+  color: #97a5bb;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Backend status */
+
+.status-card {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 12px;
+  border: 1px solid #38465d;
+  border-radius: 14px;
+  background: #242d3c;
+}
+
+.status-card > div {
+  min-width: 0;
+}
+
+.status-card strong {
+  display: block;
+  overflow: hidden;
+  color: #d9e1f0;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-card p {
+  margin: 3px 0 0;
+  color: #7f8ca3;
+  font-size: 11px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 50%;
+  background: #2ecc71;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      46,
+      204,
+      113,
+      0.1
+    );
+}
+
+.status-dot-offline {
+  background: #e74c3c;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(
+      231,
+      76,
+      60,
+      0.1
+    );
+}
+
+/* Focus */
+
+.new-chat-button:focus-visible,
+.command-palette-trigger:focus-visible,
+.workspace-navigation-link:focus-visible,
+.category-section select:focus-visible {
+  outline: 2px solid
+    rgba(
+      100,
+      140,
+      255,
+      0.9
+    );
+
+  outline-offset: 2px;
+}
+
+/* Responsive */
+
+@media (max-width: 860px) {
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: auto;
+    max-height: none;
+    padding: 18px 16px;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid #303b4d;
+  }
+
+  .workspace-navigation {
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+  }
+
+  .status-card {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar {
+    gap: 14px;
+    padding: 16px 14px;
+  }
+
+  .brand-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .brand h1 {
+    font-size: 20px;
+  }
+
+  .new-chat-button {
+    min-height: 42px;
+  }
+
+  .workspace-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-navigation-link {
+    min-height: 40px;
+    padding: 0 10px;
+  }
+}

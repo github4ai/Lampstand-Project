@@ -1,0 +1,124 @@
+.message {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  width: min(100%, 980px);
+  margin: 0 auto 20px;
+  align-items: flex-start;
+}
+
+.message.user {
+  grid-template-columns: minmax(0, 1fr) 36px;
+}
+
+.message.user .message-icon {
+  grid-column: 2;
+}
+
+.message.user .message-content {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  width: auto;
+  max-width: min(760px, 88%);
+  background: rgba(79, 124, 255, 0.14);
+  border-color: rgba(100, 140, 255, 0.28);
+}
+
+.message-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--panel-light);
+  color: #b7c5ff;
+}
+
+.message-content {
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.message-content > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.message-text {
+  min-width: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.messages-end {
+  width: 100%;
+  height: 1px;
+  flex: 0 0 1px;
+}
+
+.sources-panel {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: rgba(12, 17, 26, 0.46);
+}
+
+.sources-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  color: #cbd5e8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sources-panel ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.sources-panel li {
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.sources-panel li strong,
+.sources-panel li span,
+.sources-panel li small {
+  display: block;
+}
+
+.sources-panel li strong {
+  color: #dce4f5;
+  font-size: 12px;
+}
+
+.sources-panel li span {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.sources-panel li small {
+  margin-top: 4px;
+  color: #748197;
+  font-size: 10px;
+}
