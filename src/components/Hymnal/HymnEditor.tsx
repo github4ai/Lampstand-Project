@@ -20,6 +20,8 @@ function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
   const [category, setCategory] = useState(hymn?.category ?? '')
   const [scripture, setScripture] = useState(hymn?.scriptures?.join(', ') ?? '')
   const [themes, setThemes] = useState(hymn?.themes.join(', ') ?? '')
+  const [audioUrl, setAudioUrl] = useState(hymn?.audioUrl ?? '')
+  const [sheetUrl, setSheetUrl] = useState(hymn?.pianoSheetUrl ?? '')
   const [lyrics, setLyrics] = useState(hymn ? hymn.sections.map((section) =>
     '{comment: ' + section.label + '}\n' + section.lines.join('\n')).join('\n') :
     '{comment: Verse 1}\n[C]Enter lyrics here')
@@ -31,7 +33,8 @@ function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
       `{title: ${title.trim()}}`, `{artist: ${author.trim()}}`,
       `{prefix: ${prefix.trim()}}`, `{number: ${number.trim()}}`, `{key: ${key}}`,
       `{category: ${category.trim()}}`, `{scripture: ${scripture.trim()}}`,
-      `{theme: ${themes.trim()}}`, lyrics.trim(),
+      `{theme: ${themes.trim()}}`, `{audio: ${audioUrl.trim()}}`,
+      `{sheet: ${sheetUrl.trim()}}`, lyrics.trim(),
     ].join('\n')
     const parsed = parseHymnImport(document, 'new-hymn.chordpro')
     if (!parsed || !title.trim()) {
@@ -55,6 +58,8 @@ function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
         <label>Category<input value={category} onChange={(event) => setCategory(event.target.value)} /></label>
         <label>Scripture<input value={scripture} onChange={(event) => setScripture(event.target.value)} placeholder="Ephesians 5:19" /></label>
         <label>Themes<input value={themes} onChange={(event) => setThemes(event.target.value)} placeholder="Praise, Church" /></label>
+        <label>Tune audio URL<input type="url" value={audioUrl} onChange={(event) => setAudioUrl(event.target.value)} placeholder="https://.../tune.mp3" /></label>
+        <label>Piano sheet URL<input type="url" value={sheetUrl} onChange={(event) => setSheetUrl(event.target.value)} placeholder="https://.../sheet.png" /></label>
       </div>
       <label className="hymnal-editor-lyrics">Lyrics and chords<textarea required rows={12} value={lyrics}
         onChange={(event) => setLyrics(event.target.value)} /></label>

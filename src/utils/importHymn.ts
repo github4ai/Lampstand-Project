@@ -41,7 +41,8 @@ function parseChordProHymn(text: string): Hymn | null {
     hymnNumber: metadata.get('number'),
     originalKey: metadata.get('key'), tempo: Number(metadata.get('tempo')),
     timeSignature: metadata.get('time'), themes: metadata.get('theme')?.split(','),
-    category: metadata.get('category'), scriptures: metadata.get('scripture')?.split(','), sections })
+    category: metadata.get('category'), scriptures: metadata.get('scripture')?.split(','),
+    audioUrl: metadata.get('audio'), pianoSheetUrl: metadata.get('sheet'), sections })
 }
 
 function normalizeHymn(value: Partial<Hymn>): Hymn {
@@ -56,7 +57,16 @@ function normalizeHymn(value: Partial<Hymn>): Hymn {
     tempo: Number.isFinite(value.tempo) ? value.tempo as number : 80,
     timeSignature: typeof value.timeSignature === 'string' ? value.timeSignature : '4/4',
     rightsStatus: 'user-provided',
-    audioUrl: typeof value.audioUrl === 'string' ? value.audioUrl : undefined,
-    pianoSheetUrl: typeof value.pianoSheetUrl === 'string' ? value.pianoSheetUrl : undefined,
+    audioUrl: normalizeMediaUrl(value.audioUrl, 'audio'),
+    pianoSheetUrl: normalizeMediaUrl(value.pianoSheetUrl, 'image'),
     tune: value.tune, sections: value.sections ?? [] }
+}
+
+function normalizeMediaUrl(value: unknown, kind: 'audio' | 'image'): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const url = value.trim()
+  if (/^https?:\/\//i.test(url) || url.startsWith('/')) return url
+  if (kind === 'audio' && /^data:audio\//i.test(url)) return url
+  if (kind === 'image' && /^data:image\//i.test(url)) return url
+  return undefined
 }
