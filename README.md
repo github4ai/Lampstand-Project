@@ -31,6 +31,7 @@ Restart the development server after changing environment variables.
 
 - `npm run dev` — start the development server
 - `npm run lint` — run static analysis
+- `npm test` — run unit tests
 - `npm run build` — type-check and create a production build
 - `npm run preview` — preview the production build
 
