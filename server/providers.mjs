@@ -17,7 +17,7 @@ function translationPrompt({ text, sourceLanguage, targetLanguage }) {
 export async function translateWithOllama(request, config, fetcher = fetch) {
   const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: config.ollamaModel, stream: false, messages: [{ role: 'user', content: translationPrompt(request) }] }),
+    body: JSON.stringify({ model: config.ollamaModel, stream: false, think: false, messages: [{ role: 'user', content: translationPrompt(request) }] }),
     signal: AbortSignal.timeout(120000),
   })
   await requireOk(response, 'Ollama')

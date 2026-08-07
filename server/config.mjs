@@ -8,7 +8,7 @@ export function loadConfig(env = process.env) {
     allowedOrigins: (env.AIOS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
       .split(',').map((value) => value.trim()).filter(Boolean),
     ollamaUrl: cleanUrl(env.OLLAMA_URL, 'http://127.0.0.1:11434'),
-    ollamaModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen2.5:3b',
+    ollamaModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen3:8b',
     whisperUrl: cleanUrl(env.WHISPER_URL, 'http://127.0.0.1:8000'),
     whisperModel: env.WHISPER_MODEL?.trim() || 'whisper-1',
     openaiUrl: cleanUrl(env.OPENAI_BASE_URL, 'https://api.openai.com/v1'),
