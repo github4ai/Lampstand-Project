@@ -29,6 +29,7 @@ import {
 } from './hooks/useChat'
 
 import KnowledgeCategoryPage from './pages/KnowledgeCategoryPage'
+import HistoryPage from './pages/HistoryPage'
 import KnowledgePage from './pages/KnowledgePage'
 import KnowledgeSearchPage from './pages/knowledge/KnowledgeSearchPage'
 
@@ -374,6 +375,11 @@ function App() {
         <Route
           path="/"
           element={chatPage}
+        />
+
+        <Route
+          path="/history"
+          element={<main className="workspace-panel"><HistoryPage conversations={conversations} isLoading={isLoading} onNewConversation={handleNewConversation} onOpenConversation={handleSelectConversation} onDeleteConversation={deleteConversation} /></main>}
         />
 
         <Route

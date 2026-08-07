@@ -1,5 +1,6 @@
 import {
   Bot,
+  Clock3,
   Database,
   MessageSquare,
   MessagesSquare,
@@ -131,6 +132,7 @@ function CommandPalette({
               onClose()
             },
           },
+          { id: 'command-open-history', title: 'Open Conversation History', description: 'Search and manage saved conversations', keywords: 'history saved conversations pinned', kind: 'command', icon: Clock3, action: () => { onNavigate('/history'); onClose() } },
         ]
 
         const conversationItems =

@@ -9,6 +9,7 @@ import type {
 
 import {
   Bot,
+  Clock3,
   Command,
   Copy,
   Database,
@@ -464,6 +465,10 @@ function Sidebar({
           <span>
             Knowledge
           </span>
+        </NavLink>
+
+        <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Clock3 size={17} /><span>History</span>
         </NavLink>
 
         <button
