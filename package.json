@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "api": "node --env-file-if-exists=.env.local server/index.mjs",
+    "whisper": ".venv-whisper\\Scripts\\python.exe -m uvicorn whisper_server.app:app --host 127.0.0.1 --port 8000",
+    "setup:whisper": "powershell -ExecutionPolicy Bypass -File scripts/setup-whisper.ps1",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
