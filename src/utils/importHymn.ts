@@ -37,6 +37,8 @@ function parseChordProHymn(text: string): Hymn | null {
   const title = metadata.get('title') ?? metadata.get('t')
   if (!title || sections.length === 0) return null
   return normalizeHymn({ title, author: metadata.get('artist') ?? metadata.get('a'),
+    catalogPrefix: metadata.get('prefix') ?? metadata.get('catalog'),
+    hymnNumber: metadata.get('number'),
     originalKey: metadata.get('key'), tempo: Number(metadata.get('tempo')),
     timeSignature: metadata.get('time'), themes: metadata.get('theme')?.split(','),
     category: metadata.get('category'), scriptures: metadata.get('scripture')?.split(','), sections })
@@ -44,6 +46,8 @@ function parseChordProHymn(text: string): Hymn | null {
 
 function normalizeHymn(value: Partial<Hymn>): Hymn {
   return { id: crypto.randomUUID(), title: value.title?.trim() || 'Imported hymn',
+    catalogPrefix: typeof value.catalogPrefix === 'string' ? value.catalogPrefix.trim().toUpperCase() : undefined,
+    hymnNumber: typeof value.hymnNumber === 'string' ? value.hymnNumber.trim() : undefined,
     author: value.author?.trim() || 'Unknown', year: Number.isFinite(value.year) ? value.year as number : 0,
     themes: value.themes?.filter((theme): theme is string => typeof theme === 'string').map((theme) => theme.trim()).filter(Boolean) ?? [],
     category: typeof value.category === 'string' ? value.category.trim() : undefined,

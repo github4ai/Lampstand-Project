@@ -1,6 +1,8 @@
 export interface Hymn {
   id: string
   title: string
+  catalogPrefix?: string
+  hymnNumber?: string
   author: string
   year: number
   themes: string[]

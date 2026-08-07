@@ -4,6 +4,8 @@ export const HYMNS: Hymn[] = [
   {
     id: 'amazing-grace',
     title: 'Amazing Grace',
+    catalogPrefix: 'H',
+    hymnNumber: '001',
     author: 'John Newton',
     year: 1779,
     themes: ['Grace', 'Salvation', 'Testimony'],
@@ -41,6 +43,8 @@ export const HYMNS: Hymn[] = [
   {
     id: 'blessed-assurance',
     title: 'Blessed Assurance',
+    catalogPrefix: 'H',
+    hymnNumber: '002',
     author: 'Fanny J. Crosby',
     year: 1873,
     themes: ['Assurance', 'Praise', 'Testimony'],
@@ -67,6 +71,8 @@ export const HYMNS: Hymn[] = [
   {
     id: 'holy-holy-holy',
     title: 'Holy, Holy, Holy',
+    catalogPrefix: 'H',
+    hymnNumber: '003',
     author: 'Reginald Heber',
     year: 1826,
     themes: ['Holiness', 'Trinity', 'Worship'],
@@ -87,6 +93,8 @@ export const HYMNS: Hymn[] = [
   {
     id: 'what-a-friend',
     title: 'What a Friend We Have in Jesus',
+    catalogPrefix: 'H',
+    hymnNumber: '004',
     author: 'Joseph M. Scriven',
     year: 1855,
     themes: ['Prayer', 'Comfort', 'Jesus'],

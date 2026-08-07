@@ -1,4 +1,4 @@
-import { BookOpen, FileUp, Heart, Music2, Search } from 'lucide-react'
+import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import PianoSheet from '../components/Hymnal/PianoSheet'
@@ -35,11 +35,12 @@ function HymnalPage() {
   const [query, setQuery] = useState('')
   const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
   const [importStatus, setImportStatus] = useState('')
-  const [selectedId, setSelectedId] = useState(HYMNS[0].id)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [favorites, setFavorites] = useState(loadFavorites)
   const [targetKey, setTargetKey] = useState(HYMNS[0].originalKey)
   const [capo, setCapo] = useState(0)
   const selected = hymns.find((hymn) => hymn.id === selectedId) ?? hymns[0]
+  const showCatalog = selectedId === null || query.trim() !== ''
 
   useEffect(() => {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
@@ -49,7 +50,8 @@ function HymnalPage() {
     const term = query.trim().toLowerCase()
     if (!term) return hymns
     return hymns.filter((hymn) =>
-      [hymn.title, hymn.author, ...hymn.themes].some((value) =>
+      [hymn.title, hymn.author, hymn.catalogPrefix ?? '', hymn.hymnNumber ?? '',
+        (hymn.catalogPrefix ?? '') + (hymn.hymnNumber ?? ''), ...hymn.themes].some((value) =>
         value.toLowerCase().includes(term)))
   }, [hymns, query])
 
@@ -68,6 +70,7 @@ function HymnalPage() {
     const hymn = hymns.find((item) => item.id === id)
     if (!hymn) return
     setSelectedId(id)
+    setQuery('')
     setTargetKey(hymn.originalKey)
     setCapo(0)
   }
@@ -82,6 +85,7 @@ function HymnalPage() {
     localStorage.setItem(IMPORTED_KEY, JSON.stringify(imported))
     setHymns([...HYMNS, ...imported])
     setSelectedId(hymn.id)
+    setQuery('')
     setTargetKey(hymn.originalKey)
     setCapo(0)
     setImportStatus(hymn.title + ' imported.')
@@ -105,38 +109,47 @@ function HymnalPage() {
       title="Ministry Hymnal"
       subtitle="Public-domain hymns with searchable lyrics and guitar-ready chord sheets."
       icon={<BookOpen size={25} />}
+      toolbar={<div className="hymnal-toolbar">
+        <button type="button" onClick={() => { setSelectedId(null); setQuery('') }}>
+          <LayoutGrid size={15} /> Browse Hymns
+        </button>
+        <label className="hymnal-toolbar-search"><Search size={15} />
+          <input value={query} onChange={(event) => setQuery(event.target.value)}
+            type="search" placeholder="Search title, number, or theme" />
+        </label>
+        <label className="hymnal-toolbar-import"><FileUp size={15} /> Import
+          <input type="file" accept=".json,.cho,.chordpro,.pro,.crd,text/plain,application/json"
+            onChange={(event) => { const file = event.target.files?.[0]; if (file) void importHymn(file); event.target.value = '' }} />
+        </label>
+      </div>}
       statusBar={<span>{hymns.length} hymns - Imports and favorites are stored on this device</span>}
       className="hymnal-page"
     >
       <div className="hymnal-grid">
-        <aside className="hymnal-library">
-          <label className="hymnal-search">
-            <Search size={17} />
-            <input value={query} onChange={(event) => setQuery(event.target.value)}
-              type="search" placeholder="Search hymns or themes" />
-          </label>
-          <label className="hymnal-import">
-            <FileUp size={15} /> Import JSON or ChordPro
-            <input type="file" accept=".json,.cho,.chordpro,.pro,.crd,text/plain,application/json"
-              onChange={(event) => { const file = event.target.files?.[0]; if (file) void importHymn(file); event.target.value = '' }} />
-          </label>
+        {showCatalog ? <section className="hymnal-catalog">
+          <header><h2>{query.trim() ? 'Search results' : 'Hymn Catalog'}</h2>
+            <p>{query.trim() ? visible.length + ' matching hymns' : 'Choose a hymn to open its lyrics, chords, piano sheet, and tune.'}</p>
+          </header>
           {importStatus && <p className="hymnal-import-status">{importStatus}</p>}
-          <div className="hymnal-list">
+          <div className="hymnal-catalog-list">
             {visible.map((hymn) => (
-              <button className={hymn.id === selected.id ? 'active' : ''} type="button"
-                onClick={() => chooseHymn(hymn.id)} key={hymn.id}>
-                <span><strong>{hymn.title}</strong><small>{hymn.author} - {hymn.year}</small></span>
+              <button type="button" onClick={() => chooseHymn(hymn.id)} key={hymn.id}>
+                <span><strong>{hymn.title}</strong><small>
+                  {hymn.catalogPrefix}{hymn.hymnNumber ? ' ' + hymn.hymnNumber + ' - ' : ''}{hymn.author}
+                </small></span>
                 {favorites.includes(hymn.id) && <Heart size={14} fill="currentColor" />}
               </button>
             ))}
             {visible.length === 0 && <p className="hymnal-empty">No matching hymns.</p>}
           </div>
-        </aside>
-
+        </section> :
         <article className="hymnal-sheet">
           <header className="hymnal-sheet-header">
             <div>
               <p className="hymnal-eyebrow"><Music2 size={14} /> {selected.rightsStatus === 'user-provided' ? 'User provided' : 'Public domain'}</p>
+              {(selected.catalogPrefix || selected.hymnNumber) && <span className="hymnal-catalog-number">
+                {selected.catalogPrefix} {selected.hymnNumber}
+              </span>}
               <h2>{selected.title}</h2>
               <p>{selected.author}{selected.year > 0 ? ' - ' + selected.year : ''} - {selected.tempo} BPM - {selected.timeSignature}</p>
             </div>
@@ -169,6 +182,7 @@ function HymnalPage() {
           <div className="hymnal-info-grid">
             <section className="hymnal-info-card">
               <h3>Details</h3><dl>
+                <div><dt>Hymn</dt><dd>{selected.catalogPrefix} {selected.hymnNumber || 'Not assigned'}</dd></div>
                 <div><dt>Category</dt><dd>{selected.category || 'Uncategorized'}</dd></div>
                 <div><dt>Key</dt><dd>{targetKey} major</dd></div>
                 <div><dt>Meter</dt><dd>{selected.timeSignature}</dd></div>
@@ -197,7 +211,7 @@ function HymnalPage() {
               </section>
             ))}
           </div>}
-        </article>
+        </article>}
       </div>
     </WorkspaceLayout>
   )

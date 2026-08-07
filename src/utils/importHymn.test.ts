@@ -17,10 +17,12 @@ describe('parseHymnImport', () => {
   it('imports ChordPro metadata and sections', () => {
     const hymn = parseHymnImport([
       '{title: ChordPro Hymn}', '{artist: Test Author}', '{key: D}',
+      '{prefix: NS}', '{number: 1156}',
       '[D]First verse', '{start_of_chorus}', '[G]Chorus line', '{end_of_chorus}',
     ].join('\n'), 'song.cho')
     expect(hymn).toMatchObject({
       title: 'ChordPro Hymn', author: 'Test Author', originalKey: 'D',
+      catalogPrefix: 'NS', hymnNumber: '1156',
     })
     expect(hymn?.sections).toHaveLength(2)
     expect(hymn?.sections[1].label).toBe('Chorus')
