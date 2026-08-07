@@ -1,5 +1,11 @@
 import { AIOS_API_BASE_URL } from '../config/api'
-import type { SupportedLanguage, TranscriptionResult, TranslationRequest, TranslationResult } from '../types/languageTools'
+import type { LanguageProviderStatus, SupportedLanguage, TranscriptionResult, TranslationRequest, TranslationResult } from '../types/languageTools'
+
+export async function getLanguageProviderStatus(signal?: AbortSignal): Promise<LanguageProviderStatus> {
+  const response = await fetch(`${AIOS_API_BASE_URL}/language/providers`, { signal })
+  await requireSuccess(response)
+  return response.json() as Promise<LanguageProviderStatus>
+}
 
 async function requireSuccess(response: Response): Promise<void> {
   if (response.ok) return

@@ -27,3 +27,12 @@ export interface LanguageHistoryItem {
   audioLanguage?: SupportedLanguage
   createdAt: string
 }
+
+export interface LanguageProviderStatus {
+  mode: string
+  providers: {
+    ollama: { configured: boolean; available: boolean }
+    whisper: { configured: boolean; available: boolean }
+    openai: { configured: boolean; available: boolean }
+  }
+}

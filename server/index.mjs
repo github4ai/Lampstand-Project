@@ -35,6 +35,15 @@ async function readForm(request) {
   return webRequest.formData()
 }
 
+async function providerAvailable(url) {
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(1500) })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
 export function createAiosServer() {
   return createServer(async (request, response) => {
     const origin = request.headers.origin || ''
@@ -47,6 +56,23 @@ export function createAiosServer() {
             ollama: { configured: true },
             whisper: { configured: true },
             openai: { configured: Boolean(config.openaiApiKey) },
+          },
+        }, origin)
+      }
+
+
+      if (request.method === 'GET' && request.url === '/language/providers') {
+        const [ollama, whisper] = await Promise.all([
+          providerAvailable(`${config.ollamaUrl}/api/tags`),
+          providerAvailable(`${config.whisperUrl}/health`),
+        ])
+        const cloudConfigured = Boolean(config.openaiApiKey)
+        return send(response, 200, {
+          mode: config.providerMode,
+          providers: {
+            ollama: { configured: true, available: ollama },
+            whisper: { configured: true, available: whisper },
+            openai: { configured: cloudConfigured, available: cloudConfigured },
           },
         }, origin)
       }

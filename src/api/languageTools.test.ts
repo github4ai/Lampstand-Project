@@ -1,8 +1,16 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { transcribeAudio, translateText } from './languageTools'
+import { getLanguageProviderStatus, transcribeAudio, translateText } from './languageTools'
 
 describe('language tools API', () => {
   afterEach(() => vi.unstubAllGlobals())
+
+  it('loads language provider readiness', async () => {
+    const payload = { mode: 'hybrid', providers: { ollama: { configured: true, available: true } } }
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(getLanguageProviderStatus()).resolves.toEqual(payload)
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8765/language/providers', { signal: undefined })
+  })
 
   it('sends translation requests as JSON', async () => {
     const payload = { text: 'Hello', sourceLanguage: 'en', targetLanguage: 'mr', translatedText: 'Namaskar' }

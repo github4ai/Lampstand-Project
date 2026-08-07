@@ -1,8 +1,8 @@
 import { ArrowLeftRight, Copy, Download, FileAudio, History, Languages, LoaderCircle, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
-import { transcribeAudio, translateText } from '../api/languageTools'
-import type { LanguageHistoryItem, SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
+import { getLanguageProviderStatus, transcribeAudio, translateText } from '../api/languageTools'
+import type { LanguageHistoryItem, LanguageProviderStatus, SupportedLanguage, TranslationSourceLanguage } from '../types/languageTools'
 
 const LANGUAGE_HISTORY_KEY = 'aios-studio-language-history-v1'
 
@@ -43,6 +43,13 @@ function LanguageToolsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [history, setHistory] = useState<LanguageHistoryItem[]>(loadHistory)
+  const [providerStatus, setProviderStatus] = useState<LanguageProviderStatus | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    void getLanguageProviderStatus(controller.signal).then(setProviderStatus).catch(() => setProviderStatus(null))
+    return () => controller.abort()
+  }, [])
 
   function saveHistory(item: Omit<LanguageHistoryItem, 'id' | 'createdAt'>) {
     const next = [{ ...item, id: crypto.randomUUID(), createdAt: new Date().toISOString() }, ...history].slice(0, 20)
@@ -110,6 +117,15 @@ function LanguageToolsPage() {
     subtitle="Translate ministry text and transcribe spoken audio in supported languages."
     icon={<Languages size={25} />} statusBar={<span>Translation and transcription are processed by your configured AIOS providers.</span>}
     className="language-tools-page">
+    <div className="language-provider-status" aria-label="Language provider status">
+      {(['ollama', 'whisper', 'openai'] as const).map((provider) => {
+        const status = providerStatus?.providers[provider]
+        return <span className={status?.available ? 'available' : 'unavailable'} key={provider}>
+          <i />{provider === 'ollama' ? 'Ollama Translation' : provider === 'whisper' ? 'Local Whisper' : 'OpenAI'}
+          <small>{status?.available ? 'Ready' : status?.configured ? 'Offline' : 'Not configured'}</small>
+        </span>
+      })}
+    </div>
     <div className="language-tools-tabs">
       <button className={tool === 'translation' ? 'active' : ''} type="button"
         onClick={() => { setTool('translation'); setResult(''); setError('') }}><Languages size={17} /> Text Translation</button>
