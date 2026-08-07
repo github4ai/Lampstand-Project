@@ -1,4 +1,4 @@
-import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Plus, Search } from 'lucide-react'
+import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import PianoSheet from '../components/Hymnal/PianoSheet'
@@ -37,6 +37,7 @@ function HymnalPage() {
   const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
   const [importStatus, setImportStatus] = useState('')
   const [editorOpen, setEditorOpen] = useState(false)
+  const [editingHymn, setEditingHymn] = useState<Hymn | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [favorites, setFavorites] = useState(loadFavorites)
   const [targetKey, setTargetKey] = useState(HYMNS[0].originalKey)
@@ -94,7 +95,10 @@ function HymnalPage() {
   }
 
   function saveCreatedHymn(hymn: Hymn) {
-    const imported = [...loadImportedHymns(), hymn]
+    const current = loadImportedHymns()
+    const imported = current.some((item) => item.id === hymn.id)
+      ? current.map((item) => item.id === hymn.id ? hymn : item)
+      : [...current, hymn]
     localStorage.setItem(IMPORTED_KEY, JSON.stringify(imported))
     setHymns([...HYMNS, ...imported])
     setSelectedId(hymn.id)
@@ -103,6 +107,18 @@ function HymnalPage() {
     setCapo(0)
     setImportStatus(hymn.title + ' added.')
     setEditorOpen(false)
+    setEditingHymn(null)
+  }
+
+  function deleteUserHymn(hymn: Hymn) {
+    if (hymn.rightsStatus !== 'user-provided' ||
+      !window.confirm('Delete ' + hymn.title + '? This cannot be undone.')) return
+    const imported = loadImportedHymns().filter((item) => item.id !== hymn.id)
+    localStorage.setItem(IMPORTED_KEY, JSON.stringify(imported))
+    setHymns([...HYMNS, ...imported])
+    setFavorites((current) => current.filter((id) => id !== hymn.id))
+    setSelectedId(null)
+    setImportStatus(hymn.title + ' deleted.')
   }
 
   function toggleFavorite(id: string) {
@@ -127,7 +143,7 @@ function HymnalPage() {
         <button type="button" onClick={() => { setSelectedId(null); setQuery('') }}>
           <LayoutGrid size={15} /> Browse Hymns
         </button>
-        <button type="button" onClick={() => setEditorOpen(true)}>
+        <button type="button" onClick={() => { setEditingHymn(null); setEditorOpen(true) }}>
           <Plus size={15} /> Add Hymn
         </button>
         <label className="hymnal-toolbar-search"><Search size={15} />
@@ -142,7 +158,8 @@ function HymnalPage() {
       statusBar={<span>{hymns.length} hymns - Imports and favorites are stored on this device</span>}
       className="hymnal-page"
     >
-      {editorOpen && <HymnEditor onClose={() => setEditorOpen(false)} onSave={saveCreatedHymn} />}
+      {editorOpen && <HymnEditor hymn={editingHymn}
+        onClose={() => { setEditorOpen(false); setEditingHymn(null) }} onSave={saveCreatedHymn} />}
       <div className="hymnal-grid">
         {showCatalog ? <section className="hymnal-catalog">
           <header><h2>{query.trim() ? 'Search results' : 'Hymn Catalog'}</h2>
@@ -176,6 +193,14 @@ function HymnalPage() {
               aria-label={favorites.includes(selected.id) ? 'Remove favorite' : 'Add favorite'}>
               <Heart size={18} fill={favorites.includes(selected.id) ? 'currentColor' : 'none'} />
             </button>
+            {selected.rightsStatus === 'user-provided' && <div className="hymnal-manage-actions">
+              <button type="button" onClick={() => { setEditingHymn(selected); setEditorOpen(true) }}>
+                <Pencil size={16} /> Edit
+              </button>
+              <button type="button" onClick={() => deleteUserHymn(selected)}>
+                <Trash2 size={16} /> Delete
+              </button>
+            </div>}
           </header>
 
           <div className="hymnal-playback"><TunePlayer hymn={selected} /></div>

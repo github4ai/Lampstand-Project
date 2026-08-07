@@ -6,20 +6,23 @@ import { parseHymnImport } from '../../utils/importHymn'
 import { CHROMATIC_KEYS } from '../../utils/chords'
 
 interface HymnEditorProps {
+  hymn?: Hymn | null
   onClose: () => void
   onSave: (hymn: Hymn) => void
 }
 
-function HymnEditor({ onClose, onSave }: HymnEditorProps) {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [prefix, setPrefix] = useState('')
-  const [number, setNumber] = useState('')
-  const [key, setKey] = useState('C')
-  const [category, setCategory] = useState('')
-  const [scripture, setScripture] = useState('')
-  const [themes, setThemes] = useState('')
-  const [lyrics, setLyrics] = useState('{comment: Verse 1}\n[C]Enter lyrics here')
+function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
+  const [title, setTitle] = useState(hymn?.title ?? '')
+  const [author, setAuthor] = useState(hymn?.author ?? '')
+  const [prefix, setPrefix] = useState(hymn?.catalogPrefix ?? '')
+  const [number, setNumber] = useState(hymn?.hymnNumber ?? '')
+  const [key, setKey] = useState(hymn?.originalKey ?? 'C')
+  const [category, setCategory] = useState(hymn?.category ?? '')
+  const [scripture, setScripture] = useState(hymn?.scriptures?.join(', ') ?? '')
+  const [themes, setThemes] = useState(hymn?.themes.join(', ') ?? '')
+  const [lyrics, setLyrics] = useState(hymn ? hymn.sections.map((section) =>
+    '{comment: ' + section.label + '}\n' + section.lines.join('\n')).join('\n') :
+    '{comment: Verse 1}\n[C]Enter lyrics here')
   const [error, setError] = useState('')
 
   function submit(event: FormEvent) {
@@ -30,17 +33,17 @@ function HymnEditor({ onClose, onSave }: HymnEditorProps) {
       `{category: ${category.trim()}}`, `{scripture: ${scripture.trim()}}`,
       `{theme: ${themes.trim()}}`, lyrics.trim(),
     ].join('\n')
-    const hymn = parseHymnImport(document, 'new-hymn.chordpro')
-    if (!hymn || !title.trim()) {
+    const parsed = parseHymnImport(document, 'new-hymn.chordpro')
+    if (!parsed || !title.trim()) {
       setError('Add a title and at least one lyric line.')
       return
     }
-    onSave(hymn)
+    onSave({ ...parsed, id: hymn?.id ?? parsed.id })
   }
 
   return <div className="hymnal-editor-backdrop" role="presentation">
     <form className="hymnal-editor" onSubmit={submit}>
-      <header><div><h2>Add Hymn</h2><p>Use [C] chord markers and section directives in the lyrics.</p></div>
+      <header><div><h2>{hymn ? 'Edit Hymn' : 'Add Hymn'}</h2><p>Use [C] chord markers and section directives in the lyrics.</p></div>
         <button type="button" onClick={onClose} aria-label="Close hymn editor"><X size={18} /></button></header>
       <div className="hymnal-editor-grid">
         <label>Title<input required value={title} onChange={(event) => setTitle(event.target.value)} /></label>
