@@ -7,7 +7,7 @@ interface HistoryPageProps {
   isLoading: boolean
   onNewConversation: () => void
   onOpenConversation: (id: string) => void
-  onDeleteConversation: (id: string) => void
+  onDeleteConversation: (id: string) => boolean
 }
 
 function HistoryPage({ conversations, isLoading, onNewConversation, onOpenConversation, onDeleteConversation }: HistoryPageProps) {

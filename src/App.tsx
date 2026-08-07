@@ -272,6 +272,21 @@ function App() {
     }
   }
 
+  function handleDeleteConversation(
+    conversationId: string,
+  ): boolean {
+    if (isLoading) return false
+    const conversation = conversations.find((item) => item.id === conversationId)
+    if (!conversation) return false
+    const confirmed = window.confirm(
+      'Delete ' + conversation.title + '? This cannot be undone.',
+    )
+    if (!confirmed) return false
+    deleteConversation(conversationId)
+    addToast({ title: 'Conversation deleted', message: conversation.title, variant: 'warning', duration: 3200 })
+    return true
+  }
+
   function handleSelectConversation(
     conversationId: string,
   ) {
@@ -392,7 +407,7 @@ function App() {
           togglePinConversation
         }
         onDeleteConversation={
-          deleteConversation
+          handleDeleteConversation
         }
       />
 
@@ -411,7 +426,7 @@ function App() {
 
         <Route
           path="/history"
-          element={<main className="workspace-panel"><HistoryPage conversations={conversations} isLoading={isLoading} onNewConversation={handleNewConversation} onOpenConversation={handleSelectConversation} onDeleteConversation={deleteConversation} /></main>}
+          element={<main className="workspace-panel"><HistoryPage conversations={conversations} isLoading={isLoading} onNewConversation={handleNewConversation} onOpenConversation={handleSelectConversation} onDeleteConversation={handleDeleteConversation} /></main>}
         />
 
         <Route

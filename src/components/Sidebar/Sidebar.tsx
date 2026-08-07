@@ -84,7 +84,7 @@ interface SidebarProps {
 
   onDeleteConversation: (
     conversationId: string,
-  ) => void
+  ) => boolean
 }
 
 function Sidebar({
@@ -366,15 +366,6 @@ function Sidebar({
     onDeleteConversation(
       conversation.id,
     )
-
-    addToast({
-      title:
-        'Conversation deleted',
-      message:
-        conversation.title,
-      variant: 'warning',
-      duration: 3200,
-    })
   }
 
   return (
