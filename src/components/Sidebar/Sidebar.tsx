@@ -467,6 +467,10 @@ function Sidebar({
           </span>
         </NavLink>
 
+        <NavLink to="/agents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Bot size={17} /><span>Agents</span>
+        </NavLink>
+
         <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <FileText size={17} /><span>Documents</span>
         </NavLink>
