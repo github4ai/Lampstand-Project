@@ -17,3 +17,18 @@ export async function generateMedia(
   }
   return response.json() as Promise<MediaGeneration>
 }
+
+export async function getMediaGeneration(
+  id: string,
+  signal?: AbortSignal,
+): Promise<MediaGeneration> {
+  const response = await fetch(
+    `${AIOS_API_BASE_URL}/media/generations/${encodeURIComponent(id)}`,
+    { signal },
+  )
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || `Unable to refresh media generation ${id}.`)
+  }
+  return response.json() as Promise<MediaGeneration>
+}

@@ -5,7 +5,10 @@ export interface MediaGenerationRequest {
   prompt: string
   aspectRatio?: string
   durationSeconds?: number
-  audioMode?: 'speech' | 'music'
+  audioMode?: 'speech' | 'music' | 'instrumental' | 'song'
+  language?: string
+  genre?: string
+  audioStyle?: string
 }
 
 export interface MediaGeneration {
