@@ -12,6 +12,7 @@ export interface KnowledgeFile {
 export interface KnowledgeDocument {
   id: string
   name: string
+  stem: string
   category: string
 
   chunks: number | null
@@ -23,6 +24,16 @@ export interface KnowledgeDocument {
 
   indexed: boolean
   modified_at: string | null
+}
+
+export interface KnowledgeDocumentDetail extends KnowledgeDocument {
+  source_hash: string
+  statistics: { pages: number | null; chunks: number; embeddings: number; vectors: number; words: number }
+  embedding_dimensions: number
+  pages: number[]
+  artifact_size_bytes: number
+  artifacts: KnowledgeFile[]
+  metadata_files: KnowledgeFile[]
 }
 
 export interface KnowledgeCategory {
@@ -148,6 +159,14 @@ export async function getKnowledgeLibrary(
   return requestJson<KnowledgeLibrary>(
     '/knowledge',
     signal,
+  )
+}
+
+export async function getKnowledgeDocument(
+  categoryName: string, documentName: string, signal?: AbortSignal,
+): Promise<KnowledgeDocumentDetail> {
+  return requestJson<KnowledgeDocumentDetail>(
+    '/knowledge/' + encodeURIComponent(categoryName) + '/' + encodeURIComponent(documentName), signal,
   )
 }
 

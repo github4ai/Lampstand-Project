@@ -35,6 +35,7 @@ import {
 
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
+const DocumentDetailPage = lazy(() => import('./pages/DocumentDetailPage'))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const KnowledgeCategoryPage = lazy(() => import('./pages/KnowledgeCategoryPage'))
 const KnowledgePage = lazy(() => import('./pages/KnowledgePage'))
@@ -422,6 +423,8 @@ function App() {
         <Route path="/settings" element={<main className="workspace-panel"><SettingsPage /></main>} />
 
         <Route path="/agents" element={<main className="workspace-panel"><AgentsPage agents={agents} selectedAgentId={selectedAgentId} loading={agentsLoading} error={agentsError} onRetry={refreshAgents} onSelectAgent={handleSelectAgent} onStartChat={() => navigate("/")} /></main>} />
+
+        <Route path="/documents/:categoryName/:documentName" element={<DocumentDetailPage />} />
 
         <Route path="/documents" element={<main className="workspace-panel"><DocumentsPage /></main>} />
 

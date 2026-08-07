@@ -60,7 +60,7 @@ function DocumentsPage() {
        <div className="documents-table-wrap"><table className="documents-table">
         <thead><tr><th>Document</th><th>Status</th><th>Chunks</th><th>Embeddings</th><th>Updated</th></tr></thead>
         <tbody>{visible.map((document) => <tr key={document.id}
-          onClick={() => navigate('/knowledge/' + encodeURIComponent(document.category))}>
+          onClick={() => navigate('/documents/' + encodeURIComponent(document.category) + '/' + encodeURIComponent(document.stem))}>
           <td><strong>{document.name}</strong><span>{document.category}</span></td>
           <td><span className={document.indexed ? 'document-status indexed' : 'document-status'}>{document.indexed ? 'Indexed' : 'Pending'}</span></td>
           <td>{formatCount(document.chunks ?? 0)}</td>
