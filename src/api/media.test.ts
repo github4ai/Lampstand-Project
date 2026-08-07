@@ -49,4 +49,24 @@ describe('generateMedia', () => {
     }))
   })
 
+
+  it('includes provider-neutral visual generation options', async () => {
+    const payload = {
+      id: 'video-1', kind: 'video', status: 'queued', prompt: 'Verse animation', createdAt: 'now',
+    }
+    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    }))
+    vi.stubGlobal('fetch', fetchMock)
+    const request = {
+      kind: 'video' as const, prompt: 'Verse animation',
+      videoMode: 'scripture_animation' as const, visualStyle: 'Cinematic',
+      resolution: '1080p' as const,
+    }
+    await generateMedia(request)
+    expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      body: JSON.stringify(request),
+    }))
+  })
+
 })

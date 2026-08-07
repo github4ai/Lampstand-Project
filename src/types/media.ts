@@ -9,6 +9,11 @@ export interface MediaGenerationRequest {
   language?: string
   genre?: string
   audioStyle?: string
+  imageMode?: 'sermon_illustration' | 'social_post' | 'thumbnail' | 'poster' | 'background'
+  videoMode?: 'text_to_video' | 'lyric_video' | 'sermon_clip' | 'scripture_animation'
+  visualStyle?: string
+  quality?: 'draft' | 'standard' | 'high'
+  resolution?: '720p' | '1080p' | '4k'
 }
 
 export interface MediaGeneration {

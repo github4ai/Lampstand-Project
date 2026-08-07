@@ -36,6 +36,11 @@ function MediaStudioPage() {
   const [language, setLanguage] = useState('en')
   const [genre, setGenre] = useState('Worship')
   const [audioStyle, setAudioStyle] = useState('Narration')
+  const [imageMode, setImageMode] = useState<'sermon_illustration' | 'social_post' | 'thumbnail' | 'poster' | 'background'>('sermon_illustration')
+  const [videoMode, setVideoMode] = useState<'text_to_video' | 'lyric_video' | 'sermon_clip' | 'scripture_animation'>('text_to_video')
+  const [visualStyle, setVisualStyle] = useState('Cinematic')
+  const [quality, setQuality] = useState<'draft' | 'standard' | 'high'>('standard')
+  const [resolution, setResolution] = useState<'720p' | '1080p' | '4k'>('1080p')
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
   const [results, setResults] = useState(loadMediaHistory)
@@ -84,7 +89,12 @@ function MediaStudioPage() {
         language: kind === 'audio' && (audioMode === 'speech' || audioMode === 'song')
           ? language : undefined,
         genre: kind === 'audio' && audioMode !== 'speech' ? genre : undefined,
-        audioStyle: kind === 'audio' ? audioStyle : undefined })
+        audioStyle: kind === 'audio' ? audioStyle : undefined,
+        imageMode: kind === 'image' ? imageMode : undefined,
+        videoMode: kind === 'video' ? videoMode : undefined,
+        visualStyle: kind !== 'audio' ? visualStyle : undefined,
+        quality: kind === 'image' ? quality : undefined,
+        resolution: kind === 'video' ? resolution : undefined })
       setResults((current) => [result, ...current])
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Unable to generate media.')
@@ -106,6 +116,31 @@ function MediaStudioPage() {
           <textarea rows={7} value={prompt} onChange={(event) => setPrompt(event.target.value)}
             placeholder={`Describe the ${kind} for your ministry project...`} /></label>
         <div className="media-options">
+          {kind === 'image' && <label>Purpose<select value={imageMode}
+            onChange={(event) => setImageMode(event.target.value as typeof imageMode)}>
+            <option value="sermon_illustration">Sermon Illustration</option>
+            <option value="social_post">Social Post</option><option value="thumbnail">Thumbnail</option>
+            <option value="poster">Poster</option><option value="background">Background</option>
+          </select></label>}
+          {kind === 'video' && <label>Format<select value={videoMode}
+            onChange={(event) => setVideoMode(event.target.value as typeof videoMode)}>
+            <option value="text_to_video">Text to Video</option><option value="lyric_video">Lyric Video</option>
+            <option value="sermon_clip">Sermon Clip</option><option value="scripture_animation">Scripture Animation</option>
+          </select></label>}
+          {kind !== 'audio' && <label>Style<select value={visualStyle}
+            onChange={(event) => setVisualStyle(event.target.value)}>
+            {['Cinematic', 'Photorealistic', 'Illustration', 'Watercolor', 'Minimal',
+              'Stained Glass', 'Documentary'].map((item) => <option key={item}>{item}</option>)}
+          </select></label>}
+          {kind === 'image' && <label>Quality<select value={quality}
+            onChange={(event) => setQuality(event.target.value as typeof quality)}>
+            <option value="draft">Draft</option><option value="standard">Standard</option>
+            <option value="high">High</option>
+          </select></label>}
+          {kind === 'video' && <label>Resolution<select value={resolution}
+            onChange={(event) => setResolution(event.target.value as typeof resolution)}>
+            <option value="720p">720p</option><option value="1080p">1080p</option><option value="4k">4K</option>
+          </select></label>}
           {kind !== 'audio' && <label>Aspect ratio<select value={aspectRatio} onChange={(event) => setAspectRatio(event.target.value)}>
             <option>16:9</option><option>1:1</option><option>4:5</option><option>9:16</option>
           </select></label>}
