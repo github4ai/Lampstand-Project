@@ -3,7 +3,7 @@ import { Readable } from 'node:stream'
 import { pathToFileURL } from 'node:url'
 import { loadConfig } from './config.mjs'
 import { transcribeWithProviders, translateWithProviders } from './providers.mjs'
-import { createImageGeneration, getImageGeneration, proxyComfyFile } from './media.mjs'
+import { createMediaGeneration, getMediaGeneration, proxyAudioFile, proxyComfyFile } from './media.mjs'
 
 const supportedLanguages = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml'])
 const config = loadConfig()
@@ -133,18 +133,24 @@ export function createAiosServer() {
       }
 
       if (request.method === 'POST' && request.url === '/media/generate') {
-        return send(response, 202, await createImageGeneration(await readJson(request), config), origin)
+        return send(response, 202, await createMediaGeneration(await readJson(request), config), origin)
       }
 
       const mediaMatch = request.method === 'GET' && request.url.match(/^\/media\/generations\/([^?]+)$/)
       if (mediaMatch) {
-        const job = await getImageGeneration(decodeURIComponent(mediaMatch[1]), config)
+        const job = await getMediaGeneration(decodeURIComponent(mediaMatch[1]), config)
         return job ? send(response, 200, job, origin) : send(response, 404, { detail: 'Media generation not found.' }, origin)
       }
 
       if (request.method === 'GET' && request.url.startsWith('/media/files?')) {
         const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
         return await proxyComfyFile(request.url.slice(request.url.indexOf('?') + 1), config, response, origin, allowedOrigin)
+      }
+
+      const audioMatch = request.method === 'GET' && request.url.match(/^\/media\/audio\/([^?]+)$/)
+      if (audioMatch) {
+        const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+        return await proxyAudioFile(decodeURIComponent(audioMatch[1]), config, response, allowedOrigin)
       }
 
       return await proxyLegacy(request, response, origin)
