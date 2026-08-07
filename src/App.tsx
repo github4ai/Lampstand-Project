@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useMemo,
   useRef,
@@ -18,7 +20,6 @@ import ChatComposer from './components/Composer/ChatComposer'
 import ChatMessage from './components/Message/ChatMessage'
 import Sidebar from './components/Sidebar/Sidebar'
 import ToastViewport from './components/Toast/ToastViewport'
-import KnowledgeViewerPage from './pages/knowledge/KnowledgeViewerPage'
 
 import {
   useAgents,
@@ -28,17 +29,19 @@ import {
   useChat,
 } from './hooks/useChat'
 
-import KnowledgeCategoryPage from './pages/KnowledgeCategoryPage'
-import HistoryPage from './pages/HistoryPage'
-import DocumentsPage from './pages/DocumentsPage'
-import AgentsPage from './pages/AgentsPage'
-import SettingsPage from './pages/SettingsPage'
-import KnowledgePage from './pages/KnowledgePage'
-import KnowledgeSearchPage from './pages/knowledge/KnowledgeSearchPage'
 
 import {
   useAppStore,
 } from './store/useAppStore'
+
+const AgentsPage = lazy(() => import('./pages/AgentsPage'))
+const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
+const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const KnowledgeCategoryPage = lazy(() => import('./pages/KnowledgeCategoryPage'))
+const KnowledgePage = lazy(() => import('./pages/KnowledgePage'))
+const KnowledgeSearchPage = lazy(() => import('./pages/knowledge/KnowledgeSearchPage'))
+const KnowledgeViewerPage = lazy(() => import('./pages/knowledge/KnowledgeViewerPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 function App() {
   const navigate =
@@ -393,7 +396,8 @@ function App() {
         }
       />
 
-      <Routes>
+      <Suspense fallback={<main className="workspace-panel"><section className="placeholder-page">Loading workspace...</section></main>}>
+        <Routes>
         <Route
           path="/"
           element={chatPage}
@@ -455,7 +459,8 @@ function App() {
             />
           }
         />
-      </Routes>
+        </Routes>
+      </Suspense>
 
       <CommandPalette
         open={

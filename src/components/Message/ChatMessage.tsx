@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react'
+
 import {
   Bot,
   LoaderCircle,
@@ -8,7 +10,7 @@ import type {
   ChatMessage as ChatMessageType,
 } from '../../types/chat'
 
-import MarkdownMessage from './MarkdownMessage'
+const MarkdownMessage = lazy(() => import('./MarkdownMessage'))
 import ResponseStatus from '../StatusBar/ResponseStatus'
 import SourcesPanel from '../Sources/SourcesPanel'
 
@@ -45,9 +47,11 @@ function ChatMessage({
         </span>
 
         <div className="message-text">
-          <MarkdownMessage
-            content={message.content}
-          />
+          <Suspense fallback={<div>{message.content}</div>}>
+            <MarkdownMessage
+              content={message.content}
+            />
+          </Suspense>
 
           {showLoadingIndicator && (
             <LoaderCircle
