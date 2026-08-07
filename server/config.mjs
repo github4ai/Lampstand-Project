@@ -11,6 +11,7 @@ export function loadConfig(env = process.env) {
     ollamaModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen3:8b',
     whisperUrl: cleanUrl(env.WHISPER_URL, 'http://127.0.0.1:8000'),
     whisperModel: env.WHISPER_MODEL?.trim() || 'whisper-1',
+    legacyApiUrl: cleanUrl(env.AIOS_LEGACY_API_URL, 'http://127.0.0.1:8765'),
     openaiUrl: cleanUrl(env.OPENAI_BASE_URL, 'https://api.openai.com/v1'),
     openaiApiKey: env.OPENAI_API_KEY?.trim() || '',
     openaiTextModel: env.OPENAI_TEXT_MODEL?.trim() || 'gpt-4.1-mini',

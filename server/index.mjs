@@ -1,4 +1,5 @@
 import { createServer } from 'node:http'
+import { Readable } from 'node:stream'
 import { pathToFileURL } from 'node:url'
 import { loadConfig } from './config.mjs'
 import { transcribeWithProviders, translateWithProviders } from './providers.mjs'
@@ -42,6 +43,35 @@ async function providerAvailable(url) {
   } catch {
     return false
   }
+}
+
+async function proxyLegacy(request, response, origin) {
+  const headers = new Headers()
+  for (const [name, value] of Object.entries(request.headers)) {
+    if (value !== undefined && name !== 'host' && name !== 'origin') headers.set(name, Array.isArray(value) ? value.join(', ') : value)
+  }
+  const options = { method: request.method, headers, signal: AbortSignal.timeout(300000) }
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    options.body = request
+    options.duplex = 'half'
+  }
+  let upstream
+  try {
+    upstream = await fetch(`${config.legacyApiUrl}${request.url}`, options)
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error)
+    throw new Error(`Legacy AIOS API at ${config.legacyApiUrl} is unavailable: ${detail}`)
+  }
+  const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+  response.writeHead(upstream.status, {
+    'Content-Type': upstream.headers.get('content-type') || 'application/octet-stream',
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+    Vary: 'Origin',
+  })
+  if (!upstream.body) return response.end()
+  Readable.fromWeb(upstream.body).pipe(response)
 }
 
 export function createAiosServer() {
@@ -101,10 +131,12 @@ export function createAiosServer() {
         return send(response, 200, await transcribeWithProviders(file, language, config), origin)
       }
 
-      return send(response, 404, { detail: 'Endpoint not found.' }, origin)
+      return await proxyLegacy(request, response, origin)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unexpected server error.'
-      return send(response, message.includes('provider succeeded') ? 503 : 500, { detail: message }, origin)
+      const providerFailure = message.includes('provider succeeded')
+      const legacyFailure = message.includes(config.legacyApiUrl)
+      return send(response, providerFailure ? 503 : legacyFailure ? 502 : 500, { detail: message }, origin)
     }
   })
 }
