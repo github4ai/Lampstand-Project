@@ -9,6 +9,7 @@ const pageTitles: Record<string, string> = {
     "/history": "Conversation History",
     "/hymnal": "Ministry Hymnal",
     "/media": "Media Studio",
+    "/language-tools": "Language Tools",
     "/settings": "Settings",
 };
 

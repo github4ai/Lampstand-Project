@@ -1,0 +1,88 @@
+import { Copy, FileAudio, Languages, LoaderCircle } from 'lucide-react'
+import { useState } from 'react'
+import WorkspaceLayout from '../layouts/WorkspaceLayout'
+import { transcribeAudio, translateText } from '../api/languageTools'
+import type { SupportedLanguage } from '../types/languageTools'
+
+const languages: Array<{ code: SupportedLanguage; label: string }> = [
+  { code: 'en', label: 'English' }, { code: 'zh', label: 'Chinese' },
+  { code: 'ta', label: 'Tamil' }, { code: 'hi', label: 'Hindi' },
+  { code: 'mr', label: 'Marathi' }, { code: 'te', label: 'Telugu' },
+  { code: 'ml', label: 'Malayalam' },
+]
+
+function LanguageSelect({ value, onChange, label }: {
+  value: SupportedLanguage; onChange: (value: SupportedLanguage) => void; label: string
+}) {
+  return <label>{label}<select value={value}
+    onChange={(event) => onChange(event.target.value as SupportedLanguage)}>
+    {languages.map((language) => <option value={language.code} key={language.code}>{language.label}</option>)}
+  </select></label>
+}
+
+function LanguageToolsPage() {
+  const [tool, setTool] = useState<'translation' | 'transcription'>('translation')
+  const [sourceLanguage, setSourceLanguage] = useState<SupportedLanguage>('en')
+  const [targetLanguage, setTargetLanguage] = useState<SupportedLanguage>('ml')
+  const [text, setText] = useState('')
+  const [audioLanguage, setAudioLanguage] = useState<SupportedLanguage>('en')
+  const [audioFile, setAudioFile] = useState<File | null>(null)
+  const [result, setResult] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function run() {
+    if (loading) return
+    setLoading(true); setError(''); setResult('')
+    try {
+      if (tool === 'translation') {
+        if (!text.trim()) throw new Error('Enter text to translate.')
+        const response = await translateText({ text: text.trim(), sourceLanguage, targetLanguage })
+        setResult(response.translatedText)
+      } else {
+        if (!audioFile) throw new Error('Choose an audio file to transcribe.')
+        const response = await transcribeAudio(audioFile, audioLanguage)
+        setResult(response.text)
+      }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Language request failed.') }
+    finally { setLoading(false) }
+  }
+
+  return <WorkspaceLayout title="Language Tools"
+    subtitle="Translate ministry text and transcribe spoken audio in supported languages."
+    icon={<Languages size={25} />} statusBar={<span>Translation and transcription are processed by your configured AIOS providers.</span>}
+    className="language-tools-page">
+    <div className="language-tools-tabs">
+      <button className={tool === 'translation' ? 'active' : ''} type="button"
+        onClick={() => { setTool('translation'); setResult(''); setError('') }}><Languages size={17} /> Text Translation</button>
+      <button className={tool === 'transcription' ? 'active' : ''} type="button"
+        onClick={() => { setTool('transcription'); setResult(''); setError('') }}><FileAudio size={17} /> Audio Transcription</button>
+    </div>
+    <div className="language-tools-grid">
+      <section className="language-input-panel">
+        {tool === 'translation' ? <>
+          <div className="language-selects"><LanguageSelect label="From" value={sourceLanguage} onChange={setSourceLanguage} />
+            <LanguageSelect label="To" value={targetLanguage} onChange={setTargetLanguage} /></div>
+          <label className="language-text-input">Text to translate<textarea rows={11} value={text}
+            onChange={(event) => setText(event.target.value)} placeholder="Enter text..." /></label>
+        </> : <>
+          <LanguageSelect label="Spoken language" value={audioLanguage} onChange={setAudioLanguage} />
+          <label className="language-file-input"><FileAudio size={25} /><strong>{audioFile?.name ?? 'Choose an audio file'}</strong>
+            <span>MP3, WAV, M4A, or another format supported by AIOS</span>
+            <input type="file" accept="audio/*" onChange={(event) => setAudioFile(event.target.files?.[0] ?? null)} /></label>
+        </>}
+        {error && <p className="language-error">{error}</p>}
+        <button className="language-run" type="button" disabled={loading} onClick={() => void run()}>
+          {loading && <LoaderCircle className="spin" size={16} />}{loading ? 'Processing...' : tool === 'translation' ? 'Translate Text' : 'Transcribe Audio'}
+        </button>
+      </section>
+      <section className="language-result-panel"><header><h2>Result</h2>
+        {result && <button type="button" onClick={() => void navigator.clipboard.writeText(result)}><Copy size={14} /> Copy</button>}</header>
+        <div className={result ? 'language-result-content' : 'language-result-content empty'}>
+          {result || 'Your translated or transcribed text will appear here.'}</div>
+      </section>
+    </div>
+  </WorkspaceLayout>
+}
+
+export default LanguageToolsPage

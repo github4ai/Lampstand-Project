@@ -15,6 +15,7 @@ import {
   Database,
   FileJson,
   FileText,
+  Languages,
   MessageSquare,
   MessagesSquare,
   Music2,
@@ -473,6 +474,10 @@ function Sidebar({
 
         <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <WandSparkles size={17} /><span>Media Studio</span>
+        </NavLink>
+
+        <NavLink to="/language-tools" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Languages size={17} /><span>Language Tools</span>
         </NavLink>
 
         <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
