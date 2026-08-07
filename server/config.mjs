@@ -5,7 +5,7 @@ export function loadConfig(env = process.env) {
     host: env.AIOS_API_HOST?.trim() || '127.0.0.1',
     port: Number(env.AIOS_API_PORT || 8765),
     providerMode: env.AIOS_PROVIDER_MODE?.trim() || 'hybrid',
-    allowedOrigins: (env.AIOS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
+    allowedOrigins: (env.AIOS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174')
       .split(',').map((value) => value.trim()).filter(Boolean),
     ollamaUrl: cleanUrl(env.OLLAMA_URL, 'http://127.0.0.1:11434'),
     ollamaModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen3:8b',

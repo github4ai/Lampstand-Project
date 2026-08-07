@@ -122,7 +122,7 @@ function LanguageToolsPage() {
         const status = providerStatus?.providers[provider]
         return <span className={status?.available ? 'available' : 'unavailable'} key={provider}>
           <i />{provider === 'ollama' ? 'Ollama Translation' : provider === 'whisper' ? 'Local Whisper' : 'OpenAI'}
-          <small>{status?.available ? 'Ready' : status?.configured ? 'Offline' : 'Not configured'}</small>
+          <small>{!providerStatus ? 'Status unavailable' : status?.available ? 'Ready' : status?.configured ? 'Offline' : 'Not configured'}</small>
         </span>
       })}
     </div>
