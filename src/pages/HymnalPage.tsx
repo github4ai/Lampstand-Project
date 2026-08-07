@@ -1,8 +1,9 @@
-import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Search } from 'lucide-react'
+import { BookOpen, FileUp, Heart, LayoutGrid, Music2, Plus, Search } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import WorkspaceLayout from '../layouts/WorkspaceLayout'
 import PianoSheet from '../components/Hymnal/PianoSheet'
 import TunePlayer from '../components/Hymnal/TunePlayer'
+import HymnEditor from '../components/Hymnal/HymnEditor'
 import { HYMNS } from '../data/hymns'
 import { CHROMATIC_KEYS, extractChords, semitonesBetween, stripChords, transposeChordLine } from '../utils/chords'
 import { parseHymnImport } from '../utils/importHymn'
@@ -35,6 +36,7 @@ function HymnalPage() {
   const [query, setQuery] = useState('')
   const [hymns, setHymns] = useState(() => [...HYMNS, ...loadImportedHymns()])
   const [importStatus, setImportStatus] = useState('')
+  const [editorOpen, setEditorOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [favorites, setFavorites] = useState(loadFavorites)
   const [targetKey, setTargetKey] = useState(HYMNS[0].originalKey)
@@ -91,6 +93,18 @@ function HymnalPage() {
     setImportStatus(hymn.title + ' imported.')
   }
 
+  function saveCreatedHymn(hymn: Hymn) {
+    const imported = [...loadImportedHymns(), hymn]
+    localStorage.setItem(IMPORTED_KEY, JSON.stringify(imported))
+    setHymns([...HYMNS, ...imported])
+    setSelectedId(hymn.id)
+    setQuery('')
+    setTargetKey(hymn.originalKey)
+    setCapo(0)
+    setImportStatus(hymn.title + ' added.')
+    setEditorOpen(false)
+  }
+
   function toggleFavorite(id: string) {
     setFavorites((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
@@ -113,6 +127,9 @@ function HymnalPage() {
         <button type="button" onClick={() => { setSelectedId(null); setQuery('') }}>
           <LayoutGrid size={15} /> Browse Hymns
         </button>
+        <button type="button" onClick={() => setEditorOpen(true)}>
+          <Plus size={15} /> Add Hymn
+        </button>
         <label className="hymnal-toolbar-search"><Search size={15} />
           <input value={query} onChange={(event) => setQuery(event.target.value)}
             type="search" placeholder="Search title, number, or theme" />
@@ -125,6 +142,7 @@ function HymnalPage() {
       statusBar={<span>{hymns.length} hymns - Imports and favorites are stored on this device</span>}
       className="hymnal-page"
     >
+      {editorOpen && <HymnEditor onClose={() => setEditorOpen(false)} onSave={saveCreatedHymn} />}
       <div className="hymnal-grid">
         {showCatalog ? <section className="hymnal-catalog">
           <header><h2>{query.trim() ? 'Search results' : 'Hymn Catalog'}</h2>
