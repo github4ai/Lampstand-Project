@@ -6,18 +6,22 @@ AIOS Studio is a local React workspace for chatting with AIOS agents, browsing i
 
 - Node.js 20 or newer
 - npm
-- AIOS API running locally
+- Ollama for private local translation
+- An OpenAI-compatible local Whisper server for private transcription
 
 ## Development
 
 ```powershell
 npm install
+npm run api
 npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).
 
 The frontend expects the AIOS API at `http://127.0.0.1:8765` by default.
+
+The included API runs in hybrid mode: it tries local Ollama and Whisper providers first, then uses OpenAI only when an `OPENAI_API_KEY` is configured. Copy `.env.example` to `.env.local` to customize providers. Secrets in `.env.local` are ignored by Git.
 
 To use another API address, copy `.env.example` to `.env.local` and change:
 
@@ -30,6 +34,7 @@ Restart the development server after changing environment variables.
 ## Commands
 
 - `npm run dev` — start the development server
+- `npm run api` — start the hybrid AIOS backend
 - `npm run lint` — run static analysis
 - `npm test` — run unit tests
 - `npm run build` — type-check and create a production build
