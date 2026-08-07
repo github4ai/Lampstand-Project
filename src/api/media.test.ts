@@ -33,6 +33,15 @@ describe('generateMedia', () => {
       .rejects.toThrow('Provider unavailable')
   })
 
+  it('expands gateway-relative generated media URLs', async () => {
+    const payload = { id: 'image-1', kind: 'image', status: 'completed', prompt: 'Hope',
+      createdAt: 'now', url: '/media/files?filename=result.png' }
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), { status: 200 })))
+    await expect(getMediaGeneration('image-1')).resolves.toMatchObject({
+      url: 'http://127.0.0.1:8766/media/files?filename=result.png',
+    })
+  })
+
   it('includes audio mode and language in generation requests', async () => {
     const payload = { id: 'audio-1', kind: 'audio', status: 'queued', prompt: 'A worship song', createdAt: 'now' }
     const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), {

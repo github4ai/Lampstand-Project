@@ -1,6 +1,11 @@
 import { AIOS_API_BASE_URL } from '../config/api'
 import type { MediaGeneration, MediaGenerationRequest } from '../types/media'
 
+function normalizeMediaUrl(generation: MediaGeneration): MediaGeneration {
+  if (!generation.url?.startsWith('/')) return generation
+  return { ...generation, url: `${AIOS_API_BASE_URL}${generation.url}` }
+}
+
 export async function generateMedia(
   request: MediaGenerationRequest,
   signal?: AbortSignal,
@@ -15,7 +20,7 @@ export async function generateMedia(
     const message = await response.text()
     throw new Error(message || `Media generation failed with status ${response.status}.`)
   }
-  return response.json() as Promise<MediaGeneration>
+  return normalizeMediaUrl(await response.json() as MediaGeneration)
 }
 
 export async function getMediaGeneration(
@@ -30,5 +35,5 @@ export async function getMediaGeneration(
     const message = await response.text()
     throw new Error(message || `Unable to refresh media generation ${id}.`)
   }
-  return response.json() as Promise<MediaGeneration>
+  return normalizeMediaUrl(await response.json() as MediaGeneration)
 }

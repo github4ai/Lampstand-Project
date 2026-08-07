@@ -3,6 +3,7 @@ import { Readable } from 'node:stream'
 import { pathToFileURL } from 'node:url'
 import { loadConfig } from './config.mjs'
 import { transcribeWithProviders, translateWithProviders } from './providers.mjs'
+import { createImageGeneration, getImageGeneration, proxyComfyFile } from './media.mjs'
 
 const supportedLanguages = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml'])
 const config = loadConfig()
@@ -129,6 +130,21 @@ export function createAiosServer() {
         if (!supportedLanguages.has(language)) return send(response, 400, { detail: 'Unsupported transcription language.' }, origin)
         if (file.size > config.maxAudioBytes) return send(response, 413, { detail: 'Audio file is too large.' }, origin)
         return send(response, 200, await transcribeWithProviders(file, language, config), origin)
+      }
+
+      if (request.method === 'POST' && request.url === '/media/generate') {
+        return send(response, 202, await createImageGeneration(await readJson(request), config), origin)
+      }
+
+      const mediaMatch = request.method === 'GET' && request.url.match(/^\/media\/generations\/([^?]+)$/)
+      if (mediaMatch) {
+        const job = await getImageGeneration(decodeURIComponent(mediaMatch[1]), config)
+        return job ? send(response, 200, job, origin) : send(response, 404, { detail: 'Media generation not found.' }, origin)
+      }
+
+      if (request.method === 'GET' && request.url.startsWith('/media/files?')) {
+        const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+        return await proxyComfyFile(request.url.slice(request.url.indexOf('?') + 1), config, response, origin, allowedOrigin)
       }
 
       return await proxyLegacy(request, response, origin)
