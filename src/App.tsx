@@ -8,7 +8,6 @@ import {
 } from 'react'
 
 import {
-  Navigate,
   Route,
   Routes,
   useNavigate,
@@ -42,6 +41,7 @@ const KnowledgePage = lazy(() => import('./pages/KnowledgePage'))
 const KnowledgeSearchPage = lazy(() => import('./pages/knowledge/KnowledgeSearchPage'))
 const KnowledgeViewerPage = lazy(() => import('./pages/knowledge/KnowledgeViewerPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function App() {
   const navigate =
@@ -465,15 +465,7 @@ function App() {
           }
         />
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
-        />
+        <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
 
