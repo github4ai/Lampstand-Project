@@ -30,6 +30,8 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
+import { AIOS_API_BASE_URL } from '../../config/api'
+
 import type {
   AgentSummary,
 } from '../../services/api'
@@ -883,7 +885,7 @@ function Sidebar({
           </strong>
 
           <p>
-            127.0.0.1:8765
+            {AIOS_API_BASE_URL.replace(/^https?:\/\//, '')}
           </p>
         </div>
       </div>

@@ -1,10 +1,9 @@
+import { AIOS_API_BASE_URL } from '../config/api'
+
 import type {
   KnowledgeContextResponse,
   KnowledgeViewerResponse,
 } from '../types/knowledgeViewer'
-
-const AIOS_API_BASE_URL =
-  'http://127.0.0.1:8765'
 
 async function readErrorMessage(
   response: Response,

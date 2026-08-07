@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# AIOS Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+AIOS Studio is a local React workspace for chatting with AIOS agents, browsing indexed knowledge, searching chunks, managing conversation history, and monitoring local services.
 
-Currently, two official plugins are available:
+## Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 20 or newer
+- npm
+- AIOS API running locally
 
-## React Compiler
+## Development
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open [http://localhost:5173](http://localhost:5173).
+
+The frontend expects the AIOS API at `http://127.0.0.1:8765` by default.
+
+To use another API address, copy `.env.example` to `.env.local` and change:
+
+```text
+VITE_AIOS_API_URL=http://127.0.0.1:8765
+```
+
+Restart the development server after changing environment variables.
+
+## Commands
+
+- `npm run dev` — start the development server
+- `npm run lint` — run static analysis
+- `npm run build` — type-check and create a production build
+- `npm run preview` — preview the production build
+
+## Workspaces
+
+- Chat
+- Knowledge Library and Search
+- Documents
+- Agents
+- Conversation History
+- Settings
+
+Conversation data and interface preferences are stored locally in the browser.

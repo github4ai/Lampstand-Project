@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://127.0.0.1:8765'
+import { AIOS_API_BASE_URL } from '../config/api'
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: AIOS_API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -143,7 +143,7 @@ export async function streamAIOS(
   callbacks: StreamCallbacks,
 ): Promise<void> {
   const response = await fetch(
-    `${API_BASE_URL}/ask/stream`,
+    `${AIOS_API_BASE_URL}/ask/stream`,
     {
       method: 'POST',
       headers: {

@@ -1,7 +1,6 @@
 import { CheckCircle2, RefreshCw, Server, Settings, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-
-const API_URL = 'http://127.0.0.1:8765'
+import { AIOS_API_BASE_URL } from '../config/api'
 const STORAGE_KEY = 'aios-studio-settings-v1'
 
 interface Preferences { compactUi: boolean; reducedMotion: boolean }
@@ -23,7 +22,7 @@ function SettingsPage() {
   const checkConnection = useCallback(async () => {
     setChecking(true)
     try {
-      const response = await fetch(API_URL + '/', { headers: { Accept: 'application/json' } })
+      const response = await fetch(AIOS_API_BASE_URL + '/', { headers: { Accept: 'application/json' } })
       if (!response.ok) throw new Error()
       const payload = await response.json() as { status?: string }
       setOnline(true)
@@ -67,7 +66,7 @@ function SettingsPage() {
           <div className="settings-panel-title"><Server size={19} /><div><h2>AIOS API</h2><p>Connection used by Chat and Knowledge.</p></div></div>
           <div className="settings-service">
             <span className={online ? 'settings-service-dot online' : 'settings-service-dot'} />
-            <div><strong>{checking ? 'Checking...' : status}</strong><code>{API_URL}</code></div>
+            <div><strong>{checking ? 'Checking...' : status}</strong><code>{AIOS_API_BASE_URL}</code></div>
             <button type="button" onClick={() => void checkConnection()} disabled={checking}>
               <RefreshCw size={15} className={checking ? 'spin' : ''} /> Check
             </button>
