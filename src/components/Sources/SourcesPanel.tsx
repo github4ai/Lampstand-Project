@@ -1,6 +1,8 @@
 import {
+  ChevronDown,
   FileText,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import type {
   StreamSource,
@@ -14,29 +16,46 @@ function SourcesPanel({
   sources,
 }: SourcesPanelProps) {
   return (
-    <div className="sources-panel">
-      <div className="sources-title">
+    <details className="sources-panel">
+      <summary className="sources-title">
         <FileText size={16} />
         Sources
-      </div>
+        <span>{sources.length}</span>
+        <ChevronDown className="sources-chevron" size={16} />
+      </summary>
 
       <ol>
         {sources.map((source) => (
           <li key={source.id}>
-            <strong>
-              {source.citation}
-            </strong>
+            {source.url ? (
+              source.url.startsWith("/") ? (
+                <Link to={source.url} className="source-link">
+                  {source.citation}
+                </Link>
+              ) : (
+                <a
+                  href={source.url}
+                  className="source-link"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {source.citation}
+                </a>
+              )
+            ) : (
+              <strong>{source.citation}</strong>
+            )}
 
-            {source.page !== null && (
+            {Number.isFinite(source.page) && (
               <span>
                 Page {source.page}
               </span>
             )}
 
-            {source.rerank_score !== null && (
+            {Number.isFinite(source.rerank_score) && (
               <small>
                 Relevance:{" "}
-                {source.rerank_score.toFixed(
+                {Number(source.rerank_score).toFixed(
                   3,
                 )}
               </small>
@@ -44,7 +63,7 @@ function SourcesPanel({
           </li>
         ))}
       </ol>
-    </div>
+    </details>
   );
 }
 

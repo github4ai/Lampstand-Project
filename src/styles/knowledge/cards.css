@@ -6,7 +6,7 @@
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: #1b2230;
+  background: #17243a;
   color: inherit;
   text-decoration: none;
   box-shadow: var(--shadow);
@@ -99,6 +99,40 @@
   color: #f6d98a;
 }
 
+.knowledge-status-badge.partial {
+  border: 1px solid rgba(245, 200, 76, 0.25);
+  background: rgba(245, 200, 76, 0.08);
+  color: #f6d98a;
+}
+
+.knowledge-assistant-owner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 9px;
+  background: rgba(56, 189, 248, 0.055);
+  color: #7dd3fc;
+}
+
+.knowledge-assistant-owner > span,
+.knowledge-assistant-owner strong,
+.knowledge-assistant-owner small {
+  display: block;
+}
+
+.knowledge-assistant-owner strong {
+  color: #dceeff;
+  font-size: 10px;
+}
+
+.knowledge-assistant-owner small {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
 .knowledge-card-metrics {
   display: grid;
   grid-template-columns:
@@ -163,7 +197,7 @@
 
 .knowledge-card-open {
   margin-top: auto;
-  color: #9eb2ff;
+  color: #bae6fd;
   font-size: 11px;
   font-weight: 700;
 }
@@ -184,7 +218,7 @@
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: #1b2230;
+  background: #17243a;
 }
 
 .knowledge-document-row-main {
@@ -202,7 +236,7 @@
   place-items: center;
   border-radius: 9px;
   background: rgba(79, 124, 255, 0.11);
-  color: #a8bbff;
+  color: #bae6fd;
 }
 
 .knowledge-document-row-copy {
@@ -210,17 +244,22 @@
 }
 
 .knowledge-document-row-copy strong,
+.knowledge-document-row-copy a,
 .knowledge-document-row-copy span {
   display: block;
 }
 
-.knowledge-document-row-copy strong {
+.knowledge-document-row-copy strong,
+.knowledge-document-row-copy a {
   overflow: hidden;
   color: #e3e9f5;
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.knowledge-document-open { text-decoration: none; }
+.knowledge-document-open:hover { color: #7dd3fc; text-decoration: underline; }
 
 .knowledge-document-row-copy span {
   margin-top: 4px;

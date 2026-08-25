@@ -1,0 +1,2 @@
+/* Settings flow: people and remote policy first, then updates/services, followed by preferences and maintenance. */
+.settings-access-panel{grid-column:1/-1}.settings-ai-services{grid-column:1/-1}.settings-appearance-panel{order:6}.settings-backup-panel{order:7}.settings-api-panel{order:4}.settings-voice-panel{order:5}@media(max-width:800px){.settings-access-panel,.settings-ai-services{grid-column:auto}}

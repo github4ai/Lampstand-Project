@@ -5,7 +5,9 @@ interface ContextChunkProps {
   chunk: number;
   page?: number | null;
   text: ReactNode;
+  renderedText?: ReactNode;
   isCurrent?: boolean;
+  onOpen?: () => void;
 }
 
 function ContextChunk({
@@ -13,7 +15,9 @@ function ContextChunk({
   chunk,
   page,
   text,
+  renderedText,
   isCurrent = false,
+  onOpen,
 }: ContextChunkProps) {
   return (
     <section
@@ -31,9 +35,12 @@ function ContextChunk({
             {page != null && ` • Page ${page}`}
           </p>
         </div>
+        {!isCurrent && onOpen && (
+          <button type="button" onClick={onOpen}>Open chunk</button>
+        )}
       </header>
 
-      <article className="viewer-context-body">{text}</article>
+      <article className="viewer-context-body">{renderedText ?? text}</article>
     </section>
   );
 }

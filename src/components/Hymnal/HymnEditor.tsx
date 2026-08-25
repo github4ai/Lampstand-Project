@@ -14,6 +14,7 @@ interface HymnEditorProps {
 function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
   const [title, setTitle] = useState(hymn?.title ?? '')
   const [author, setAuthor] = useState(hymn?.author ?? '')
+  const [language, setLanguage] = useState(hymn?.language ?? 'en')
   const [prefix, setPrefix] = useState(hymn?.catalogPrefix ?? '')
   const [number, setNumber] = useState(hymn?.hymnNumber ?? '')
   const [key, setKey] = useState(hymn?.originalKey ?? 'C')
@@ -31,6 +32,7 @@ function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
     event.preventDefault()
     const document = [
       `{title: ${title.trim()}}`, `{artist: ${author.trim()}}`,
+      `{language: ${language}}`,
       `{prefix: ${prefix.trim()}}`, `{number: ${number.trim()}}`, `{key: ${key}}`,
       `{category: ${category.trim()}}`, `{scripture: ${scripture.trim()}}`,
       `{theme: ${themes.trim()}}`, `{audio: ${audioUrl.trim()}}`,
@@ -51,6 +53,12 @@ function HymnEditor({ hymn, onClose, onSave }: HymnEditorProps) {
       <div className="hymnal-editor-grid">
         <label>Title<input required value={title} onChange={(event) => setTitle(event.target.value)} /></label>
         <label>Author<input value={author} onChange={(event) => setAuthor(event.target.value)} /></label>
+        <label>Language<select value={language} onChange={(event) => setLanguage(event.target.value)}>
+          <option value="en">English</option><option value="zh">Chinese</option>
+          <option value="ta">Tamil</option><option value="hi">Hindi</option>
+          <option value="mr">Marathi</option><option value="te">Telugu</option>
+          <option value="ml">Malayalam</option>
+        </select></label>
         <label>Prefix<input value={prefix} onChange={(event) => setPrefix(event.target.value.toUpperCase())} placeholder="NS" /></label>
         <label>Number<input value={number} onChange={(event) => setNumber(event.target.value)} placeholder="1156" /></label>
         <label>Key<select value={key} onChange={(event) => setKey(event.target.value)}>

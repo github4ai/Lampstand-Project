@@ -33,6 +33,7 @@ function Start-LocalService {
     [string]$FilePath,
     [string[]]$Arguments,
     [string]$WorkingDirectory,
+    [int]$ReadinessSeconds = 20,
     [hashtable]$Environment = @{}
   )
 
@@ -59,26 +60,32 @@ function Start-LocalService {
     }
   }
 
-  if (Wait-LocalPort $Port) { Write-Host "[started] $Name on port $Port" }
+  if (Wait-LocalPort $Port $ReadinessSeconds) { Write-Host "[started] $Name on port $Port" }
   else { Write-Warning "$Name did not become ready. Check $logRoot\$safeName.err.log" }
 }
 
 $ollama = Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'
-$legacyPython = Join-Path $aiRoot 'ai-env\Scripts\python.exe'
-$whisperPython = Join-Path $studioRoot '.venv-whisper\Scripts\python.exe'
+$installedPython = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'
+$legacyPython = if (Test-Path -LiteralPath $installedPython) { $installedPython } else { Join-Path $aiRoot 'ai-env\Scripts\python.exe' }
+$whisperPython = if (Test-Path -LiteralPath $installedPython) { $installedPython } else { Join-Path $studioRoot '.venv-whisper\Scripts\python.exe' }
 $node = (Get-Command node.exe).Source
-$npm = (Get-Command npm.cmd).Source
+$powershell = (Get-Command powershell.exe).Source
+$vite = Join-Path $studioRoot 'node_modules\vite\bin\vite.js'
 
 Start-LocalService -Name 'Ollama' -Port 11434 -FilePath $ollama -Arguments @('serve') -WorkingDirectory $studioRoot
-Start-LocalService -Name 'Original AIOS API' -Port 8765 -FilePath $legacyPython `
-  -Arguments @('-m', 'uvicorn', 'AIOS.api.app:app', '--host', '127.0.0.1', '--port', '8765') -WorkingDirectory $aiRoot
+Start-LocalService -Name 'Legacy local API' -Port 9655 -FilePath $legacyPython `
+  -Arguments @('-m', 'uvicorn', 'AIOS.api.app:app', '--host', '127.0.0.1', '--port', '9655') -WorkingDirectory $aiRoot `
+  -ReadinessSeconds 90 `
+  -Environment @{ PYTHONPATH = "$studioRoot\python_overrides;$aiRoot;$aiRoot\ai-env\Lib\site-packages" }
 Start-LocalService -Name 'Local Whisper' -Port 8000 -FilePath $whisperPython `
-  -Arguments @('-m', 'uvicorn', 'whisper_server.app:app', '--host', '127.0.0.1', '--port', '8000') -WorkingDirectory $studioRoot
-Start-LocalService -Name 'Unified AIOS Gateway' -Port 8766 -FilePath $node `
-  -Arguments @('server/index.mjs') -WorkingDirectory $studioRoot -Environment @{ AIOS_API_PORT = '8766' }
-Start-LocalService -Name 'AIOS Studio Web' -Port 5173 -FilePath $npm `
-  -Arguments @('run', 'dev', '--', '--host', 'localhost', '--port', '5173') -WorkingDirectory $studioRoot
+  -Arguments @('-m', 'uvicorn', 'whisper_server.app:app', '--host', '127.0.0.1', '--port', '8000') -WorkingDirectory $studioRoot `
+  -Environment @{ PYTHONPATH = "$studioRoot;$studioRoot\.venv-whisper\Lib\site-packages" }
+Start-LocalService -Name 'Lampstand Gateway' -Port 9656 -FilePath $powershell `
+  -Arguments @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'gateway-supervisor.ps1')) `
+  -WorkingDirectory $studioRoot -Environment @{ AIOS_API_PORT = '9656'; AIOS_LEGACY_API_URL = 'http://127.0.0.1:9655' }
+Start-LocalService -Name 'Lampstand Project Web' -Port 5173 -FilePath $node `
+  -Arguments @($vite, '--host', '127.0.0.1', '--port', '5173') -WorkingDirectory $studioRoot
 
 Write-Host ''
-Write-Host 'AIOS Studio: http://localhost:5173/'
+Write-Host 'Lampstand Project: http://localhost:5173/'
 Write-Host "Logs: $logRoot"

@@ -1,7 +1,10 @@
 import {
   ArrowRight,
+  Check,
+  Clipboard,
   FileText,
 } from 'lucide-react'
+import { useState } from 'react'
 import {
   useNavigate,
 } from 'react-router-dom'
@@ -13,6 +16,16 @@ import type {
 interface SearchResultCardProps {
   result: KnowledgeSearchResult
   rank: number
+  query?: string
+}
+
+function highlightedText(text: string, query = '') {
+  const words = query.trim().split(/\s+/).filter((word) => word.length > 1)
+  if (!words.length) return text
+  const escaped = words.map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  const parts = text.split(new RegExp(`(${escaped.join('|')})`, 'gi'))
+  return parts.map((part, index) => words.some((word) => word.toLocaleLowerCase() === part.toLocaleLowerCase())
+    ? <mark key={`${part}-${index}`}>{part}</mark> : part)
 }
 
 function formatScore(
@@ -31,23 +44,21 @@ function formatScore(
 function SearchResultCard({
   result,
   rank,
+  query,
 }: SearchResultCardProps) {
   const navigate =
     useNavigate()
+  const [citationStatus, setCitationStatus] = useState<'idle' | 'copied' | 'failed'>('idle')
 
   function openChunk() {
     const document =
       result.document ||
       result.source
 
-    const query =
-      result.matched_query
-        ? (
-          `?q=${encodeURIComponent(
-            result.matched_query,
-          )}`
-        )
-        : ''
+    const parameters = new URLSearchParams()
+    if (result.matched_query) parameters.set('q', result.matched_query)
+    parameters.set('category', result.category)
+    const query = `?${parameters.toString()}`
 
     navigate(
       (
@@ -62,6 +73,18 @@ function SearchResultCard({
         query
       ),
     )
+  }
+
+  async function copyCitation() {
+    const citation = result.citation || [result.document || result.source, result.category,
+      `Chunk ${result.chunk}`, result.page !== null ? `Page ${result.page}` : null].filter(Boolean).join(' · ')
+    try {
+      await navigator.clipboard.writeText(citation)
+      setCitationStatus('copied')
+      window.setTimeout(() => setCitationStatus('idle'), 1800)
+    } catch {
+      setCitationStatus('failed')
+    }
   }
 
   return (
@@ -109,8 +132,7 @@ function SearchResultCard({
         </header>
 
         <p className="knowledge-search-result-preview">
-          {result.preview ||
-            'No preview is available.'}
+          {highlightedText(result.preview || 'No preview is available.', query)}
         </p>
 
         <div className="knowledge-search-result-meta">
@@ -191,6 +213,10 @@ function SearchResultCard({
         </details>
 
         <footer className="knowledge-search-result-footer">
+          <button type="button" onClick={() => void copyCitation()}>
+            {citationStatus === 'copied' ? <Check size={14} /> : <Clipboard size={14} />}
+            {citationStatus === 'copied' ? 'Citation copied' : citationStatus === 'failed' ? 'Copy failed' : 'Copy citation'}
+          </button>
           <button
             type="button"
             onClick={openChunk}

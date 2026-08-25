@@ -53,3 +53,17 @@ export interface KnowledgeContextResponse {
   end_chunk_id: number | null
   chunks: KnowledgeContextChunk[]
 }
+
+export interface KnowledgeOutlineSection {
+  id: string
+  label: string
+  chunk_id: number
+  page: number | null
+  type: 'lesson' | 'chapter' | 'section'
+}
+
+export interface KnowledgeOutlineResponse {
+  category: string
+  document: string
+  sections: KnowledgeOutlineSection[]
+}

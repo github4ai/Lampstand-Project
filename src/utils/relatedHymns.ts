@@ -1,8 +1,13 @@
 import type { Hymn } from '../types/hymnal'
 
 export function getRelatedHymns(selected: Hymn, hymns: Hymn[], limit = 4): Hymn[] {
+  const catalogKey = (hymn: Hymn) => `${hymn.catalogPrefix ?? ''}${hymn.hymnNumber ?? ''}`.toUpperCase()
+  const explicit = (selected.relatedCatalogs ?? []).map((catalog) =>
+    hymns.find((hymn) => hymn.id !== selected.id && catalogKey(hymn) === catalog.toUpperCase()))
+    .filter((hymn): hymn is Hymn => Boolean(hymn))
+  if (explicit.length >= limit) return explicit.slice(0, limit)
   const selectedThemes = new Set(selected.themes.map((theme) => theme.toLowerCase()))
-  return hymns
+  const inferred = hymns
     .filter((hymn) => hymn.id !== selected.id)
     .map((hymn) => ({
       hymn,
@@ -14,6 +19,7 @@ export function getRelatedHymns(selected: Hymn, hymns: Hymn[], limit = 4): Hymn[
     .filter((item) => item.score > 0)
     .sort((first, second) =>
       second.score - first.score || first.hymn.title.localeCompare(second.hymn.title))
-    .slice(0, limit)
     .map((item) => item.hymn)
+    .filter((hymn) => !explicit.some((item) => item.id === hymn.id))
+  return [...explicit, ...inferred].slice(0, limit)
 }

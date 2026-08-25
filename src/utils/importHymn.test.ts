@@ -30,6 +30,29 @@ describe('parseHymnImport', () => {
     expect(hymn?.sections[1].label).toBe('Chorus')
   })
 
+  it('normalizes language codes from JSON hymns', () => {
+    const hymn = parseHymnImport(JSON.stringify({
+      title: 'Marathi Hymn', language: ' MR ',
+      sections: [{ label: 'Verse', lines: ['गीत'] }],
+    }), 'marathi.json')
+    expect(hymn?.language).toBe('mr')
+  })
+
+  it('imports language metadata and aliases from ChordPro', () => {
+    const language = parseHymnImport('{title: Malayalam Hymn}\n{language: ml}\nLine', 'malayalam.pro')
+    const alias = parseHymnImport('{title: Telugu Hymn}\n{lang: te}\nLine', 'telugu.pro')
+    expect(language?.language).toBe('ml')
+    expect(alias?.language).toBe('te')
+  })
+
+  it('defaults unsupported hymn languages to English', () => {
+    const hymn = parseHymnImport(JSON.stringify({
+      title: 'Unknown Language', language: 'xx',
+      sections: [{ label: 'Verse', lines: ['Line'] }],
+    }), 'unknown.json')
+    expect(hymn?.language).toBe('en')
+  })
+
   it('drops unsafe media URLs', () => {
     const hymn = parseHymnImport(JSON.stringify({
       title: 'Safe', audioUrl: 'javascript:alert(1)', pianoSheetUrl: 'file:///secret',

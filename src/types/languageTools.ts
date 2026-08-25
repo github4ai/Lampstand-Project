@@ -1,4 +1,4 @@
-export type SupportedLanguage = 'en' | 'zh' | 'ta' | 'hi' | 'mr' | 'te' | 'ml'
+export type SupportedLanguage = 'en' | 'zh' | 'ta' | 'hi' | 'mr' | 'te' | 'ml' | 'kn' | 'ru' | 'ko'
 export type TranslationSourceLanguage = SupportedLanguage | 'auto'
 
 export interface TranslationRequest {
@@ -9,12 +9,16 @@ export interface TranslationRequest {
 
 export interface TranslationResult extends TranslationRequest {
   translatedText: string
+  provider?: string
+  model?: string
 }
 
 export interface TranscriptionResult {
   text: string
   language: SupportedLanguage
   durationSeconds?: number
+  provider?: string
+  model?: string
 }
 
 export interface LanguageHistoryItem {
@@ -25,6 +29,10 @@ export interface LanguageHistoryItem {
   sourceLanguage?: TranslationSourceLanguage
   targetLanguage?: SupportedLanguage
   audioLanguage?: SupportedLanguage
+  favorite?: boolean
+  provider?: string
+  model?: string
+  durationSeconds?: number
   createdAt: string
 }
 

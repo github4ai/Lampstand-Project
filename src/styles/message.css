@@ -86,6 +86,7 @@
   font-size: 12px;
   font-weight: 700;
 }
+.sources-title{cursor:pointer;list-style:none}.sources-title::-webkit-details-marker{display:none}.sources-title>span{margin-left:auto;color:var(--text-muted);font-size:12px}.sources-chevron{transition:transform .18s ease}.sources-panel[open] .sources-chevron{transform:rotate(180deg)}
 
 .sources-panel ol {
   display: grid;
@@ -106,9 +107,41 @@
   display: block;
 }
 
+.message-pdf-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: rgba(79, 124, 255, 0.1);
+  color: #aebeff;
+  cursor: pointer;
+}
+
+.message-pdf-action:hover {
+  border-color: rgba(100, 140, 255, 0.55);
+  background: rgba(79, 124, 255, 0.18);
+}
+
+.message-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.message-actions button{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-muted);font-size:10px;cursor:pointer}.message-actions button:hover{border-color:var(--border);background:rgba(255,255,255,.04);color:#dcecff}.message.user .message-actions{justify-content:flex-end}.chat-starters{display:flex;width:min(100%,980px);flex-wrap:wrap;align-items:center;gap:8px;margin:0 auto 20px;padding:0 48px}.chat-starters>strong{width:100%;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.chat-starters button{padding:9px 12px;border:1px solid rgba(56,189,248,.22);border-radius:10px;background:rgba(56,189,248,.06);color:#bae6fd;font-size:11px;cursor:pointer}.chat-starters button:hover{background:rgba(56,189,248,.12)}@media(max-width:700px){.chat-starters{padding:0}}
+
 .sources-panel li strong {
   color: #dce4f5;
   font-size: 12px;
+}
+
+.source-link {
+  display: block;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.source-link:hover {
+  text-decoration: underline;
 }
 
 .sources-panel li span {

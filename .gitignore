@@ -13,6 +13,10 @@ __pycache__/
 *.py[cod]
 dist
 dist-ssr
+release/
+.pnpm-store/
+build-assets/*.png
+data/hymnal-library.json
 *.local
 
 # Editor directories and files

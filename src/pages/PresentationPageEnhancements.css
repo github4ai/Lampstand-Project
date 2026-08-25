@@ -1,0 +1,79 @@
+.source-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.basket-help {
+  margin: 0;
+  color: #9eb4ca;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.verse-basket {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid #36506c;
+  border-radius: 10px;
+  background: #102137;
+}
+
+.verse-basket > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 7px 6px 10px;
+  border: 1px solid #3f607d;
+  border-radius: 999px;
+  background: #1b3650;
+  color: #e6f4ff;
+  font-size: 12px;
+}
+
+.verse-basket button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #294861;
+  color: #bfefff;
+  cursor: pointer;
+}
+
+.verse-basket button:hover {
+  background: #7b3040;
+  color: #fff;
+}
+
+.hymn-source-preview {
+  padding: 14px;
+  border: 1px solid #3a516c;
+  border-radius: 10px;
+  background: #111e30;
+  color: #dce9f7;
+}
+
+.hymn-source-preview strong,
+.hymn-source-preview small {
+  display: block;
+}
+
+.hymn-source-preview strong {
+  font-size: 17px;
+}
+
+.hymn-source-preview small {
+  margin-top: 5px;
+  color: #9eb4ca;
+}
+
+@media (max-width: 900px) {
+  .source-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

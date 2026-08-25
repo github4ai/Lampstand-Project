@@ -1,0 +1,89 @@
+.church-dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.church-dashboard-summary > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--panel);
+  padding: 14px 16px;
+}
+
+.church-dashboard-summary span {
+  color: var(--text-muted);
+  font-size: .76rem;
+}
+
+.church-dashboard-summary strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: .98rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.church-dashboard-summary > div.attention { border-color: color-mix(in srgb,#e6b85c 50%,var(--border)); }
+.church-dashboard-summary > div.attention strong { color: #e6b85c; }
+
+.church-section-card small {
+  display: inline-flex;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-size: .72rem;
+  padding: 5px 8px;
+}
+.church-section-card small.attention { background: color-mix(in srgb,#e6b85c 14%,transparent); color:#e6b85c; }
+
+.church-recent-activity {
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 18px;
+}
+
+.church-recent-activity > header,
+.church-recent-activity > header > div,
+.church-recent-list > a {
+  display: flex;
+  align-items: center;
+}
+
+.church-recent-activity > header { justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.church-recent-activity > header > div { gap: 8px; }
+.church-recent-activity h2 { margin: 0; font-size: 1rem; }
+.church-recent-activity > header > a { color: var(--primary); font-size: .8rem; text-decoration: none; }
+.church-recent-list { display: grid; gap: 7px; }
+.church-recent-list > a { gap: 11px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 11px 12px; text-decoration: none; }
+.church-recent-list > a:hover { border-color: var(--primary); }
+.church-recent-list > a > span { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: color-mix(in srgb,var(--primary) 13%,transparent); color: var(--primary); }
+.church-recent-list > a > span.announcement { background: color-mix(in srgb,#e6b85c 14%,transparent); color: #e6b85c; }
+.church-recent-list > a > div { min-width: 0; flex: 1; }
+.church-recent-list strong,.church-recent-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.church-recent-list strong { font-size: .86rem; }
+.church-recent-list small,.church-recent-list time,.church-recent-empty { color: var(--text-muted); font-size: .73rem; }
+.church-recent-list small { margin-top: 4px; }
+.church-recent-list time { flex: 0 0 auto; }
+.church-recent-empty { margin: 0; padding: 16px 0; text-align: center; }
+
+@media (max-width: 800px) {
+  .church-dashboard-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1450px) and (min-width: 801px) {
+  .church-dashboard-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .church-dashboard-summary { grid-template-columns: 1fr; }
+  .church-recent-list time { display: none; }
+}

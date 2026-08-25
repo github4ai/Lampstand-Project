@@ -2,6 +2,7 @@ import { AIOS_API_BASE_URL } from '../config/api'
 
 import type {
   KnowledgeContextResponse,
+  KnowledgeOutlineResponse,
   KnowledgeViewerResponse,
 } from '../types/knowledgeViewer'
 
@@ -27,6 +28,17 @@ async function readErrorMessage(
   return (
     `Knowledge viewer request failed ` +
     `with status ${response.status}.`
+  )
+}
+
+export async function getKnowledgeOutline(
+  category: string,
+  document: string,
+  signal?: AbortSignal,
+): Promise<KnowledgeOutlineResponse> {
+  return requestJson<KnowledgeOutlineResponse>(
+    `/knowledge/${encodeURIComponent(category)}/${encodeURIComponent(document)}/outline`,
+    signal,
   )
 }
 

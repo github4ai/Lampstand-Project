@@ -69,6 +69,27 @@
   cursor: default;
 }
 
+.knowledge-action-link {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255,255,255,.035);
+  color: #d9e7f7;
+  font-size: 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.knowledge-action-link:hover {
+  border-color: rgba(56,189,248,.45);
+  color: #bae6fd;
+}
+
 @media (max-width:760px){
 
 .knowledge-workspace

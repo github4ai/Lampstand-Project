@@ -9,16 +9,23 @@ import type {
 
 import {
   Bot,
+  BookOpen,
+  LibraryBig,
   Clock3,
+  Church,
   Command,
   Copy,
   Database,
+  Download,
   FileJson,
   FileText,
+  GraduationCap,
   Languages,
   MessageSquare,
   MessagesSquare,
-  Music2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Presentation,
   Pencil,
   Pin,
   PinOff,
@@ -34,6 +41,9 @@ import {
 } from 'react-router-dom'
 
 import { AIOS_API_BASE_URL } from '../../config/api'
+import { APP_NAME, APP_TAGLINE } from '../../config/brand'
+import BrandMark from '../BrandMark'
+import type { BackendHealth } from '../../hooks/useBackendHealth'
 
 import type {
   AgentSummary,
@@ -46,6 +56,8 @@ import {
 import type {
   ChatConversation,
 } from '../../types/chat'
+import { ACCESS_CONTROL_STORAGE_KEY, canAccess, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
+import { lockProfile, markProfileUnlocked, verifyPin } from '../../utils/pinSecurity'
 
 import {
   exportConversationAsJson,
@@ -53,6 +65,8 @@ import {
 } from '../../utils/exportConversation'
 
 interface SidebarProps {
+  accessState: AccessControlState
+  activeProfile: LocalUserProfile
   agents: AgentSummary[]
   conversations: ChatConversation[]
   activeConversationId:
@@ -60,6 +74,8 @@ interface SidebarProps {
   selectedAgentId: string
   isLoading: boolean
   agentsLoading: boolean
+  backendStatus: BackendHealth
+  onCheckBackend: () => Promise<void>
 
   onSelectAgent: (
     agentId: string,
@@ -91,12 +107,16 @@ interface SidebarProps {
 }
 
 function Sidebar({
+  accessState,
+  activeProfile,
   agents,
   conversations,
   activeConversationId,
   selectedAgentId,
   isLoading,
   agentsLoading,
+  backendStatus,
+  onCheckBackend,
   onSelectAgent,
   onNewConversation,
   onSelectConversation,
@@ -125,6 +145,17 @@ function Sidebar({
     setSearchQuery,
   ] = useState('')
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() =>
+    window.localStorage.getItem('aios-sidebar-collapsed') === 'true')
+
+  function toggleSidebar() {
+    setSidebarCollapsed((current) => {
+      const next = !current
+      window.localStorage.setItem('aios-sidebar-collapsed', String(next))
+      return next
+    })
+  }
+
   const [
     editingConversationId,
     setEditingConversationId,
@@ -150,9 +181,6 @@ function Sidebar({
         agent.id ===
         selectedAgentId,
     ) ?? null
-
-  const backendConnected =
-    agents.length > 0
 
   const filteredConversations =
     useMemo(() => {
@@ -313,6 +341,18 @@ function Sidebar({
     navigate('/')
   }
 
+  async function switchProfile(profileId: string) {
+    const profile = accessState.profiles.find((item) => item.id === profileId)
+    if (!profile || profile.suspended) return
+    if (profile.pinHash) {
+      const pin = window.prompt(`Enter the PIN for ${profile.name}.`)
+      if (!pin || !await verifyPin(pin, profile.pinHash)) { addToast({ title: 'Profile remains locked', message: 'The PIN was incorrect.', variant: 'error' }); return }
+      markProfileUnlocked(profile.id)
+    }
+    localStorage.setItem(ACCESS_CONTROL_STORAGE_KEY, JSON.stringify({ ...accessState, activeProfileId: profileId }))
+    window.location.assign(canAccess(profile, 'chat') ? '/' : canAccess(profile, 'school') ? '/school' : canAccess(profile, 'ministry') ? '/ministry' : '/language-tools')
+  }
+
   function handleOpenConversation(
     conversationId: string,
   ) {
@@ -372,19 +412,26 @@ function Sidebar({
   }
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <div className="brand">
         <div className="brand-icon">
-          <Bot size={26} />
+          <BrandMark size={28} />
         </div>
 
         <div className="brand-copy">
-          <h1>AIOS Studio</h1>
+          <h1>{APP_NAME}</h1>
 
           <p>
-            Local AI workspace
+            {APP_TAGLINE}
           </p>
         </div>
+
+        <button type="button" className="sidebar-collapse-button" onClick={toggleSidebar}
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!sidebarCollapsed}>
+          {sidebarCollapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
+        </button>
       </div>
 
       <button
@@ -411,7 +458,7 @@ function Sidebar({
         <Search size={16} />
 
         <span>
-          Search AIOS
+          Search Lampstand
         </span>
 
         <kbd>
@@ -421,9 +468,9 @@ function Sidebar({
 
       <nav
         className="workspace-navigation"
-        aria-label="AIOS workspace"
+        aria-label="Lampstand workspace"
       >
-        <NavLink
+        {canAccess(activeProfile, 'chat') && <NavLink
           to="/"
           end
           className={({
@@ -441,9 +488,9 @@ function Sidebar({
           />
 
           <span>Chat</span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink
+        {canAccess(activeProfile, 'knowledge') && <NavLink
           to="/knowledge"
           className={({
             isActive,
@@ -462,34 +509,54 @@ function Sidebar({
           <span>
             Knowledge
           </span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink to="/agents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'agents') && <NavLink to="/agents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Bot size={17} /><span>Agents</span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink to="/hymnal" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Music2 size={17} /><span>Hymnal</span>
-        </NavLink>
+        {canAccess(activeProfile, 'ministry') && <NavLink to="/ministry" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <LibraryBig size={17} /><span>Ministry</span>
+        </NavLink>}
+        {canAccess(activeProfile, 'ministry') && <NavLink to="/presentation" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Presentation size={18} />
+          <span>Presentation</span>
+        </NavLink>}
 
-        <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'school') && <NavLink to="/school" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <GraduationCap size={17} /><span>School</span>
+        </NavLink>}
+
+        {canAccess(activeProfile, 'church') && <NavLink to="/church" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Church size={17} /><span>Church</span>
+        </NavLink>}
+
+        {canAccess(activeProfile, 'media') && <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <WandSparkles size={17} /><span>Media Studio</span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink to="/language-tools" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'language-tools') && <NavLink to="/language-tools" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Languages size={17} /><span>Language Tools</span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'documents') && <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <FileText size={17} /><span>Documents</span>
-        </NavLink>
+        </NavLink>}
 
-        <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'history') && <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Clock3 size={17} /><span>History</span>
+        </NavLink>}
+
+        {activeProfile.role === 'owner' && <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Settings size={17} /><span>Settings</span>
+        </NavLink>}
+
+        <NavLink to="/updates" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <Download size={17} /><span>App Updates</span>
         </NavLink>
 
-        <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Settings size={17} /><span>Settings</span>
+        <NavLink to="/help" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+          <BookOpen size={17} /><span>Help & Guides</span>
         </NavLink>
 
         <button
@@ -506,6 +573,14 @@ function Sidebar({
           </span>
         </button>
       </nav>
+
+      <div className="sidebar-profile-switcher">
+        <label htmlFor="lampstand-profile">Profile</label>
+        <select id="lampstand-profile" value={activeProfile.id} onChange={(event) => void switchProfile(event.target.value)}>
+          {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.role}</option>)}
+        </select>
+        {activeProfile.pinHash && <button type="button" className="sidebar-lock-profile" onClick={() => { lockProfile(activeProfile.id); window.location.reload() }}>Lock profile</button>}
+      </div>
 
       <div className="category-section">
         <label htmlFor="agent">
@@ -870,31 +945,31 @@ function Sidebar({
         </div>
       </div>
 
-      <div className="status-card">
+      <button className="status-card" type="button" onClick={() => void onCheckBackend()} title="Check backend connection">
         <span
           className={`status-dot ${
-            backendConnected
+            backendStatus === 'connected'
               ? ''
-              : 'status-dot-offline'
+              : backendStatus === 'checking'
+                ? 'status-dot-checking'
+                : 'status-dot-offline'
           }`}
         />
 
         <div>
           <strong>
-            {backendConnected
-              ? (
-                  'Backend connected'
-                )
-              : (
-                  'Backend unavailable'
-                )}
+            {backendStatus === 'connected'
+              ? 'Backend connected'
+              : backendStatus === 'checking'
+                ? 'Checking backend'
+                : 'Backend unavailable'}
           </strong>
 
           <p>
             {AIOS_API_BASE_URL.replace(/^https?:\/\//, '')}
           </p>
         </div>
-      </div>
+      </button>
     </aside>
   )
 }

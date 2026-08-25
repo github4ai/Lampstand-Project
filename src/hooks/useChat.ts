@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -11,6 +12,7 @@ import type {
 import {
   streamAIOS,
 } from '../services/api'
+import { resolveDirectBibleQuestion, resolveDirectHwmrQuestion, resolveDirectHymnalQuestion, resolveDirectLifeStudyQuestion, resolveDirectMinistryBooksQuestion, resolveUnifiedMinistryQuestion } from '../api/ministryAssistant'
 
 import type {
   AgentSummary,
@@ -20,14 +22,23 @@ import type {
   ChatConversation,
   ChatMessage,
   StreamMetadata,
+  MinistrySource,
+  SchoolSource,
 } from '../types/chat'
 
 import {
-  parseImportedConversation,
+  parseImportedConversations,
 } from '../utils/importConversation'
+import { buildContextualQuestion } from '../utils/contextualQuestion'
 
 const STORAGE_KEY =
   'aios-studio-conversations-v1'
+const RECOVERY_STORAGE_KEY =
+  'aios-studio-conversations-recovery-v1'
+const ministrySourceStorageKey = 'aios-ministry-source'
+const ministrySources: MinistrySource[] = ['all', 'bible', 'hwmr', 'life-study', 'ministry-books', 'hymnal']
+const schoolSourceStorageKey = 'lampstand-school-source'
+const schoolSources: SchoolSource[] = ['all', 'English', 'Science', 'Mathematics', 'Computer Skills', 'Social Science', 'Tailoring']
 
 function createWelcomeMessage(
   assistantName = 'AIOS',
@@ -36,7 +47,7 @@ function createWelcomeMessage(
     id: crypto.randomUUID(),
     role: 'assistant',
     content:
-      'Welcome to AIOS Studio. Select an assistant and ask a question.',
+      'Welcome to Lampstand Project. Select an assistant and ask a question.',
     assistantName,
     completed: true,
   }
@@ -55,6 +66,7 @@ function createConversation(
     createdAt: now,
     updatedAt: now,
     pinned: false,
+    folder: '',
     messages: [
       createWelcomeMessage(
         assistantName,
@@ -63,23 +75,63 @@ function createConversation(
   }
 }
 
-function normalizeConversation(
-  conversation: ChatConversation,
-): ChatConversation {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
+function normalizeConversation(value: unknown): ChatConversation | null {
+  if (!isRecord(value) || typeof value.id !== 'string' || typeof value.title !== 'string' ||
+    typeof value.agentId !== 'string' || typeof value.createdAt !== 'string' ||
+    typeof value.updatedAt !== 'string' || !Array.isArray(value.messages)) return null
+
+  const messages = value.messages.flatMap((message): ChatMessage[] => {
+    if (!isRecord(message) || typeof message.id !== 'string' ||
+      (message.role !== 'user' && message.role !== 'assistant') || typeof message.content !== 'string') return []
+
+    const sources = Array.isArray(message.sources)
+      ? message.sources.flatMap((source) => {
+          if (!isRecord(source) || typeof source.id !== 'number' || typeof source.citation !== 'string') return []
+          return [{
+            id: source.id,
+            citation: source.citation,
+            source: typeof source.source === 'string' ? source.source : '',
+            page: typeof source.page === 'number' ? source.page : null,
+            chunk: typeof source.chunk === 'number' ? source.chunk : null,
+            rerank_score: typeof source.rerank_score === 'number' ? source.rerank_score : null,
+            url: typeof source.url === 'string' ? source.url : undefined,
+          }]
+        })
+      : undefined
+
+    return [{
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      assistantName: typeof message.assistantName === 'string' ? message.assistantName : undefined,
+      grounded: typeof message.grounded === 'boolean' ? message.grounded : undefined,
+      completed: typeof message.completed === 'boolean' ? message.completed : undefined,
+      model: typeof message.model === 'string' ? message.model : undefined,
+      sources,
+    }]
+  })
+
   return {
-    ...conversation,
-    pinned:
-      conversation.pinned ?? false,
+    id: value.id,
+    title: value.title,
+    agentId: value.agentId,
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+    pinned: value.pinned === true,
+    folder: typeof value.folder === 'string' ? value.folder : '',
+    messages,
   }
 }
 
 function loadStoredConversations():
   ChatConversation[] {
+  let storedValue: string | null = null
   try {
-    const storedValue =
-      localStorage.getItem(
-        STORAGE_KEY,
-      )
+    storedValue = localStorage.getItem(STORAGE_KEY)
 
     if (!storedValue) {
       return []
@@ -92,16 +144,39 @@ function loadStoredConversations():
       return []
     }
 
-    return (
-      parsedValue as ChatConversation[]
-    ).map(normalizeConversation)
+    const normalized = parsedValue.map(normalizeConversation).filter((value): value is ChatConversation => value !== null)
+    if (normalized.length !== parsedValue.length) localStorage.setItem(RECOVERY_STORAGE_KEY, storedValue)
+    return normalized
   } catch (error) {
     console.error(
       'Unable to load stored conversations.',
       error,
     )
 
+    try {
+      if (storedValue) localStorage.setItem(RECOVERY_STORAGE_KEY, storedValue)
+    } catch {
+      // The in-memory app remains usable when recovery storage is unavailable.
+    }
     return []
+  }
+}
+
+function loadMinistrySource(): MinistrySource {
+  try {
+    const value = localStorage.getItem(ministrySourceStorageKey) as MinistrySource | null
+    return value && ministrySources.includes(value) ? value : 'all'
+  } catch {
+    return 'all'
+  }
+}
+
+function loadSchoolSource(): SchoolSource {
+  try {
+    const value = localStorage.getItem(schoolSourceStorageKey) as SchoolSource | null
+    return value && schoolSources.includes(value) ? value : 'all'
+  } catch {
+    return 'all'
   }
 }
 
@@ -149,7 +224,6 @@ function sortConversations(
           ? -1
           : 1
       }
-
       return (
         new Date(
           second.updatedAt,
@@ -199,6 +273,32 @@ export function useChat(
 
   const [error, setError] =
     useState('')
+  const [persistenceError, setPersistenceError] = useState('')
+
+  const requestControllerRef = useRef<AbortController | null>(null)
+
+  const [ministrySource, setMinistrySourceState] = useState<MinistrySource>(
+    loadMinistrySource,
+  )
+  const [schoolSource, setSchoolSourceState] = useState<SchoolSource>(loadSchoolSource)
+
+  function setMinistrySource(source: MinistrySource) {
+    setMinistrySourceState(source)
+    try {
+      localStorage.setItem(ministrySourceStorageKey, source)
+    } catch {
+      setPersistenceError('The Ministry source preference could not be saved in this browser.')
+    }
+  }
+
+  function setSchoolSource(source: SchoolSource) {
+    setSchoolSourceState(source)
+    try {
+      localStorage.setItem(schoolSourceStorageKey, source)
+    } catch {
+      setPersistenceError('The School source preference could not be saved in this browser.')
+    }
+  }
 
   const sortedConversations =
     useMemo(
@@ -234,11 +334,13 @@ export function useChat(
           conversations,
         ),
       )
+      setPersistenceError('')
     } catch (storageError) {
       console.error(
         'Unable to save conversations.',
         storageError,
       )
+      setPersistenceError('Conversations could not be saved in this browser. Export important chats before closing Lampstand Project.')
     }
   }, [conversations])
 
@@ -313,15 +415,17 @@ export function useChat(
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
+    questionOverride?: string,
   ) {
     event.preventDefault()
 
     const trimmedQuestion =
-      question.trim()
+      (questionOverride ?? question).trim()
 
     if (
       !trimmedQuestion ||
       isLoading ||
+      requestControllerRef.current ||
       !selectedAgent
     ) {
       return
@@ -405,10 +509,144 @@ export function useChat(
     setQuestion('')
     setError('')
     setIsLoading(true)
+    const requestController = new AbortController()
+    requestControllerRef.current = requestController
+
+    const markResponseStopped = () => {
+      updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+        ...message,
+        content: message.content || 'Response stopped.',
+        completed: false,
+      }))
+    }
 
     try {
+      if (
+        selectedAgent.id === 'ministry' &&
+        (ministrySource === 'all' || ministrySource === 'bible')
+      ) {
+        const directAnswer = await resolveDirectBibleQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Recovery Bible',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      if (selectedAgent.id === 'ministry' && ministrySource === 'all') {
+        const directAnswer = await resolveUnifiedMinistryQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Unified Local Ministry',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      if (selectedAgent.id === 'ministry' && ministrySource === 'life-study') {
+        const directAnswer = await resolveDirectLifeStudyQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Local Life-Study',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      if (selectedAgent.id === 'ministry' && ministrySource === 'hwmr') {
+        const directAnswer = await resolveDirectHwmrQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Indexed HWMR',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      if (selectedAgent.id === 'ministry' && ministrySource === 'hymnal') {
+        const directAnswer = await resolveDirectHymnalQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Local Hymnal',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      if (selectedAgent.id === 'ministry' && ministrySource === 'ministry-books') {
+        const directAnswer = await resolveDirectMinistryBooksQuestion(trimmedQuestion)
+        if (requestController.signal.aborted) {
+          markResponseStopped()
+          return
+        }
+        if (directAnswer) {
+          updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+            ...message,
+            content: directAnswer.content,
+            grounded: true,
+            completed: true,
+            model: 'Local Ministry Books',
+            sources: directAnswer.sources,
+          }))
+          return
+        }
+      }
+
+      const scopedQuestion = selectedAgent.id === 'school' && schoolSource !== 'all'
+        ? `[School source: ${schoolSource}. Use only indexed ${schoolSource} Level C materials. Do not mix other subjects.]\n\n${trimmedQuestion}`
+        : trimmedQuestion
+
       await streamAIOS(
-        trimmedQuestion,
+        buildContextualQuestion(
+          scopedQuestion,
+          conversation.messages,
+        ),
         selectedAgent.id,
         {
           onMetadata: (
@@ -462,11 +700,35 @@ export function useChat(
           onError: (
             message,
           ) => {
+            updateAssistantMessage(conversationId, assistantMessageId, (current) => ({
+              ...current,
+              content: current.content || 'Lampstand could not complete this response.',
+              completed: false,
+            }))
+            setQuestion(
+              (current) =>
+                current.trim()
+                  ? current
+                  : trimmedQuestion,
+            )
             setError(message)
           },
         },
+        ministrySource,
+        requestController.signal,
       )
+
+      updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
+        ...message,
+        content: message.content || 'AIOS returned no response.',
+        completed: message.completed ?? false,
+      }))
     } catch (requestError) {
+      if (requestError instanceof DOMException && requestError.name === 'AbortError') {
+        markResponseStopped()
+        setError('Response stopped. Your conversation has been kept.')
+        return
+      }
       console.error(
         requestError,
       )
@@ -483,26 +745,40 @@ export function useChat(
           ...message,
           content:
             message.content ||
-            'AIOS could not complete this response.',
+            'Lampstand could not complete this response.',
           completed: false,
         }),
       )
 
+      setQuestion(
+        (current) =>
+          current.trim()
+            ? current
+            : trimmedQuestion,
+      )
       setError(errorMessage)
     } finally {
-      setIsLoading(false)
+      if (requestControllerRef.current === requestController) {
+        requestControllerRef.current = null
+        setIsLoading(false)
+      }
     }
   }
 
-  function startNewChat() {
-    if (!selectedAgent) {
+  function cancelResponse() {
+    requestControllerRef.current?.abort()
+  }
+
+  function startNewChat(agentOverride?: AgentSummary) {
+    const agent = agentOverride ?? selectedAgent
+    if (!agent) {
       return
     }
 
     const conversation =
       createConversation(
-        selectedAgent.id,
-        selectedAgent.name,
+        agent.id,
+        agent.name,
       )
 
     setConversations(
@@ -643,18 +919,53 @@ export function useChat(
     )
   }
 
+  function moveConversationToFolder(conversationId: string, folder: string) {
+    if (isLoading) return
+    updateConversation(conversationId, (conversation) => ({
+      ...conversation,
+      folder: folder.trim(),
+      updatedAt: new Date().toISOString(),
+    }))
+  }
+
+  function prepareMessageDraft(messageId: string, resubmit = false) {
+    if (isLoading || !activeConversation) return
+    const messageIndex = activeConversation.messages.findIndex((message) => message.id === messageId)
+    if (messageIndex < 0) return
+    const target = activeConversation.messages[messageIndex]
+    const userIndex = target.role === 'user'
+      ? messageIndex
+      : activeConversation.messages.slice(0, messageIndex).findLastIndex((message) => message.role === 'user')
+    if (userIndex < 0) return
+    const userMessage = activeConversation.messages[userIndex]
+    updateConversation(activeConversation.id, (conversation) => ({
+      ...conversation,
+      updatedAt: new Date().toISOString(),
+      messages: conversation.messages.slice(0, userIndex),
+    }))
+    setQuestion(userMessage.content)
+    setError(resubmit ? '' : 'The question is ready to edit and send again.')
+    if (resubmit) {
+      void handleSubmit({ preventDefault() {} } as FormEvent<HTMLFormElement>, userMessage.content)
+    }
+  }
+
+  function retryMessage(messageId: string) {
+    prepareMessageDraft(messageId, true)
+  }
+
   function importConversation(
     value: unknown,
   ): boolean {
     if (isLoading) return false
     const imported =
-      parseImportedConversation(
+      parseImportedConversations(
         value,
       )
     if (!imported) return false
 
-    setConversations((current) => [imported, ...current])
-    setActiveConversationId(imported.id)
+    setConversations((current) => [...imported, ...current])
+    setActiveConversationId(imported[0].id)
     setQuestion('')
     setError('')
     return true
@@ -663,22 +974,29 @@ export function useChat(
   function deleteConversation(
     conversationId: string,
   ) {
+    deleteConversations([conversationId])
+  }
+
+  function deleteConversations(
+    conversationIds: string[],
+  ) {
     if (isLoading) {
       return
     }
+
+    const deletedIds = new Set(conversationIds)
 
     setConversations(
       (current) => {
         const remaining =
           current.filter(
             (conversation) =>
-              conversation.id !==
-              conversationId,
+              !deletedIds.has(conversation.id),
           )
 
         if (
-          activeConversationId ===
-          conversationId
+          activeConversationId &&
+          deletedIds.has(activeConversationId)
         ) {
           setActiveConversationId(
             sortConversations(
@@ -700,14 +1018,24 @@ export function useChat(
     question,
     isLoading,
     error,
+    persistenceError,
+    ministrySource,
+    schoolSource,
     setQuestion,
+    setMinistrySource,
+    setSchoolSource,
     handleSubmit,
+    cancelResponse,
     startNewChat,
     selectConversation,
     renameConversation,
     duplicateConversation,
     togglePinConversation,
+    moveConversationToFolder,
+    prepareMessageDraft,
+    retryMessage,
     importConversation,
     deleteConversation,
+    deleteConversations,
   }
 }

@@ -185,6 +185,104 @@ export async function getKnowledgeCategory(
   )
 }
 
+export async function uploadKnowledgeDocument(file: File, category: string, collection: string) {
+  const form = new FormData()
+  form.set('file', file)
+  form.set('category', category)
+  form.set('collection', collection)
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/upload`, { method: 'POST', body: form })
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  return response.json() as Promise<{ name: string; category: string; collection: string | null; status: 'pending_index' }>
+}
+
+export async function getKnowledgeSubcollections(category: string, parent = '') {
+  const query = new URLSearchParams({ category })
+  if (parent) query.set('parent', parent)
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/subcollections?${query}`)
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  const result = await response.json() as { subcollections?: unknown }
+  return Array.isArray(result.subcollections) ? result.subcollections.filter((item): item is string => typeof item === 'string') : []
+}
+
+export interface KnowledgeSourceFile {
+  name: string
+  category: string
+  subcollection: string | null
+  relativePath: string
+  sizeBytes: number
+  modifiedAt: string
+  title: string
+  description: string
+  tags: string[]
+}
+
+export async function getKnowledgeSources() {
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/sources`)
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  const result = await response.json() as { sources?: KnowledgeSourceFile[] }
+  return Array.isArray(result.sources) ? result.sources : []
+}
+
+export async function trashKnowledgeSource(relativePath: string) {
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/source`, {
+    method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ relativePath }),
+  })
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  return response.json() as Promise<{ removed: string; recoverableFrom: string }>
+}
+
+export function getKnowledgePreviewUrl(relativePath: string) {
+  return `${AIOS_API_BASE_URL}/knowledge/source/preview?${new URLSearchParams({ path: relativePath })}`
+}
+
+export async function updateKnowledgeSource(input: { relativePath: string; name: string; category: string; collection: string; title: string; description: string; tags: string[] }) {
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/source`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input),
+  })
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  return response.json() as Promise<{ relativePath: string; status: 'saved' }>
+}
+
+export interface KnowledgeHealth {
+  checkedAt: string
+  sources: number
+  totalSizeBytes: number
+  indexed: number
+  pending: string[]
+  duplicates: string[][]
+  healthy: boolean
+}
+
+export function inspectKnowledgeHealth(signal?: AbortSignal) {
+  return requestJson<KnowledgeHealth>('/knowledge/health', signal)
+}
+
+export interface KnowledgeIndexStatus {
+  state: 'idle' | 'running' | 'completed' | 'completed_with_errors' | 'failed'
+  startedAt: string | null
+  finishedAt: string | null
+  output: string
+  exitCode: number | null
+  processed: number
+  total: number
+  current: string
+  errors: number
+}
+
+async function knowledgeIndexRequest(path: string, method = 'GET') {
+  const response = await fetch(`${AIOS_API_BASE_URL}${path}`, { method })
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  return response.json() as Promise<KnowledgeIndexStatus>
+}
+
+export function getKnowledgeIndexStatus() {
+  return knowledgeIndexRequest('/knowledge/index/status')
+}
+
+export function startKnowledgeIndex() {
+  return knowledgeIndexRequest('/knowledge/index', 'POST')
+}
+
 export function formatFileSize(
   sizeBytes: number,
 ): string {

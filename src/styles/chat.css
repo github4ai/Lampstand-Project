@@ -1,6 +1,6 @@
 .chat-header{
     padding:28px 40px;
-    border-bottom:1px solid #2f3948;
+    border-bottom:1px solid var(--border);
 }
 
 .chat-header h2{
@@ -10,7 +10,7 @@
 
 .chat-header p{
     margin-top:8px;
-    color:#97a5bb;
+    color:var(--text-muted);
 }
 
 .messages{

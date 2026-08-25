@@ -13,7 +13,7 @@ class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundary
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('AIOS Studio rendering error.', error, info)
+    console.error('Lampstand Project rendering error.', error, info)
   }
 
   private reload = () => {
@@ -33,7 +33,7 @@ class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundary
       <main className="app-error-boundary">
         <section>
           <span className="app-error-icon"><AlertTriangle size={30} /></span>
-          <p className="app-error-eyebrow">AIOS Studio recovery</p>
+          <p className="app-error-eyebrow">Lampstand Project recovery</p>
           <h1>Something went wrong</h1>
           <p className="app-error-message">
             The workspace encountered an unexpected display error. Your saved conversations and preferences remain in this browser.

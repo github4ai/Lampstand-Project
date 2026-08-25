@@ -53,7 +53,7 @@ describe('getKnowledgeDocument', () => {
     ).resolves.toEqual(payload)
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:8766/knowledge/Ministry%20Notes/Test%20File',
+      'http://127.0.0.1:9656/knowledge/Ministry%20Notes/Test%20File',
       expect.objectContaining({ method: 'GET' }),
     )
   })

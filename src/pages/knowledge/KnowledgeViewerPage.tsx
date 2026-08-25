@@ -5,10 +5,19 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
+  Check,
   ChevronLeft,
+  Clipboard,
+  Download,
   FileText,
   Hash,
   Layers3,
+  Bookmark,
+  MessageSquareText,
+  Maximize2,
+  Minimize2,
+  Search,
+  StickyNote,
 } from 'lucide-react'
 import {
   Link,
@@ -23,11 +32,29 @@ import {
 } from '../../api/knowledgeViewer'
 
 import ContextChunk from '../../components/knowledge/viewer/ContextChunk'
+import { useReaderAnnotations } from '../../hooks/useReaderAnnotations'
+import '../../styles/reader-annotations.css'
 
 import type {
   KnowledgeContextResponse,
   KnowledgeViewerResponse,
 } from '../../types/knowledgeViewer'
+
+const CONTEXT_RADIUS_KEY = 'aios-studio-knowledge-context-radius-v1'
+const READER_SIZE_KEY = 'aios-studio-knowledge-reader-size-v1'
+const VIEWER_BOOKMARKS_KEY = 'aios-studio-knowledge-bookmarks-v1'
+const VIEWER_NOTES_KEY = 'aios-studio-knowledge-notes-v1'
+const CHAT_HANDOFF_KEY = 'aios-studio-chat-handoff-v1'
+
+function loadContextRadius() {
+  const value = Number(localStorage.getItem(CONTEXT_RADIUS_KEY) ?? '1')
+  return Number.isInteger(value) && value >= 0 && value <= 3 ? value : 1
+}
+
+function loadReaderSize(): 'compact' | 'comfortable' | 'large' {
+  const value = localStorage.getItem(READER_SIZE_KEY)
+  return value === 'compact' || value === 'large' ? value : 'comfortable'
+}
 
 function KnowledgeViewerPage() {
   const navigate =
@@ -45,6 +72,12 @@ function KnowledgeViewerPage() {
 
   const searchQuery =
     searchParams.get('q') ?? ''
+
+  const annotations = useReaderAnnotations(`knowledge:${categoryName}:${documentName}:${chunkId}`)
+
+  const returnSearchPath = searchParams.size > 0
+    ? `/knowledge/search?${searchParams.toString()}`
+    : '/knowledge/search'
 
   const [
     data,
@@ -75,8 +108,72 @@ function KnowledgeViewerPage() {
       null,
     )
 
+  const [
+    jumpChunk,
+    setJumpChunk,
+  ] = useState(chunkId)
+
+  const [
+    copyStatus,
+    setCopyStatus,
+  ] = useState<'idle' | 'copied' | 'copied-context' | 'failed'>('idle')
+
+  const [
+    contextRadius,
+    setContextRadius,
+  ] = useState(loadContextRadius)
+
+  const [
+    readerSize,
+    setReaderSize,
+  ] = useState(loadReaderSize)
+
+  const [retryKey, setRetryKey] = useState(0)
+  const [findText, setFindText] = useState('')
+  const [note, setNote] = useState('')
+  const [bookmarked, setBookmarked] = useState(false)
+  const [fullPage, setFullPage] = useState(false)
+
+  useEffect(() => { document.body.classList.toggle('reader-full-page-active', fullPage); return () => document.body.classList.remove('reader-full-page-active') }, [fullPage])
+
+  useEffect(() => {
+    localStorage.setItem(CONTEXT_RADIUS_KEY, String(contextRadius))
+  }, [contextRadius])
+
+  useEffect(() => {
+    localStorage.setItem(READER_SIZE_KEY, readerSize)
+  }, [readerSize])
+
   const numericChunkId =
     Number(chunkId)
+
+  useEffect(() => {
+    setJumpChunk(chunkId)
+    setCopyStatus('idle')
+    const key = `${categoryName}/${documentName}/${chunkId}`
+    try {
+      const bookmarks = JSON.parse(localStorage.getItem(VIEWER_BOOKMARKS_KEY) ?? '[]') as string[]
+      const notes = JSON.parse(localStorage.getItem(VIEWER_NOTES_KEY) ?? '{}') as Record<string, string>
+      setBookmarked(bookmarks.includes(key)); setNote(notes[key] ?? '')
+    } catch { setBookmarked(false); setNote('') }
+  }, [categoryName, documentName, chunkId])
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null
+      if (target?.matches('input, textarea, select, button, a, [contenteditable="true"]')) return
+      if (event.key === 'ArrowLeft' && data && data.chunk.previous_chunk_id !== null) {
+        event.preventDefault()
+        openChunk(data.chunk.previous_chunk_id)
+      }
+      if (event.key === 'ArrowRight' && data && data.chunk.next_chunk_id !== null) {
+        event.preventDefault()
+        openChunk(data.chunk.next_chunk_id)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  })
 
   useEffect(() => {
     const controller =
@@ -115,7 +212,7 @@ function KnowledgeViewerPage() {
             categoryName,
             documentName,
             numericChunkId,
-            1,
+            contextRadius,
             controller.signal,
           ),
         ])
@@ -158,6 +255,8 @@ function KnowledgeViewerPage() {
     categoryName,
     documentName,
     numericChunkId,
+    contextRadius,
+    retryKey,
   ])
 
   function openChunk(
@@ -169,14 +268,8 @@ function KnowledgeViewerPage() {
       return
     }
 
-    const query =
-      searchQuery
-        ? (
-            `?q=${encodeURIComponent(
-              searchQuery,
-            )}`
-          )
-        : ''
+    const parameters = searchParams.toString()
+    const query = parameters ? `?${parameters}` : ''
 
     navigate(
       (
@@ -187,6 +280,100 @@ function KnowledgeViewerPage() {
         query
       ),
     )
+  }
+
+  async function copyChunk() {
+    if (!data) return
+    try {
+      await navigator.clipboard.writeText(data.chunk.text)
+      setCopyStatus('copied')
+      window.setTimeout(() => setCopyStatus('idle'), 1800)
+    } catch {
+      setCopyStatus('failed')
+    }
+  }
+
+  async function copyContext() {
+    if (!context) return
+    const text = context.chunks.map((item) =>
+      [`Chunk ${item.chunk}${item.page !== null ? ` · Page ${item.page}` : ''}`, item.text].join('\n'))
+      .join('\n\n---\n\n')
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopyStatus('copied-context')
+      window.setTimeout(() => setCopyStatus('idle'), 1800)
+    } catch {
+      setCopyStatus('failed')
+    }
+  }
+
+  function downloadContext() {
+    if (!data || !context) return
+    const text = context.chunks.map((item) =>
+      [`Chunk ${item.chunk}${item.page !== null ? ` · Page ${item.page}` : ''}`, item.text].join('\n'))
+      .join('\n\n---\n\n')
+    const first = context.chunks[0]?.chunk ?? data.chunk.chunk
+    const last = context.chunks.at(-1)?.chunk ?? data.chunk.chunk
+    const header = `${data.chunk.source}\nCategory: ${data.category}\nChunks: ${first}–${last}\n\n`
+    const file = new Blob([header + text], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    const source = data.chunk.source.replace(/[^a-z0-9-]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()
+    link.href = url
+    link.download = `${source || 'knowledge'}-chunks-${first}-${last}.txt`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function downloadChunk() {
+    if (!data) return
+    const current = data.chunk
+    const header = [current.source, `Category: ${current.category}`, `Chunk: ${current.chunk}`,
+      current.page !== null ? `Page: ${current.page}` : null].filter(Boolean).join('\n')
+    const file = new Blob([`${header}\n\n${current.text}`], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    const name = `${current.source}-chunk-${current.chunk}`.replace(/[^a-z0-9-]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()
+    link.href = url
+    link.download = `${name || `chunk-${current.chunk}`}.txt`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function toggleBookmark() {
+    const key = `${categoryName}/${documentName}/${chunkId}`
+    let bookmarks: string[] = []
+    try { bookmarks = JSON.parse(localStorage.getItem(VIEWER_BOOKMARKS_KEY) ?? '[]') as string[] } catch { /* start clean */ }
+    const next = bookmarks.includes(key) ? bookmarks.filter((item) => item !== key) : [key, ...bookmarks]
+    localStorage.setItem(VIEWER_BOOKMARKS_KEY, JSON.stringify(next)); setBookmarked(next.includes(key))
+  }
+
+  function saveNote(value: string) {
+    setNote(value)
+    const key = `${categoryName}/${documentName}/${chunkId}`
+    let notes: Record<string, string> = {}
+    try { notes = JSON.parse(localStorage.getItem(VIEWER_NOTES_KEY) ?? '{}') as Record<string, string> } catch { /* start clean */ }
+    if (value.trim()) notes[key] = value
+    else delete notes[key]
+    localStorage.setItem(VIEWER_NOTES_KEY, JSON.stringify(notes))
+  }
+
+  function askAboutPassage() {
+    if (!data) return
+    localStorage.setItem(CHAT_HANDOFF_KEY, JSON.stringify({
+      question: `Using this passage from ${data.chunk.source} (chunk ${data.chunk.chunk}${data.chunk.page !== null ? `, page ${data.chunk.page}` : ''}), help me understand:\n\n${data.chunk.text}`,
+      agentId: data.category.toLocaleLowerCase() === 'ministry' ? 'ministry' : 'general',
+    }))
+    navigate('/')
+  }
+
+  function renderChunkText(text: string) {
+    const term = findText.trim()
+    if (!term) return annotations.highlight(text)
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const parts = text.split(new RegExp(`(${escaped})`, 'gi'))
+    return parts.map((part, index) => part.toLocaleLowerCase() === term.toLocaleLowerCase()
+      ? <mark key={`${index}-${part}`}>{part}</mark> : <span key={`${index}-${part}`}>{annotations.highlight(part)}</span>)
   }
 
   if (loading) {
@@ -216,7 +403,11 @@ function KnowledgeViewerPage() {
               'The chunk is unavailable.'}
           </p>
 
-          <Link to="/knowledge/search">
+          <button type="button" onClick={() => setRetryKey((value) => value + 1)}>
+            Try again
+          </button>
+
+          <Link to={returnSearchPath}>
             Return to Search
           </Link>
         </div>
@@ -228,11 +419,11 @@ function KnowledgeViewerPage() {
     data.chunk
 
   return (
-    <section className="knowledge-viewer-page">
+    <section className={`knowledge-viewer-page${fullPage ? ' reader-full-page' : ''}`}>
       <header className="knowledge-viewer-header">
         <div>
           <Link
-            to="/knowledge/search"
+            to={returnSearchPath}
             className="knowledge-viewer-back"
           >
             <ArrowLeft
@@ -285,12 +476,48 @@ function KnowledgeViewerPage() {
               )}
             </div>
 
-            <span>
-              {chunk.word_count} words
-            </span>
+            <div className="knowledge-viewer-toolbar-actions">
+              <button type="button" onClick={() => setFullPage((value) => !value)} title={fullPage ? 'Exit full-page reading' : 'Open full-page reading'}>
+                {fullPage ? <Minimize2 size={14} /> : <Maximize2 size={14} />} {fullPage ? 'Exit' : 'Full page'}
+              </button>
+              <label>Text size
+                <select value={readerSize} onChange={(event) => setReaderSize(event.target.value as typeof readerSize)}
+                  aria-label="Knowledge reader text size">
+                  <option value="compact">Compact</option><option value="comfortable">Comfortable</option>
+                  <option value="large">Large</option>
+                </select>
+              </label>
+              <label>Context
+                <select value={contextRadius} onChange={(event) => setContextRadius(Number(event.target.value))}
+                  aria-label="Surrounding context chunks on each side">
+                  <option value={0}>Current only</option><option value={1}>1 each side</option>
+                  <option value={2}>2 each side</option><option value={3}>3 each side</option>
+                </select>
+              </label>
+              <label className="knowledge-viewer-find"><Search size={13} />
+                <input value={findText} onChange={(event) => setFindText(event.target.value)} placeholder="Find in context" aria-label="Find text in displayed context" />
+              </label>
+              <span>{chunk.word_count} words</span>
+              <button type="button" onClick={() => void copyChunk()} title="Copy current chunk text">
+                {copyStatus === 'copied' ? <Check size={14} /> : <Clipboard size={14} />}
+                {copyStatus === 'copied' ? 'Copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy chunk'}
+              </button>
+              {context.chunks.length > 1 && <button type="button" onClick={() => void copyContext()}
+                title="Copy current and surrounding chunks">
+                {copyStatus === 'copied-context' ? <Check size={14} /> : <Clipboard size={14} />}
+                {copyStatus === 'copied-context' ? 'Context copied' : copyStatus === 'failed' ? 'Copy failed' : 'Copy context'}
+              </button>}
+              {context.chunks.length > 1 && <button type="button" onClick={downloadContext}
+                title="Download current and surrounding chunks">
+                <Download size={14} /> Download context
+              </button>}
+              <button type="button" onClick={downloadChunk} title="Download current chunk as text">
+                <Download size={14} /> Download
+              </button>
+            </div>
           </div>
 
-          <div className="knowledge-viewer-text">
+          <div className={`knowledge-viewer-text reader-${readerSize}`} onMouseUp={annotations.captureSelection}>
             {context.chunks.map((contextChunk) => (
               <ContextChunk
                 key={contextChunk.id}
@@ -304,14 +531,19 @@ function KnowledgeViewerPage() {
                 chunk={contextChunk.chunk}
                 page={contextChunk.page}
                 text={contextChunk.text}
+                renderedText={renderChunkText(contextChunk.text)}
                 isCurrent={contextChunk.is_current}
+                onOpen={contextChunk.is_current ? undefined : () => openChunk(contextChunk.chunk)}
               />
             ))}
           </div>
+          {annotations.popup}
 
           <nav className="knowledge-viewer-navigation">
             <button
               type="button"
+              aria-keyshortcuts="ArrowLeft"
+              title="Previous chunk (Left arrow)"
               disabled={
                 chunk.previous_chunk_id ===
                 null
@@ -339,8 +571,22 @@ function KnowledgeViewerPage() {
               )}
             </button>
 
+            <form onSubmit={(event) => {
+              event.preventDefault()
+              const target = Number(jumpChunk)
+              if (Number.isInteger(target) && target >= 1 && target <= data.statistics.chunks) openChunk(target)
+            }}>
+              <label htmlFor="knowledge-jump-chunk">Jump to</label>
+              <input id="knowledge-jump-chunk" type="number" min={1} max={data.statistics.chunks}
+                value={jumpChunk} onChange={(event) => setJumpChunk(event.target.value)}
+                aria-label={`Chunk number from 1 to ${data.statistics.chunks}`} />
+              <button type="submit">Go</button>
+            </form>
+
             <button
               type="button"
+              aria-keyshortcuts="ArrowRight"
+              title="Next chunk (Right arrow)"
               disabled={
                 chunk.next_chunk_id ===
                 null
@@ -485,6 +731,23 @@ function KnowledgeViewerPage() {
               </p>
             </section>
           )}
+
+          <section className="knowledge-viewer-panel knowledge-viewer-actions-panel">
+            <h2>Passage actions</h2>
+            <button type="button" onClick={toggleBookmark}><Bookmark size={15} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Bookmarked' : 'Bookmark passage'}</button>
+            <button type="button" onClick={askAboutPassage}><MessageSquareText size={15} /> Ask about this passage</button>
+          </section>
+
+          <section className="knowledge-viewer-panel">
+            <h2><StickyNote size={14} /> My note</h2>
+            <textarea value={note} onChange={(event) => saveNote(event.target.value)} placeholder="Add a private note for this passage…" aria-label="Private note for this passage" />
+            <small>Saved locally as you type.</small>
+          </section>
+          <section className="knowledge-viewer-panel">
+            <h2>Highlights & annotations</h2>
+            <p>{annotations.count} saved for this passage.</p>
+            <small>Select text in the lesson to highlight it and add an optional annotation. Click a saved highlight to view or delete it.</small>
+          </section>
         </aside>
       </div>
     </section>

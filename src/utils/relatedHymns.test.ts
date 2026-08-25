@@ -16,4 +16,11 @@ describe('getRelatedHymns', () => {
     ])
     expect(result.map((item) => item.id)).toEqual(['two-themes', 'one-theme'])
   })
+
+  it('prioritizes related catalog numbers supplied by the source page', () => {
+    const selected = { ...hymn('selected', ['Grace']), relatedCatalogs: ['NS12'] }
+    const explicit = { ...hymn('explicit', ['Other']), catalogPrefix: 'NS', hymnNumber: '12' }
+    expect(getRelatedHymns(selected, [selected, hymn('theme-match', ['Grace']), explicit], 2)
+      .map((item) => item.id)).toEqual(['explicit', 'theme-match'])
+  })
 })

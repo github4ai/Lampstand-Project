@@ -4,4 +4,6 @@ export interface AgentSummary {
   description: string
   category: string
   icon: string
+  capabilities?: string[]
+  recommended_tasks?: string[]
 }

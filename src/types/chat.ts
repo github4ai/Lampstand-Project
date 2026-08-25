@@ -5,7 +5,25 @@ export interface StreamSource {
   page: number | null
   chunk: number | null
   rerank_score: number | null
+  url?: string
 }
+
+export type MinistrySource =
+  | 'all'
+  | 'bible'
+  | 'hwmr'
+  | 'life-study'
+  | 'ministry-books'
+  | 'hymnal'
+
+export type SchoolSource =
+  | 'all'
+  | 'English'
+  | 'Science'
+  | 'Mathematics'
+  | 'Computer Skills'
+  | 'Social Science'
+  | 'Tailoring'
 
 export interface StreamMetadata {
   agent_id: string
@@ -34,5 +52,6 @@ export interface ChatConversation {
   createdAt: string
   updatedAt: string
   pinned: boolean
+  folder?: string
   messages: ChatMessage[]
 }

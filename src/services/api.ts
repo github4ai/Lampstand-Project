@@ -31,6 +31,8 @@ export interface AgentSummary {
   description: string
   category: string
   icon: string
+  capabilities?: string[]
+  recommended_tasks?: string[]
 }
 
 export interface StreamSource {
@@ -141,6 +143,8 @@ export async function streamAIOS(
   question: string,
   agentId: string,
   callbacks: StreamCallbacks,
+  ministrySource = 'all',
+  signal?: AbortSignal,
 ): Promise<void> {
   const response = await fetch(
     `${AIOS_API_BASE_URL}/ask/stream`,
@@ -153,7 +157,9 @@ export async function streamAIOS(
       body: JSON.stringify({
         question,
         agent_id: agentId,
+        ministry_source: ministrySource,
       }),
+      signal,
     },
   )
 

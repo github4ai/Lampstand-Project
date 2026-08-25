@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseImportedConversation } from './importConversation'
+import { parseImportedConversation, parseImportedConversations } from './importConversation'
 
 const now = '2026-08-07T12:00:00.000Z'
 function ids() { let count = 0; return () => `id-${++count}` }
@@ -36,5 +36,27 @@ describe('parseImportedConversation', () => {
     expect(result).toMatchObject({
       title: 'Imported conversation', createdAt: now, updatedAt: now, pinned: false,
     })
+  })
+})
+
+describe('parseImportedConversations', () => {
+  it('restores every conversation from an AIOS backup', () => {
+    const result = parseImportedConversations({
+      format: 'aios-conversation-backup',
+      conversations: [
+        { title: 'First', agentId: 'general', messages: [] },
+        { title: 'Second', agentId: 'ministry', messages: [{ role: 'user', content: 'Hello' }] },
+      ],
+    }, ids(), now)
+    expect(result).toHaveLength(2)
+    expect(result?.map((item) => item.title)).toEqual(['First', 'Second'])
+  })
+
+  it('rejects empty and partially invalid backups', () => {
+    expect(parseImportedConversations({ format: 'aios-conversation-backup', conversations: [] }, ids(), now)).toBeNull()
+    expect(parseImportedConversations({
+      format: 'aios-conversation-backup',
+      conversations: [{ title: 'Valid', agentId: 'general', messages: [] }, { title: 'Invalid' }],
+    }, ids(), now)).toBeNull()
   })
 })

@@ -1,4 +1,5 @@
 import {
+  Bot,
   Database,
   FileText,
   Folder,
@@ -30,6 +31,14 @@ import {
 import {
   useAppStore,
 } from '../store/useAppStore'
+
+function assistantForCategory(category: string): string | null {
+  const normalized = category.trim().toLowerCase()
+  if (normalized === 'ministry') return 'Ministry Assistant'
+  if (normalized === 'school') return 'School Assistant'
+  if (normalized === 'general') return 'General Assistant'
+  return null
+}
 
 function KnowledgePage() {
   const {
@@ -117,7 +126,7 @@ function KnowledgePage() {
       title:
         'Refresh failed',
       message:
-        'AIOS could not reload the Knowledge Library.',
+        'Lampstand could not reload the Knowledge Library.',
       variant: 'error',
       duration: 4500,
     })
@@ -140,6 +149,14 @@ function KnowledgePage() {
           aria-label="Search Knowledge Library"
         />
       </label>
+
+      <Link className="knowledge-action-link" to="/knowledge/search">
+        <Search size={16} /> Search content
+      </Link>
+
+      <Link className="knowledge-action-link" to="/documents">
+        <FileText size={16} /> Manage documents
+      </Link>
 
       <button
         type="button"
@@ -391,11 +408,18 @@ function KnowledgePage() {
             Try searching with another
             category or document name.
           </p>
+
+          <button type="button" className="knowledge-refresh-button" onClick={() => setSearchQuery('')}>
+            Clear search
+          </button>
         </div>
       ) : (
         <section className="knowledge-grid">
           {filteredCategories.map(
-            (category) => (
+            (category) => {
+              const assistant = assistantForCategory(category.name)
+              const fullyIndexed = category.document_count > 0 && category.indexed_document_count === category.document_count
+              return (
               <Link
                 key={category.name}
                 className="knowledge-card"
@@ -426,19 +450,13 @@ function KnowledgePage() {
                   </div>
 
                   <span
-                    className={`knowledge-status-badge ${
-                      category.indexed_document_count >
-                      0
-                        ? 'ready'
-                        : 'empty'
-                    }`}
+                    className={`knowledge-status-badge ${fullyIndexed ? 'ready' : category.indexed_document_count > 0 ? 'partial' : 'empty'}`}
                   >
-                    {category.indexed_document_count >
-                    0
-                      ? 'Ready'
-                      : 'Empty'}
+                    {fullyIndexed ? 'Ready' : category.indexed_document_count > 0 ? 'Partially indexed' : 'Empty'}
                   </span>
                 </div>
+
+                {assistant && <div className="knowledge-assistant-owner"><Bot size={15} /><span><strong>{assistant}</strong><small>Uses this category for grounded answers</small></span></div>}
 
                 <dl className="knowledge-card-metrics">
                   <div>
@@ -526,7 +544,8 @@ function KnowledgePage() {
                   Open category →
                 </span>
               </Link>
-            ),
+              )
+            },
           )}
         </section>
       )}

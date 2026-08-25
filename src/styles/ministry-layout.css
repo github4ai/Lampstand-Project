@@ -1,0 +1,18 @@
+.ministry-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.ministry-section-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  justify-content: start;
+}
+
+@media (max-width: 900px) {
+  .ministry-section-row {
+    grid-template-columns: 1fr;
+  }
+}

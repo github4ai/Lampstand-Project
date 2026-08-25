@@ -12,7 +12,7 @@ describe('generateMedia', () => {
     vi.stubGlobal('fetch', fetchMock)
     await expect(generateMedia({ kind: 'image', prompt: 'A lamp', aspectRatio: '16:9' }))
       .resolves.toEqual(payload)
-    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:8766/media/generate',
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:9656/media/generate',
       expect.objectContaining({ method: 'POST', body: JSON.stringify({ kind: 'image', prompt: 'A lamp', aspectRatio: '16:9' }) }))
   })
 
@@ -24,7 +24,7 @@ describe('generateMedia', () => {
     vi.stubGlobal('fetch', fetchMock)
     await expect(getMediaGeneration('job/1')).resolves.toEqual(payload)
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:8766/media/generations/job%2F1', expect.objectContaining({ signal: undefined }))
+      'http://127.0.0.1:9656/media/generations/job%2F1', expect.objectContaining({ signal: undefined }))
   })
 
   it('reports backend errors', async () => {
@@ -38,7 +38,7 @@ describe('generateMedia', () => {
       createdAt: 'now', url: '/media/files?filename=result.png' }
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(payload), { status: 200 })))
     await expect(getMediaGeneration('image-1')).resolves.toMatchObject({
-      url: 'http://127.0.0.1:8766/media/files?filename=result.png',
+      url: 'http://127.0.0.1:9656/media/files?filename=result.png',
     })
   })
 

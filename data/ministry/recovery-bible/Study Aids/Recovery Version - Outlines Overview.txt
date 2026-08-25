@@ -1,0 +1,37 @@
+Recovery Version — Outlines Overview
+
+This overview describes the outlines; the supplied files contain the complete Genesis outline only.
+
+Outlines
+
+The Recovery Version contains outlines of each book, both at the beginning of the book and embedded within the text, expressing the spiritual meaning in each book.
+
+Genesis Outline
+
+Quick Tour
+
+Introduction
+
+Preface
+
+Outlines
+
+Sample Text
+
+Footnotes
+
+Cross References
+
+Charts & Maps
+
+Download a Brochure
+
+About the Recovery Version
+
+Download Brochure
+
+Other LSM Websites
+
+Copyright Policy
+
+© var d = new Date();var curr_date = d.getDate(); var curr_month = d.getDate();var curr_year = d.getFullYear();document.write(" 2002-"+ curr_year + " "); LIVING STREAM MINISTRY. All rights reserved. Reproduction in whole or in part without permission is prohibited.

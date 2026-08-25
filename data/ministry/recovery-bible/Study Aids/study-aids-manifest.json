@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "imported_at": "2026-08-10T08:22:47.534347+00:00",
+  "destination": "I:\\AI\\Knowledge\\Ministry\\Bible\\Recovery Version\\Study Aids",
+  "files": [
+    "Recovery Version - Introduction.txt",
+    "Recovery Version - Preface Excerpt.txt",
+    "Recovery Version - Outlines Overview.txt",
+    "Recovery Version - Footnote Samples.txt",
+    "Recovery Version - Cross Reference Sample.txt",
+    "Recovery Version - Genesis Outline.pdf"
+  ],
+  "coverage": {
+    "introduction": "full supplied web article",
+    "preface": "excerpt",
+    "outlines": "overview plus Genesis outline PDF",
+    "footnotes": "samples only",
+    "cross_references": "sample only"
+  },
+  "notice": "Source material supplied by the user. Observe the publisher's applicable copyright terms."
+}

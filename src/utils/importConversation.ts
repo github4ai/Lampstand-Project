@@ -48,6 +48,21 @@ export function parseImportedConversation(
     createdAt: typeof value.createdAt === 'string' ? value.createdAt : now,
     updatedAt: now,
     pinned: false,
+    folder: typeof value.folder === 'string' ? value.folder.trim() : '',
     messages: messages as ChatMessage[],
   }
+}
+
+export function parseImportedConversations(
+  value: unknown,
+  createId: IdFactory = () => crypto.randomUUID(),
+  now = new Date().toISOString(),
+): ChatConversation[] | null {
+  if (isRecord(value) && value.format === 'aios-conversation-backup' && Array.isArray(value.conversations)) {
+    const conversations = value.conversations.map((item) => parseImportedConversation(item, createId, now))
+    if (conversations.length === 0 || conversations.some((item) => item === null)) return null
+    return conversations as ChatConversation[]
+  }
+  const conversation = parseImportedConversation(value, createId, now)
+  return conversation ? [conversation] : null
 }

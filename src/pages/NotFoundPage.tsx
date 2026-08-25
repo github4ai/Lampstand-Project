@@ -11,7 +11,7 @@ function NotFoundPage() {
         <p className="not-found-code">404 · Page not found</p>
         <h1>This workspace does not exist</h1>
         <p className="not-found-message">
-          AIOS Studio could not find <code>{location.pathname}</code>. The link may be outdated or incomplete.
+          Lampstand Project could not find <code>{location.pathname}</code>. The link may be outdated or incomplete.
         </p>
         <div className="not-found-actions">
           <Link to="/"><ArrowLeft size={16} /> Return to Chat</Link>

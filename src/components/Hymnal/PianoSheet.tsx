@@ -2,7 +2,10 @@ import type { Hymn } from '../../types/hymnal'
 
 function PianoSheet({ hymn }: { hymn: Hymn }) {
   if (hymn.pianoSheetUrl) return <div className="hymnal-piano-sheet">
-    <img src={hymn.pianoSheetUrl} alt={'Piano sheet for ' + hymn.title} />
+    {/\.pdf(?:$|\?)/i.test(hymn.pianoSheetUrl)
+      ? <><iframe src={hymn.pianoSheetUrl} title={'Piano sheet for ' + hymn.title} />
+        <a href={hymn.pianoSheetUrl} target="_blank" rel="noreferrer">Open piano sheet in a new window</a></>
+      : <img src={hymn.pianoSheetUrl} alt={'Piano sheet for ' + hymn.title} />}
   </div>
   if (!hymn.tune) return <div className="hymnal-piano-empty">
     No piano sheet is available for this hymn yet.

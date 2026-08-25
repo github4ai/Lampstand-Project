@@ -157,7 +157,7 @@ function messageSources(
       )
     }
 
-    if (source.page !== null) {
+    if (Number.isFinite(source.page)) {
       lines.push(
         `  - Page: ${source.page}`,
       )
@@ -170,10 +170,10 @@ function messageSources(
     }
 
     if (
-      source.rerank_score !== null
+      Number.isFinite(source.rerank_score)
     ) {
       lines.push(
-        `  - Relevance: ${source.rerank_score.toFixed(
+        `  - Relevance: ${Number(source.rerank_score).toFixed(
           3,
         )}`,
       )
@@ -201,6 +201,7 @@ function conversationToMarkdown(
         ? 'Yes'
         : 'No'
     }`,
+    `- Folder: ${conversation.folder || 'Unfiled'}`,
     '',
     '---',
     '',
@@ -284,5 +285,33 @@ export function exportConversationAsJson(
     filename,
     content,
     'application/json',
+  )
+}
+
+export function exportConversationsBackup(
+  conversations: ChatConversation[],
+) {
+  const date = new Date().toISOString().slice(0, 10)
+  const content = JSON.stringify({
+    format: 'aios-conversation-backup',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    conversations,
+  }, null, 2)
+  downloadTextFile(
+    `AIOS conversation backup ${date}.json`,
+    content,
+    'application/json',
+  )
+}
+
+export function exportConversationRecovery(
+  rawContent: string,
+) {
+  const date = new Date().toISOString().slice(0, 10)
+  downloadTextFile(
+    `AIOS conversation recovery ${date}.txt`,
+    rawContent,
+    'text/plain',
   )
 }

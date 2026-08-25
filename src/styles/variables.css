@@ -1,27 +1,27 @@
 :root{
 
---bg:#161b22;
---panel:#1f2632;
---panel-light:#262f3f;
+--bg:#0b1220;
+--panel:#111c2e;
+--panel-light:#18263b;
 
---border:#323d50;
+--border:#2b405c;
 
---text:#f4f7fb;
---text-muted:#a9b5c7;
+--text:#eff6ff;
+--text-muted:#9fb2cc;
 
---primary:#4f7cff;
---primary-hover:#648cff;
+--primary:#38bdf8;
+--primary-hover:#67d1f7;
 
---success:#36c275;
---warning:#f5c84c;
---danger:#ef5350;
+--success:#34d399;
+--warning:#f6c85f;
+--danger:#fb7185;
 
 --radius:18px;
 
 --sidebar-width:270px;
 
 --shadow:
-0 10px 30px rgba(0,0,0,.35);
+0 10px 30px rgba(0,0,0,.4);
 
 font-family:
 
@@ -33,4 +33,20 @@ sans-serif;
 color:var(--text);
 background:var(--bg);
 
+}
+
+.high-contrast {
+  --bg: #090c11;
+  --panel: #111722;
+  --panel-light: #1a2331;
+  --border: #64748b;
+  --text: #ffffff;
+  --text-muted: #d4dce8;
+  --primary: #7295ff;
+  --primary-hover: #8ba8ff;
+}
+
+.high-contrast :focus-visible {
+  outline: 3px solid #ffd75e !important;
+  outline-offset: 2px;
 }

@@ -124,10 +124,10 @@ function DocumentRow({
           <FileText size={18} />
         </div>
 
-        <div className="knowledge-document-row-copy">
-          <strong>
+      <div className="knowledge-document-row-copy">
+          <Link className="knowledge-document-open" to={`/documents/${encodeURIComponent(document.category)}/${encodeURIComponent(document.stem)}`}>
             {document.name}
-          </strong>
+          </Link>
 
           <span>
             Modified{' '}
@@ -411,6 +411,10 @@ function KnowledgeCategoryPage() {
 
         <p>{error}</p>
 
+        <button type="button" className="knowledge-refresh-button" onClick={() => void loadCategory(undefined, true)} disabled={refreshing}>
+          <RefreshCw className={refreshing ? 'spinner' : undefined} size={16} /> {refreshing ? 'Trying again' : 'Try again'}
+        </button>
+
         <Link
           className="knowledge-back-link"
           to="/knowledge"
@@ -468,6 +472,13 @@ function KnowledgeCategoryPage() {
           </div>
         </div>
 
+        <div className="knowledge-header-actions">
+        <Link className="knowledge-action-link" to={`/knowledge/search?category=${encodeURIComponent(category.name)}`}>
+          <Search size={16} /> Search this category
+        </Link>
+        <Link className="knowledge-action-link" to="/documents">
+          <FileText size={16} /> Manage documents
+        </Link>
         <button
           type="button"
           className="knowledge-refresh-button"
@@ -492,6 +503,7 @@ function KnowledgeCategoryPage() {
             ? 'Refreshing'
             : 'Refresh'}
         </button>
+        </div>
       </header>
 
       {error && (
@@ -604,6 +616,7 @@ function KnowledgeCategoryPage() {
                 or your search returned no
                 results.
               </p>
+              {searchQuery && <button type="button" className="knowledge-refresh-button" onClick={() => setSearchQuery('')}>Clear search</button>}
             </div>
           ) : (
             <div className="knowledge-document-list">

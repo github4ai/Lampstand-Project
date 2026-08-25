@@ -1,5 +1,7 @@
 import type { Hymn } from '../types/hymnal'
 
+const SUPPORTED_HYMN_LANGUAGES = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml'])
+
 export function parseHymnImport(text: string, filename: string): Hymn | null {
   return filename.toLowerCase().endsWith('.json')
     ? parseJsonHymn(text)
@@ -37,6 +39,7 @@ function parseChordProHymn(text: string): Hymn | null {
   const title = metadata.get('title') ?? metadata.get('t')
   if (!title || sections.length === 0) return null
   return normalizeHymn({ title, author: metadata.get('artist') ?? metadata.get('a'),
+    language: metadata.get('language') ?? metadata.get('lang'),
     catalogPrefix: metadata.get('prefix') ?? metadata.get('catalog'),
     hymnNumber: metadata.get('number'),
     originalKey: metadata.get('key'), tempo: Number(metadata.get('tempo')),
@@ -50,6 +53,7 @@ function normalizeHymn(value: Partial<Hymn>): Hymn {
     catalogPrefix: typeof value.catalogPrefix === 'string' ? value.catalogPrefix.trim().toUpperCase() : undefined,
     hymnNumber: typeof value.hymnNumber === 'string' ? value.hymnNumber.trim() : undefined,
     author: value.author?.trim() || 'Unknown', year: Number.isFinite(value.year) ? value.year as number : 0,
+    language: normalizeLanguage(value.language),
     themes: value.themes?.filter((theme): theme is string => typeof theme === 'string').map((theme) => theme.trim()).filter(Boolean) ?? [],
     category: typeof value.category === 'string' ? value.category.trim() : undefined,
     scriptures: value.scriptures?.filter((item): item is string => typeof item === 'string').map((item) => item.trim()).filter(Boolean),
@@ -60,6 +64,12 @@ function normalizeHymn(value: Partial<Hymn>): Hymn {
     audioUrl: normalizeMediaUrl(value.audioUrl, 'audio'),
     pianoSheetUrl: normalizeMediaUrl(value.pianoSheetUrl, 'image'),
     tune: value.tune, sections: value.sections ?? [] }
+}
+
+function normalizeLanguage(value: unknown): string {
+  if (typeof value !== 'string') return 'en'
+  const language = value.trim().toLowerCase()
+  return SUPPORTED_HYMN_LANGUAGES.has(language) ? language : 'en'
 }
 
 function normalizeMediaUrl(value: unknown, kind: 'audio' | 'image'): string | undefined {

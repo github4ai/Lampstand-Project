@@ -1,0 +1,1028 @@
+[
+    {
+        "id": 1,
+        "chunk": 1,
+        "text": "Open Basic Education (Adult)\nBasic Computer Skills\nLevel - C (Equivalent to Class 8)\nNational Institute of Open Schooling\nA 24-25, Institutional Area, Sector-62, Noida-201309 (U.P.)\nWebsite: www.nios.ac.in Toll free no. 18001809393\n(C 104)\n\n© National Institute of Open Schooling\nPublished by:\nSecretary, National Institute of Open Schooling\nA 24-25, Institutional Area, Sector-62, Noida-201309 (U.P.)",
+        "word_count": 55,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 1
+    },
+    {
+        "id": 2,
+        "chunk": 2,
+        "text": "Advisory Committee\nChairman\nDirector (Academic)\nNational Institute of\nNational Institute of\nOpen Schooling\nOpen Schooling\nNOIDA\nNOIDA\nCurriculum Committee\nDr. Kamlesh Mittal\nDr. M.P Goyal\nDr. Devesh Bihari Saxena\nProfessor (Retired)\nPrincipal (Retired)\nComputer Expert\nNCERT, New Delhi\nNIT.\nNoida\nMr. Akshaybar Tiwari\nMrs. Anshul Sharma\nMr. Vivek Singh\nComputer Teacher\nComputer Teacher\nSEO (Academic)\nJan Shikshan Sansthan\nGovernment of Delhi,\nNIOS, NOIDA\nR.K.Puram, New Delhi\nDelhi\nLesson Writers\nMrs. Sandeepa Vij\nMr. Akshaybar Tiwari\nMrs. Anshul Sharma\nPGT, Computer\nComputer Teacher\nComputer Teacher\nDAV Chandranagar, UP\nJan Shikshan Sansthan\nGovernment of Delhi\nR.K.Puram, New Delhi\nDelhi\nDr. Devesh Bihari Saxena\nComputer Expert\nNoida\nTranslator\nSmt. Ravneet Kaur\nDr. Neha Singh\nLecturer\nFreelance Translator\nMAK Learning Solutions\nNew Delhi\nNew Delhi\nLanguage Editor\nDr. Brijbhushan Paliwal\nSmt. Kanta Vadhera\nAsso. Professor (Retd.)\nFreelance Editor\nGhaziabad, UP\nNOIDA, UP\nCourse Coordinator\nDTP Work\nMr. Vivek Singh\nMulti Graphics\nSEO (Academic)\nKarol Bagh, New Delhi\nNIOS, NOIDA",
+        "word_count": 155,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 3
+    },
+    {
+        "id": 3,
+        "chunk": 3,
+        "text": "A Word With You\nDear Learner,\nThe government of India has pioneered to provide life-long education to the neo-literates of the society.\nThe National Institute of Open Schooling has developed Self Learning Materials (SLM) at level A, B,\nC (equivalent to classes 3, 5, and 8 respectively). These materials have been developed keeping in mind\nyour needs that will develop the attitude of self-learning in you.\nYou have studied the use of computers in areas like education, business, sports, agriculture etc. in Basic\nComputer Skills course at Level A and B. You have also come to know about parts of the operating\nsystem, word processing, spreadsheet, characteristics of power point presentation, e-mail and internet.\nSimilarly, now you have learnt about meeting your requirements like typing applications, calculations,\nsending e-mail through internet, reading newspaper on computer etc.\nIn this book (Level C), you will first revise what you have studied in levels A and B and learnt about\nvarious new options present in word processing, spreadsheet and power point. You will learn about\nother new things also like getting information about your bank account using e-banking, options to\nprotect your computer from viruses, internet security etc.\nThis book has been divided into different lessons. In every lesson there are \"Intext Questions\" given to\nassess your own progress. After every lesson, \"What you have learnt\", \"Let's do\", \"Exercise\" have been\ngiven. Students can assess their competence by doing these exercises. Sample question papers given at\nthe end of the book is the basis of your annual examination. You can organize the time taken in the exam\nby reading and solving it.\nWe are confident that you will find this learning material useful and interesting. I am thankful to the\nexperts who have played an important role in making this material interesting and useful. I wish for your\nbright future. I also welcome the views of experts and readers for improvement in the leaning material.\nWith best wishes\nChairman\nNational Institute of Open Schooling",
+        "word_count": 331,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 5
+    },
+    {
+        "id": 4,
+        "chunk": 4,
+        "text": "Sl. No.\nTitle of Lesson\nPage No.\n1.\nRecapitulation\n1\n2.\nWord Processing\n16\n3.\nSpread Sheet\n30\n4.\nPower Point Presentation\n42\n5.\nComputer Network\n53\n6.\nInternet\n63\n7.\nMultimedia\n73\n8.\nInternet Banking\n82\n9.\nJob opportunities in various areas of computer\n 91\n•\nCurriculum\n96\n•\nSample Question Paper and Marking Scheme\n105\nContents",
+        "word_count": 58,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 7
+    },
+    {
+        "id": 5,
+        "chunk": 5,
+        "text": "1\n1\nRecapitulation\nThe present lesson is the summary of lessons studied at levels 'A' and 'B'. By now we know what\nis a Computer and where all it can be used; what is the role of the Operating System and how it\nestablishes coordination between Hardware and Software. Similarly, we have gained good knowledge\nof Word Processor, Spread Sheet and Presentation software which are important parts of Microsoft\nOffice. In this series, we also studied topics like Internet and e-mail that are components of our\ndaily work routine.\nObjectives\nAfter studying this lesson, you will be able to :\n•\nacquire information related to various fields of Computers;\n•\ntalk about Operating System and its various components;\n•\nlearn to make Rows and Columns in a Spread Sheet;\n•\nsave the slides made in the Presentation;\n•\ntell about usage and facilities of Internet;\n•\nlearn the use of e-mail.",
+        "word_count": 151,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 9
+    },
+    {
+        "id": 6,
+        "chunk": 6,
+        "text": "2\n1.1\nIntroduction to Computers\nUsually people think that computers are being used only by highly educated people, but this thought\nis not correct. A computer can be easily used by an ordinary person as well.\nThe word 'Computer' is derived from an English word 'Compute'. It means 'to calculate'. We can do\nseveral tasks with its help.\nComputer is an electrically operated machine (electronic appliance) which works as per the\ninstructions of the user to give the desired results.\nWe had never imagined that humans will develop a machine that will be able to complete any task\nin the blink of an eyelid. Today, computer is being used in every field whether it is education,\nagriculture, art or business.\nComputer is being very well used everywhere whether it is private sector or the government sector.\nIn the education sector, computer is being used so much that no work seems possible without it.\nThese days computers are being used to mark the attendance of students and teachers in schools\nand colleges, and educational materials, question papers and other important tasks are all being\ndone using computers only. Use of computers has increased so much in art and business that people\nlike to sell or buy things using computers and for that they pay from their bank accounts through\ncomputers only. It has now become possible to do all types of businesses using computers.\nThese days no one likes to work on paper. People send and receive message through computers\nonly.\n1.2\nOperating System\nThe Operating system is an important part of a computer. It helps in the proper functioning of\ncomputer's hardware and software so that it becomes easy to work on computers.\nAt the last level (Level A), we studied about Operating System in detail. Let's now revise it once.\n(a)\nDesktop: The icon that we see on the computer monitor, that whole area is called the desktop.\n(b)\nMouse Pointer: The arrow mark that we see on the computer screen is called mouse pointer.\n(c)\nTitle Bar: Whenever we open an application or a program, we find its name written in a bar\nat the top of the screen. This is known as the 'Title Bar'.\n(d)\nMenu Bar: There is a line at the bottom of the Title Bar on which usually File, Edit etc. are\nwritten. On clicking at them with a mouse, a list opens. That is called the Menu Bar.\n(e)\nFile: When we put our necessary documents in the computer or save them after typing, they\nare saved in the form of a file. We can give a name to this file.",
+        "word_count": 439,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 10
+    },
+    {
+        "id": 7,
+        "chunk": 7,
+        "text": "3\n(f)\nFolder: When one or more files have to be kept in the computer, they are kept in a folder. We\ncan give any name to the folder. We can cut, copy and paste them from one place to another.\nWe have learnt about creating a folder in our last level.\nIntext Question\n1.1\n1.\nComplete the following sentences using appropriate words -\n(User, Title Bar, as per the directions, compute, folder, to calculate\nsoftware, operating system, hardware)\n(i)\nThe word 'Computer' is derived from ........................, that means ........................ .\n(ii)\nWhen one or more files are to be kept in a computer, they are kept in a ............... .\n(iii) ........................... is considered to be an important part of the computer.\n(iv)\nOperating system helps to run ....................... and ........................ in a smooth way.\n(v)\nOn opening an application, the topmost part of the screen where its name is written,\nis called ........................... .\n(vi)\nComputer is an electricity operated machine that works on the direction of the\n........................... and gives desired results.\n2.\nAnswer the questions given below:\n(i)\nWhat is a computer?\n________________________________________________________________\n(ii)\nWhere is the computer used?\n________________________________________________________________\n________________________________________________________________\n(iii) Name various components of an operating system.\n________________________________________________________________\n________________________________________________________________\n1.3\nWhat is a Word Processor and what are its functions?\nTill now we have come to know what a computer is, where it is used and operating system is the\nmain component of a computer without which a computer cannot work. Now, we will get to know",
+        "word_count": 253,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 11
+    },
+    {
+        "id": 8,
+        "chunk": 8,
+        "text": "4\nknow what is a word -processor and for which task it is used.\nTo type a text, edit it, decorate it, and to correct grammar and spelling mistakes, is called word\nprocessing.\nWord Processor has different components. Their description is as follows -\n(a)\nStart Button: It is a button at the left bottom of desktop with the help of which one can reach\nanywhere in the computer.\n(b)\nTitle Bar: Strip at the top of the word screen where the document's name is written.\n(c)\nScroll Bar and Ruler: Scroll bar is the bar which can be moved up and down, forward and\nbackward and this helps to move the text screen up and down, left and right. Ruler is at the top\nof the text area on right and left. It is used to set the width of the page and to set left and right\nmargins.\n(d)\nInsertion Point / Cursor: It is the short standing twinkling line for writing on the text area.\nWe can type in the text area with its help.\n(e)\nIt is necessary to pay attention to a few things while working on the word processor.\n•\nWhen you open a new file, name it and save it.\n•\nWhile formatting, take care of the font size as they should be easily read and there\nshould be appropriate distance between the two lines.\n•\nWhile writing a document, take care of the grammar and word related mistakes. The\nword processor itself suggests corrections in grammar and word mistakes.\nDocuments can be typed in word processor in a number of formats. This involves different ways of\nwriting letters, their size, colour etc. In word processor, number of words, lines and pages can be\ncounted.\n1.4\nE-mail\nE-mail or electronic mail is a medium of sending and receiving messages through internet. This is\nan important service that is available through internet. E-mail is an electronic form of traditional\nmail in which we use computer to write a mail.\n(a)\nAdvantages of E-mail\n•\nMessage reaches very fast through e-mail\n•\nThe cost of e-mail is very little\n•\nWe can send letters, files, reports, pictures etc. through e-mail",
+        "word_count": 365,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 12
+    },
+    {
+        "id": 9,
+        "chunk": 9,
+        "text": "5\n(b)\nE-mail message: The messages that we send or receive through e-mail are called e-mail\nmessages.\n(c)\nAddress book: This is a place where e-mail addresses of different people are stored.\n(d)\nInternet browsing: Receiving desired information from web (www) through internet is called\nweb browsing. Web browser is an application software with the help of which we can do\ninternet browsing. Web browser links your computer with the World Wide Web.\nIntext Question\n1.2\n1.\nComplete the sentences given below with appropriate words:\n(Title Bar, Start button, address book)\n(i)\n............................. the place where addresses of different people are stored.\n(ii)\nThe button at the bottom left side of the desktop is called ............................. .\n(iii) The strip on the top of the word screen on which the name of the document name\nis written is called ............................. .\n2.\nAnswer the following questions -\n(i)\nWhat is a word processor? What tasks can it perform?\n________________________________________________________________\n(ii)\nWhat are the components of a word processor?\n________________________________________________________________\n(iii) What is a cursor?\n________________________________________________________________\n(iv)\nWhat are the advantages of E-mail?\n________________________________________________________________\n1.5\nSpreadsheet\nSpreadsheet is an electronic sheet made on computer just like a paper ledger sheet which business\npeople use to make their account statements and calculations. This is like a big table consisting of\nrows and columns.",
+        "word_count": 221,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 13
+    },
+    {
+        "id": 10,
+        "chunk": 10,
+        "text": "6\nWith the help of spreadsheet calculations can be done within seconds. If we change the numbers on\nthe sheet due to any reason, their totals also change automatically.\nWe use MS Excel to make a spreadsheet.\nAt the last level we have learnt to make a spreadsheet. We have learnt that the cell in which we have\nto write data or numbers has to be clicked to make it active and then the data or numbers are typed\nin it. This is the way all numbers are typed and the file is saved. To save the file we -\n1.\nClick on the 'Microsoft Office' button\n2.\nThen click on 'Save As'\n3.\nA 'Save As' dialog box appears in which we type the file name and then click on the O.K.\nbutton. By doing this, our file gets saved in 'My Documents' folder.\nWe have also learnt to open and print a file in MS Excel. To print a file we -\n1.\nClick on the 'Microsoft Office' button\n2.\nSelect 'Print' option\n3.\nWhen the 'Print' dialog box appears, click on the 'Active Sheet' and then click on O.K. This\nway our file gets printed.\nTo open an already made file, we click on 'MS - Office' button. Then click on the 'Open' option.\nWhen 'Open' dialog box appears, click on your file. Now click on 'Open' button. Your desired file\nwill get opened.\n1.6\nPower Point\nPower Point is a part of the Microsoft Office. It is used to make presentations. In presentation, we\ncan show our data through pictures, sounds, videos etc. We have already learnt what is Power\nPoint, how it is made, how we insert pictures, graphs and text material in it. With that we also learnt\nhow to save the presentation and how to open an already saved presentation file.\nWe shall revise some important parts of it here -\n(a)\nOpening a Presentation: We can make presentation in a window that opens on clicking\nStart\n All programmes\nMicrosoft Office Microsoft Power Point 2007\n(b)\nMaking a Slide: On opening a presentation, first a new slide opens. This is where we can\nplace pictures, audio or video. If we need an additional slide, we can get it by pressing 'New\nslide' button present on the 'Home' tab.",
+        "word_count": 385,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 14
+    },
+    {
+        "id": 11,
+        "chunk": 11,
+        "text": "7\n(c)\nSaving a Slide: To save a presentation, press Microsoft Office button and click on Save\noption out of the different options that appear.\n(d)\nMaking a Presentation: For presenting we will first open a presentation or make a new one.\nAfter that click on the Slide Show tab. Now click on the Start Slide Show given at the bottom\nand select 'From Beginning'. In this way the presentation will start on the screen.\nIntext Question\n1.3\n1.\nComplete the sentences given below with appropriate words:\n(Microsoft office, slide, rows, columns, account keeping, data, MS Excel)\n(i)\nThere are .................. and .................. in spreadsheet.\n(ii)\nIn presentation we show our .................. through pictures and sounds.\n(iii) We use .................. while making spreadsheet.\n(iv)\nPowerpoint is a part of .................. only.\n(v)\nWe make-new .................. with the help of 'New Slide' button on Home Tab.\n(vi)\nWe do .................. with the help of spreadsheet.\n2.\nPut () mark against correct and () against wrong statements -\n(i)\nWe use MS Excel to make a spreadsheet.\n( )\n(ii)\nNew slide is created automatically in a powerpoint.\n( )\n(iii) Spreadsheet is used for account keeping.\n( )\n(iv)\nIn powerpoint, the presentation opens with a start button.\n( )\n1.7\nComputer Security\nJust name a computer and a number of problems like virus, hacking, password theft come to the\nmind and it is right because if not taken care of, it would be very difficult to work on computer. For\nthis we have read about security steps in detail. Let's revise them.\nThere are various steps that can be taken to keep our computer and documents secure and prevent\nthem from hacking or cyber attacks that take place through internet. Some of the security steps are\nbeing revised here:",
+        "word_count": 299,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 15
+    },
+    {
+        "id": 12,
+        "chunk": 12,
+        "text": "8\n(a)\nPassword: Whenever we switch on our computer, it asks for user identity and password. We\ncan make a password here by mixing letters and numbers.\nUser name and password are mostly used for most of the functions like e-mail, internet banking\netc. We should keep on changing our passwords from time to time.\n(b)\nComputer Virus: Computer virus is a kind of program that harms different components of\nthe computer. Many anti-viruses are available in the market that may be installed on the\ncomputer to protect it from such problems. Norton, Quick Heal, Avast are some of the anti-\nviruses.\n(c)\nFile Attachment: While file attachment we may use any type of attachment of file like\ndocument, audio, video etc.\n1.8\nInternet\nNow we will find out what is internet and what its utility is. What equipments are connected to the\ninternet? How information is given and taken? What are the main parts that make internet function\nand give us information?\nInternet is a vast storehouse of knowledge and information. Through it we can get any information\nin a very little time. This is the fastest source for give and take of information all over the world.\nUses of Internet\n•\nInternet is used in agriculture related jobs.\n•\nThrough internet we can send messages to our friends and relatives.\n•\nWe can talk to our close relatives living abroad via video conferencing through internet.\n•\nBusiness persons can show their samples through internet.\n•\nUse of internet is increasing day by day in the fields of education, banking, entertainment,\nmedicine, travel etc.\nAccessories that are connected with Internet\nWe can be connected with the internet in two ways. By dialing on telephone line to the Internet\nService Provider (ISP) company's computer or directly connecting to the ISP. Mostly we connect to\nthe ISP through telephone line and a modem.\nMain accessories connected to an internet are modem, router, wireless internet card, Internet LAN\nSystem etc.",
+        "word_count": 328,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 16
+    },
+    {
+        "id": 13,
+        "chunk": 13,
+        "text": "9\nFigure 1.1 Accessories of Internet\nThe main parts of internet with the help of which we can run the internet are -\n(a)\nURL: The full name of URL is Uniform Resource Locator. One example is\nhttp:www.nios.ac.in. It is also called web address.\n(b)\nWorld Wide Web: World Wide Web can be called the collection of information that can be\nused on internet. It is a service provided by the internet. The information on World Wide Web\ncan be present in the form of text, pictures, and sounds.\n(c)\nInternet Browsing: Collecting desired information from web through internet is called web\nbrowsing. Web browser is a software with the help of which internet browsing is done. Web\nbrowser software links your computer with the world wide web.\nIntext Question\n1.4\n1.\nComplete the setences given below with appropriate words:\n(Web, antivirus, uniform resource locator, web address, education;\nbanking and entertainment, World Wide Web)\n(i)\nThe full form of URL is .................. ................... .................... .\n(ii)\nInternet is used in ..................; .................. and .................. .\n(iii) Getting desired information from ................ through internet is called web browsing.",
+        "word_count": 187,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 17
+    },
+    {
+        "id": 14,
+        "chunk": 14,
+        "text": "10\n(iv)\nURL is also known as ........................................\n(v)\nNorton is a type of ............................................\n(vi)\nFull form of www is .........................................\n2.\nAnswer the following questions in one or two sentences -\n(i)\nWhat is internet?\n________________________________________________________________\n(ii)\nWhat accessories are connected to internet?\n________________________________________________________________\n(iii) What is a computer virus?\n________________________________________________________________\n(iv)\nWhat are the uses of internet?\n________________________________________________________________\nWhat you have learnt\n•\nThe word 'Computer' is derived from an English word 'Compute' that means 'to calculate'\n•\nThe main components of Operating System are - Desktop, Mouse Pointer, and Title Bar\netc.\n•\nTyping text, editing, decorating, and correcting spelling mistakes is called word\nprocessing.\n•\nPowerPoint is a part of Microsoft Office which is used to make presentations.\n•\nComputer virus is a program which harms various components of the computer.\n•\nURL and World Wide Web are two parts of internet.\nLet's do it\nUse mail merge method in word processor that you learnt at level B and send birthday invitation\ncards to five people.",
+        "word_count": 171,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 18
+    },
+    {
+        "id": 15,
+        "chunk": 15,
+        "text": "11\nExercise\n1.\nSelect the correct alternative :\n(i)\nThe word, computer means -\n(a)\nTo calculate\n(b)\nTo select\n(c)\nTo use\n(d)\nTo direct\n(ii)\nWhich of the following is not a component of the operating system?\n(a)\nFile\n(b)\nFolder\n(c)\nDesktop\n(d)\nPresentation\n(iii) The place where e-mail addresses of different people are stored is called -\n(a)\nAddress book\n(b)\ndiary\n(c)\ne-mail\n(d)\ninternet\n(iv)\nWhat is a cursor ?\n(a)\nA twinkling standing line\n(b)\nA slanting line\n(c)\nA straight line\n(d)\nNone of the above\n(v)\nThe ..................... on e-mail is very little.\n(a)\nexpenditure\n(b)\nmaterial\n(c)\nData\n(d)\nText\n(vi)\nWe use ..................... for spreadsheet -\n(a)\nPower point\n(b)\nWord processor\n(c)\nInternet\n(d)\nMS Excel\n(vii) Full name of URL is -\n(a)\nUniform Resource Locator\n(b)\nUniform Reply Locator\n(c)\nUniform Resource Light\n(d)\nUniform Resource Location\n2.\nComplete the sentences given below with appropriate words:\n(Antivirus, World Wide Web, folder, Web, new slide, Title bar, user,\nas per directions, rows, columns)\n(i)\nObtaining desired information from ..................... through internet is called web\nbrowsing.\n(ii)\nWhen one or more files have to be kept in a computer, they are placed in a .................",
+        "word_count": 207,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 19
+    },
+    {
+        "id": 16,
+        "chunk": 16,
+        "text": "12\n(iii)\nNorton is a type of .....................\n(iv)\nWith the help of 'new slide' button in 'Home' tab, we make a .....................\n(v)\nThe full form of www. is ......................................................\n(vi)\nThe strip on the top of word screen on which document name is written is called\n..................... .............................\n(vii)\nA spreadsheet has ..................... and ..................... .\n(viii) Computer is an electricity operated machine which gives desired results of the work\n..................... given by the -.....................\n3.\nAnswer the following questions-\n(i)\nWhat is computer? Where is it used?\n________________________________________________________________\n(ii)\nWhat are the advantages of e-mail?\n________________________________________________________________\n(iii) What is a word processor? Describe its different components.\n________________________________________________________________\n(iv)\nWrite about the different components of the operating system.\n________________________________________________________________\n(v)\nWhich accessories are attached to the internet?\n________________________________________________________________\n(vi)\nWhat is a computer virus?\n________________________________________________________________\n________________________________________________________________\n(vii) What are the uses of internet?\n________________________________________________________________\n________________________________________________________________",
+        "word_count": 147,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 20
+    },
+    {
+        "id": 17,
+        "chunk": 17,
+        "text": "13\nAnswer\nAnswers to Questions from the Lesson\n1.1\n1.\n(i)\nCompute, to calculate\n(ii)\nFolder\n(iii) Operating System\n(iv)\nHardware, software\n(v)\nTitle bar\n(vi)\nUser, as per directions\n2.\n(i)\nThe word 'Computer' is derived from the English word 'Compute' which means 'to\ncalculate'. Computer is an electricity operated machine which gives desired results for\nthe instructions given to it by the user.\n(ii)\nComputer is used in different fields.\n(a)\neducation\n(b)\nbusiness and industry\n(c)\narts\n(d)\ndefense and travel\n(e)\nemployment\n(f)\nsports and entertainment\n(iii) Operating system is considered to be an important part of the computer. Some of its\ncomponents are -\n(a)\nDesktop\n(b)\nMouse pointer\n(c)\nTitle bar\n(d)\nMenu bar\n(e)\nFile\n(f)\nFolder\n1.2\n1.\n(i)\nAddress book\n(ii)\n Start button\n(iii) Title bar\n2.\n(i)\nTo type a text, edit it, decorate it, and to correct grammar and spelling mistakes is called\nword processing.\n(ii)\nWord Processor has different components. They are -\n(a)\nStart Button\n(b)\nTitle Bar\n(c)\nScroll Bar and Ruler\n(d)\nInsertion Point / Cursor\n(iii) The short standing twinkling line on the text area with the help of which we types in the\ntext area is called cursor.",
+        "word_count": 205,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 21
+    },
+    {
+        "id": 18,
+        "chunk": 18,
+        "text": "14\n(iv)\nThe advantages of e-mail are as follows -\n•\nMessage reaches very fast through e-mail\n•\nThe cost of e-mail is very little\n•\nWe can send letters, files, reports, pictures etc. through e-mail\n1.3\n1.\n(i)\nRows, columns\n(ii)\nData\n(iii) MS Excel\n(iv)\nMicrosoft Office\n(v)\nSlide\n(vi)\n Account keeping\n2.\n(i)\n\n(ii)\n\n(iii) \n(iv)\n\n1.4\n1.\n(i)\nUniform Resource Locator\n(ii)\nEducation, banking, entertainment\n(iii) Web\n(iv)\nWeb Address\n(v)\nAntivirus\n(vi)\nWorld Wide Web\n2.\n(i)\nInternet is a vast storehouse of knowledge and information. Through it we can get any\ninformation in very little time.\n(ii)\nAccessories that are connected with internet are as follows -\n(a)\nModem\n(b)\nRouter\n(c)\nWireless\n(d)\nInternet card\n(e)\nInternet Lan System\n(iii) Computer virus is a type of program which can harm different components of the\ncomputer.\n(iv)\nInternet is useful in the following ways -\n(a)\nBusiness persons can show their samples through internet\n(b)\nThrough internet we can send messages to our friends and relatives\n(c)\nInternet use is increasing day by day in the fields of education, banking,\nentertainment, medicine, and travel etc.\nAnswers to Exercise Questions\n1.\n(i)\n(a)\n(ii)\n(d)\n(iii) (b)\n(iv)\n(a)\n(v)\n(c)\n(vi)\n(d)\n(vii) (a)\n2.\n(i)\nWeb\n(ii)\nFolder\n(iii) Antivirus\n(iv)\nNew slide",
+        "word_count": 224,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 22
+    },
+    {
+        "id": 19,
+        "chunk": 19,
+        "text": "15\n(v)\nWorld Wide Web\n(vi)\nTitle bar\n(vii) Rows, Columns\n(viii) User, as per directions\n3.\n(i)\nComputer is an electricity operated machine that gives desired results of the work as per\nthe directions of the user. Computer is used in different fields. Some of them are as\nfollows -\n(a)\nin the field of education\n(b)\nIn the field of arts\n(c)\nIn the field of employment\n(d)\nIn the field of sports and entertainment\n(e)\nIn the field of business\n(ii)\nThe advantages of e-mail are as follows -\n•\nMessages reach very fast through e-mail\n•\nThe cost of e-mail is very little\n•\nWe can send letters, files, reports, pictures etc. through e-mail\n(iii) To type a text, edit it, decorate it, and to correct grammar and spelling mistakes is called\nword processing.\nDifferent components of Word Processor are -\n(e)\nStart Button\n(f)\nTitle Bar\n(g)\nScroll Bar and Ruler\n(h)\nInsertion Point / Cursor\n(iv)\nDifferent components of operating system are -\n(a)\nDesktop\n(b)\nMouse pointer\n(c)\nTitle Bar\n(d)\nMenu Bar\n(e)\nFile\n(f)\nFolder\n(v)\nAccessories that are connected with internet are as follows -\n(a)\nModem\n(b)\nRouter\n(c)\nWireless\n(d)\nInternet card\n(e)\nInternet Lan System\n(vi)\nComputer virus is a type of program which harms different components of computer.\n(vii) Internet is useful in the following ways -\n(d)\nBusiness persons can show their samples through internet.\n(e)\nThrough internet we can send messages to our friends and relatives.\n(f)\nInternet use is increasing day by day in the fields of education, banking,\nentertainment, medicine, and travel etc.",
+        "word_count": 271,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 23
+    },
+    {
+        "id": 20,
+        "chunk": 20,
+        "text": "16\n2\nWord Processing\nWe have already learnt about what a computer is and where all it is used, the role of operating\nsystem in a computer and how it manages to co-ordinate between software and hardware. Similarly,\nwe have learnt about Word Processer, Spreadsheet and Power Point, which are important tools of\nMicrosoft Office. In this series we also learnt about internet, E-mail etc. which are important parts\nof our daily life.\nObjectives\nAfter studying this lesson, you will be able to -\n•\ntell about the process of word processing used in a computer;\n•\nuse the tab and indentation in a document;\n•\nlearn to make the columns in a document;\n•\ndo the page set-up;\n•\nsee the print preview of a document;\n•\nlearn the method of printing a document, and\n•\nuse 'Word Art' in a document.",
+        "word_count": 143,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 24
+    },
+    {
+        "id": 21,
+        "chunk": 21,
+        "text": "17\n2.1\nTab and Indentation\nTab is used for the formatting of a paragraph. By pressing the tab button on keyboard, the cursor on\nthe document screen moves forward by half an inch. By using this button we can present the text\nin a document in different ways. It can be understood more easily with the help of the following\nexample:\nTab\nTab\nTab\nName\nCity\nPayment\nReceipt\nNavin\nPatna\n3500\n5000.05\nShobha\nBhubaneswar\n470.75\n400\nMihir\nKolkata\n9683\n8000.6\nRajesh\nMumbai\n3888.47\n32\nWe can also set the tab by clicking on the mouse on the ruler given in the processor or click on the\npage layout tab and then click on the paragraph dialogue box and choose the tab option. After\nselecting the tab option select the tab stop position or write the distance at which tab has to be set.\nWe can set the types of tab from alignment option as well. It can be understood with help of the\nfollowing picture:\nMS-Word \n Page Layout \n Paragraph \n Tab\nFig. 2.1: Tab and Indentation",
+        "word_count": 175,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 25
+    },
+    {
+        "id": 22,
+        "chunk": 22,
+        "text": "18\n2.2\nIndent\nIndentation is known as a space between paragraph and\nthe page margin. With the help of indentation, we can show\none or more paragraphs as different from all others. This\ncan be understood with the help of the picture given below.\nIn this, picture no.1 describes the page margin and no.2\ndescribes the indentation.\nNow in the Word Processor, we will know about uses of\nidentation and its user types.Identation is of four types in\na Word Processor.\n(a)\nLeft Indent: In this type of indent space is left in a\nparagraph with page margin from left side.\n(b)\nRight Indent: In this type of indent space is left in a paragraph with page margin from right\nside.\n(c)\nFirst line indent: In this type of indent the first line of paragraph is indented on the right side.\n(d)\nHanging indent: In this type of indent all other lines of paragraph except first line are indented\non left side.\nFig. 2.3: Types of indent\nNow, how we will use these types of indentation in word processor, we will learn the steps to do it.\nWord Processor 2007 \n Page Layout Tab \n Paragraph Dialog Box \n Indent and Spacing Tab\nTab\nThis can be easily understood from the following picture. We can see at sign no.1 that 0\" is written\nin front of left and right indent. Here we can write the required indent and it is measured in inches.\nSimilarly we can set the indent at sign no. 2 as well.\nFig. 2.2: Indent",
+        "word_count": 255,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 26
+    },
+    {
+        "id": 23,
+        "chunk": 23,
+        "text": "19\nFig. 2.4: Tab Set\nIndentation can be set in one more way also which can be learnt easily from the following picture:\nFig. 2.5: Tab Set",
+        "word_count": 27,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 27
+    },
+    {
+        "id": 24,
+        "chunk": 24,
+        "text": "20\nIn the above picture, there are markings from 1 to 4.Let's understand them in the same sequence:\n1.\nFirst of all, click on the paragraph which has to be indented with the help of a mouse.\n2.\nNow click on the Page Lay Out tab.\n3.\nSet the left indent margin\n4.\nSet the right indent margin.\nThis way we have learnt two methods of indentation.\nSo far we have learnt about the different parts of Word Processor. Now we will find out what a page\nset-up is, how a page is set and in how many ways we can do page set-up.\nIntext Question\n2.1\nFill in the blanks with the appropriate words given below:\n(Formatting, Page margin, Paragraph, Hanging)\n(i)\nTab is used for ............................. of a paragraph.\n(ii)\nIndentation is known as a space between page margin and a ............................. .\n(iii)\nIn ............................. type of indentation except the first line all other lines of paragraph\nare indented towards left side.\n(iv)\nIn indent, space is left from ............................. to right in the paragraph.\n2.3\nPage Set up\nPage set up means setting of a page according to the text. Before printing the text on a paper it is\nnecessary to check its size so that we know how it will appear after printing on a paper. Page set up\noption is usually found in page layout tab of word processor.\nThe steps to open page set up are as follows:\n1.\nFirst of all, we will select page layout tab of word processor.\n2.\nIn the page layout tab we will select page set up option present in the ribbon and in that we\nwill see the picture as follows:",
+        "word_count": 285,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 28
+    },
+    {
+        "id": 25,
+        "chunk": 25,
+        "text": "21\nFig. 2.6: Page set up\nPage set up option has three parts\na.\nMargin\nb.\nOrientation\nc.\nPage size\n(a)\nMargin: Margin means the space between the edge of the page and the text. We can reduce or\nincrease the margin as per our requirement. Margins are of different types -\n(i)\nNormal margin\n(ii)\nNarrow margin\n(iii) Wide margin\n(i)\nNormal margin: In this option margin is equal on all the four sides.\nTop 1''\n Right 1''\nBottom1''\n Left 1\"\n(ii)\nNarrow margin: In this option margin of the page is half than the normal on all the four\nsides.\nTop 0.5''\nRight 0.5\"\nBottom 0.5\"\n Left 0.5\"",
+        "word_count": 110,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 29
+    },
+    {
+        "id": 26,
+        "chunk": 26,
+        "text": "22\n(iii) Wide margin: In this option, margin of the page is equal on top and right. It is equal on\nbottom and left.\nTop 1\"\nRight 1\"\nBottom 2\"\nLeft 2\"\n Fig. 2.7: How to set the margin\n(b)\nOrientation: Orientation means position. It shows the position\nof the page and position of the text in it. Orientation is the\nsecond option of page set up. It is of two types -\n(i)\nPortrait - In this orientation, text is seen length wise.\n(ii)\nLandscape - In this orientation, text is seen width wise.\n Fig. 2.8: Orientation",
+        "word_count": 98,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 30
+    },
+    {
+        "id": 27,
+        "chunk": 27,
+        "text": "23\n(c)\nPage size: Page size means shape of a page. Page sizes are of many types:\n•\nA4 (201*297 mm)\n•\nA5 (148*210 mm)\n•\nA6 (105*148 mm)\n•\nA3 (297*420 mm)\n Fig. 2.9: Page Size\n2.4\nPrint Preview\nPrint preview shows how the document will look\non printing. It is mainly in the Microsoft office\nbutton. The steps to open it are as follows:\n1.\nFirst of all we select the Microsoft office\nbutton of the word processor.\n2.\nAfter selecting the Microsoft office button,\ntable linked to it opens in which print preview\noption is available.\n3.\nNow when we select this print preview\noption, print preview window opens in which\nthe already selected version of text is shown.\nWe can see the preview of text here.\nFig. 2.10: Print Preview",
+        "word_count": 134,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 31
+    },
+    {
+        "id": 28,
+        "chunk": 28,
+        "text": "24\n2.5\nPrinting\nPrinting means to print the work that has been done on a paper. Basically our text is printed on a\npaper. Steps to open printing options are as follows:\n1.\nFirst of all we will select the Microsoft office button of word processor.\n2.\nOn doing this, a table opens in front of us.\n3.\nNow we select the print option, in which this type of picture appears -\nFig. 2.11: Print\n4.\nAfter selecting the print option, many options of printing are shown. In this we can print one\npage at a time or many pages at a time.\n2.6\nWord Art\nWord Art means the creative form of words. Words are written in a creative manner. Word art is\nmainly in text group of insert menu.",
+        "word_count": 131,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 32
+    },
+    {
+        "id": 29,
+        "chunk": 29,
+        "text": "25\nTo open it, the steps are:\n1.\nFirst of all we will select the insert menu tab of word processor.\n2.\nIn insert menu option, select the text group option which is present on the ribbon. This way\nwe can open word art.\nFig. 2.12: Word Art\nWord art is used to represent words in a creative way.We can make the text look very beautiful in\nword art.The symbol of word art is ( ). When word art window opens, there are many ways for\nwriting the words.We can choose one option out of them and write the words in a creative way.\nLet's find out how to do\nword art:\n1.\nFirst of all we select any\none option from the\nWord Art window.\n2.\nAfter selecting the\noption, a text window\nopens in which we type\nthe words. We can also\nchange the type and size\nof the words.\n Fig. 2.13",
+        "word_count": 154,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 33
+    },
+    {
+        "id": 30,
+        "chunk": 30,
+        "text": "26\nIntext Question\n2.2\n1.\nAnswer the following questions:\n(i)\nHow many types of orientations are there?\n________________________________________________________________\n(ii)\nWhat is the meaning of 'page size'?\n________________________________________________________________\n(iii) Where is the 'Print Preview' option?\n________________________________________________________________\n(iv)\nWhat is the use of 'word art'?\n________________________________________________________________\nWhat you have learnt\n•\nTab: It is used for paragraph formatting.\n•\nIndentation: It is used to give space between page margin and paragraph.\n•\nIndentation is four types: Left indent, Right indent, First line indent, Hanging indent.\n•\nPage Setup: Set the page according to the text.\n•\nPage setup has three parts: Margin, orientation, page size.\n•\nOrientationis of two types: Portrait and Landscape.\n•\nPage size: Page size means shape or size of a page.\n•\nPrint preview: Print previews show the page before printing it.\n•\nWord Art: Word Art means creative use of words.",
+        "word_count": 144,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 34
+    },
+    {
+        "id": 31,
+        "chunk": 31,
+        "text": "27\nLet's do it\nComplete the following task using tab.\nBiodata\nName\n:\nAmit Kumar\nFather's name\n:\nRajan Singh\nDate of Birth\n:\n15 October 1985\nAge\n:\n25 years\nQualification\n:\nGraduate\nHobby\n:\nReading books\nExperience\n:\nTwo years (Computer Operator)\nMarital Status\n:\nUnmarried\nDate: 12.02.2016\nPlace: Delhi\nSignature: Amit Kumar\nExercise\n1.\nSelect the right option -\n(i)\nWhich option should be selected to go to the tab option:\n(a)\nPage Layout \n Paragraph \n MSWord 2007 \n Tab\nTab\n(b)\nMSWord 2007 \n Paragraph \n Page Layout \n Tab\nTab\n(c)\nMSWord 2007 \n Page Layout \n Paragraph \n Tab\nTab\n(d)\nPage Layout \n MSWord 2007 \n Paragraph \n Tab\nTab\n(ii)\nWhich of the following options should be selected to set a margin?\n(a)\nPage setup\n(b)\nPrint preview\n(c)\n Print\n(d)\n None\n(iii) In which of the following menu is Word Art present?\n(a)\nTools\n(b)\nView\n(c)\nInsert\n(d)\nFile",
+        "word_count": 148,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 35
+    },
+    {
+        "id": 32,
+        "chunk": 32,
+        "text": "28\n2.\nFill in the blanks using appropriate words :\n(Paragraph, First line, Portrait, Orientation, Landscape, Page size)\n(i)\nIn ___________ indent first line of paragraph is indented.\n(ii)\nTab is used for ____________ formatting.\n(iii) Page set up has three main parts: Margin, __________ and _________\n(iv)\nWe can see the page in two ways in orientation options:\n(a)\n__________\n(b)\n__________\n3.\nAnswer the questions given below:\n(i)\nWhat is a tab? What is it used for?\n________________________________________________________________\n(ii)\nWhat is an indent and how many types of indents are there?\n________________________________________________________________\n(iii) Write down the steps to open indent in Word Processor.\n________________________________________________________________\n(iv)\nWrite any four options for setting a page through page setup.\n________________________________________________________________\n(v)\nWhat is Word Art?\n________________________________________________________________\nAnswer\nAnswers to Questions from the Lesson\n2.1\n(i)\nFormatting\n(ii)\nParagraph\n(iii) Hanging\n(iv)\nPage Margin",
+        "word_count": 142,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 36
+    },
+    {
+        "id": 33,
+        "chunk": 33,
+        "text": "29\n2.2\n1.\n(i)\nTwo types are there:\n(a)\nPortrait\n(b)\nLandscape\n(ii)\nPage size means shape or size of a page.\n (iii) In the Microsoft button of Word Processor.\n(iv)\n'Word Art' is used for writing the words in a creative way.\nAnswer to Exercise Questions\n1.\n(i)\n (c)\n (ii) (a)\n(iii) (d)\n2.\n(i)\nFirst Line\n(ii)\nParagraph\n(iii) Orientation, Page Size\n(iv)\n(a)\nPortrait\n(b)\nLandscape\n3.\n (i)\nIn MS-Word the way to keep the space between two words is called Tab. It is used to\nmake any data.\n(ii)\nIndent is used for increasing or decreasing the page margin. It is of four types.\n(iii) To open the indent in Word Processor first open the Word 2007, then Page Layout, then\nparagraph dialogue box and then indent.\n(iv)\nThere are four options to set a page through page setup:\n(a)\nPage margin\n(b)\nOrientation\n(c)\nHeader\n(d)\nFooter\n(v)\nThrough Word Art we can write the words on a page in different ways.",
+        "word_count": 167,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 37
+    },
+    {
+        "id": 34,
+        "chunk": 34,
+        "text": "30\n3\nSpread Sheet\nWe have learnt about spreadsheet at the last level. We had read that we can interpret numbers with\nthe help of charts. Usually human beings have the ability to understand easily through pictures in\nplace of reading the text. After writing our monthly income on a spread sheet, with the help of a\nchart we can easily find out in which month we have gained the most and in which month we got\nless. In this chapter, we will study about charts in detail.\nAt the last level, we learnt the use of formulas. For calculating the sum of large numbers, writing\nformula becomes difficult. For this we use function. At in this level we will know about function in\ndetail.\nObjectives\nAfter studying this lesson, you will be able to:\n•\ntell about the objective of charts;\n•\ndescribe the types of charts;\n•\nmake different types of charts;\n•\ndifferentiate between formula and function, and\n•\nuse a few functions.",
+        "word_count": 166,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 38
+    },
+    {
+        "id": 35,
+        "chunk": 35,
+        "text": "31\n3.1\nWhat are Charts?\nWe can show our data through pictures in MS Excel. Charts are of many types. Every chart has\nmany parts. Let's understand different parts of chart -\nFig. 3.1: Chart\n3.2\nParts of Chart\n(a)\nChart Area: The place where chart has been displayed or made is called the chart area\n(b)\nChart Title: It shows the name (Heading) of the chart\n(c)\nData Label: Name of the data shown on the transverse and vertical axis is called data label\n(d)\nLegend : It shows colour, design or symbol that is used in data series\n(e)\nData Series: It shows which row and which column is being used\n3.3\nMain types of Charts\nWe can make many types of charts through MS Excel. Let's know about some main chart types that\nare used the most.\n(a)\nColumn Chart: Column chart is made of standing rectangular strips. Their lengths are in\nproportion with the numbers they are representing.",
+        "word_count": 162,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 39
+    },
+    {
+        "id": 36,
+        "chunk": 36,
+        "text": "32\nFig. 3.2: Column Chart\n(b)\nBar Chart: Bar charts are just like column charts that are used for comparing data items.\nTheir strips are presented from left to right. Their lengths are in proportion with the data.\nFig. 3.3: Bar Chart\n(c)\nPie Chart: Pie chart is a circular chart divided in separate segments. Every segment reflects\nits proportionate value with respect to the whole.\nFig. 3.4: Pie Chart\n Jan Feb March April\n April March Feb Jan",
+        "word_count": 78,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 40
+    },
+    {
+        "id": 37,
+        "chunk": 37,
+        "text": "33\n(d)\nLine Chart: This chart is shown through lines. Through it we can show the tendency of data\nvalue in definite time periods. To show what has increased with time and what has decreased,\nline chart is very useful.\nFig. 3.5: Line Chart\n3.4\nInserting a Chart\nNow, let's now learn how to insert a chart -\n1.\nFirst select the data for which we want to make a chart.\n2.\nNow click on the 'Insert' tab.\n3.\nAfter that select the desired chart type out of the various chart types shown in the 'Charts'\ngroup.\n4.\nWe will see that the chart is made.\n5.\nNow click on the 'Layout' tab. Then go to the 'Labels' group.\n6.\nThen go to the 'Chart Title' and click on the desired option.\n7.\nNow type the title of the chart in the chart title box.\n8.\nThen click on the Axis title option and type the titles of the horizontal and vertical axes.\n9.\nNow click outside the chart area.\n10.\nNow the chart is complete as per the selected data.",
+        "word_count": 181,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 41
+    },
+    {
+        "id": 38,
+        "chunk": 38,
+        "text": "34\nIntext Question\n3.1\n1.\nFill in the blanks with appropriate words given below :\n(Rectangular standing strips, MSExcel, Chart area)\n(i)\nThe place where chart is displayed is called the .....................................\n(ii)\nMany types of charts can be made in .....................................\n(iii) Column chart is made of ............................................\n2.\nAnswer the following questions:\n(i)\nWhat is a chart?\n________________________________________________________________\n(ii)\nHow many types of charts are there? Name some of them.\n________________________________________________________________\n(iii) Differentiate between a bar chart and a column chart.\n________________________________________________________________\n(iv)\nWhat is pie chart?\n________________________________________________________________\n3.5\nFormula and Function\nIn the last curriculum we had learnt to write formulas. If we have to add cell A2 to E2 and write the\ntotal in F2, then in cell F2 we will write the formula -\n= A2 + B2 + C2 + D2 + E2\nIn MSexcel, this work can be done very easily and fast through function.\nFunction is such an option through which calculations can be done easily\nMany functions are available in MS Excel but the functions used most often are :\n1.\nSum: Through this we can find the sum of numbers",
+        "word_count": 190,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 42
+    },
+    {
+        "id": 39,
+        "chunk": 39,
+        "text": "35\n2.\nMaximum: This function helps to find the maximum number in the selected cell range\n3.\nMinimum: It shows the minimum number in the selected cell range\n4.\nAverage: Through this function, the average of the cell range is calculated\n5.\nCount: Through this function we can find the total number of cells in a cell range\n(A)\nMethod of writing a function\nJust like formula, function also starts with '='. It is written as -\n= function's name (Cell range)\nCell range - (first cell : last cell)\nFor example. To find the sum of cells A2 to A8, we will write -\n= SUM (A2:A8)\nClick on the cell where you need the sum, type function and press enter key. You will get the\nsum there.\nIntext Question\n3.2\n1.\nMark the right statements as () and the wrong statements as () -\n(i)\nFormula is also known as function\n( )\n(ii)\nIt is necessary to write cell range in a formula\n( )\n(iii) Function always starts with '+' sign\n( )\n(iv)\nCell range is written after the function name\n( )\n(v)\nSum of all numbers is calculated by 'Average'\n( )\n(vi)\n'Maximum' helps to find the maximum number\n( )\nWhat you have learnt\n•\nWe can show our data through pictures in M.S.Excel\n•\nCharts are of different types - Column charts, bar charts etc\n•\nCharts have different parts - Chart area, Chart title etc.\n•\nFunction is an option through which calculations can be done easily",
+        "word_count": 258,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 43
+    },
+    {
+        "id": 40,
+        "chunk": 40,
+        "text": "36\n•\nThere are many functions available in MS Excel. Some of the most used functions are\nas follows - SUM, MAXIMUM, MINIMUM, AVERAGE, COUNT\n•\nFormula and function, both start with '='\nLet's do it\n1.\nType the given worksheet on computer and complete it with 'Function'\nHalf-Yearly Sheet\nList of material\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\n1.\nWheat\n500\n300\n400\n500\n600\n600\n2.\nRice\n200\n100\n200\n300\n400\n400\n3.\nArhar Dal\n100\n 50\n 60\n 70\n 80\n100\n4.\nMoong Dal\n 50\n 60\n 80\n 70\n 60\n 80\nTotal sum\n ?\n ?\n ?\n ?\n ?\n ?\nMaximum used\n ?\n ?\n ?\n ?\n ?\n ?\nMinimum used\n ?\n ?\n ?\n ?\n ?\n ?\n2.\nFor the worksheet given above, make the following charts -\n(a)\nBar chart\n(b)\nLine Chart\n(c)\nPie Chart\nExercise\n1.\nSelect the right option -\n(i)\nWhich of the following is not a part of the chart?\n(a)\nChart Title\n(b)\n data Label\n(c)\nChart Area\n(d)\nChart Line\n(ii)\nWhat is Bar chart similar to?\n(a)\nColumn chart\n(b)\nLine chart\n(c)\nPie chart\n(d)\nChart",
+        "word_count": 186,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 44
+    },
+    {
+        "id": 41,
+        "chunk": 41,
+        "text": "37\n(iii) In which of the following we can show data in the form of picture?\n(a)\nMSExcel\n(b)\nMS word\n(c)\nMS PowerPoint\n(d)\nInternet\n(iv)\nWhich function helps us find the sum of numbers?\n(a)\nMAXIMUM\n(b)\nSUM\n(c)\nCOUNT\n(d)\nAVERAGE\n2.\nComplete the sentences given below with appropriate words:\n(circular, chart area, COUNT, lines, MINIMUM)\n(i)\nThe place where chart is shown is called .................................\n(ii)\nThe shape of Pie chart is .................................\n(iii) Line chart is shown by means of .................................\n(iv)\nWith the help of ................................. minimum number is shown in a cell range\n(v)\n................................. helps to find out number of cells\n3.\nAnswer the following questions -\n(i)\nWhat is 'function'?\n________________________________________________________________\n(ii)\nWhat does the Line Chart show? Where is it used?\n________________________________________________________________\n(iii) How many types of charts are there?\n________________________________________________________________\nAnswer\nAnswers to Questions from the Lesson\n3.1\n1.\n(a)\nChart area\n(b)\nM.S. Excel\n(c)\nRectangular standing lines",
+        "word_count": 160,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 45
+    },
+    {
+        "id": 42,
+        "chunk": 42,
+        "text": "38\n2.\n(i)\nRepresenting data with picture in MSExcel is called 'chart'.\n(ii)\nCharts are of many types. The main ones are -\n(a)\nBar chart\n(b)\nColumn chart\n(c)\nLine chart\n(d)\nPie chart\n(iii) (a)\nBar Chart: Bar charts are used for comparing data items. It has rectangular strips\nthat go from left to right. Their lengths are in proportion with the data.\n(b)\nColumn Chart: Column chart is also made of standing rectangular strips but its\nstrips are made from bottom to the top. Their lengths are in proportion with the\nnumbers they are representing.\n(iv)\nPie Chart: Pie chart is a circular chart divided in separate segments. Every segment\nreflects its proportionate value with respect to the whole.\n3.2\n1. (i)\n\n(ii) \n (iii)\n\n(iv) \n (v)\n\n(vi)\n\nAnswers to Exercise Question\n1.\n(i)\n(d) Chart line\n(ii)\n (a) Column chart\n(iii) (a) MS Excel\n(iv)\n(b) SUM\n2.\n(i)\nChart area\n(ii)\nCircular\n(iv)\nLines\n(iv)\nMINIMUM\n(v)\nCOUNT\n3.\n(i)\nFunction is an option by which calculations can be done very easily.\n(ii)\nLine Chart: This chart is shown through lines. Through it we can show the tendency of\ndata value in definite time periods. To show what has increased with time and what has\ndecreased, line chart is very commonly used.\n(iv)\nCharts are of many types. The main ones are -\n(a)\nBar Chart\n(b)\nColumn Chart\n(c)\nPie Chart\n(d)\nLine Chart",
+        "word_count": 245,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 46
+    },
+    {
+        "id": 43,
+        "chunk": 43,
+        "text": "39\nEvaluation Sheet 1\n(Lessons 1-3)\n1.\nSelect the right option -\n(i)\nIn which form do we see the page in 'Portrait'?\n(a)\nLength\n(b)\nBreadth\n(c)\nHeight\n(d)\nDepth\n(ii)\nWhich of the following is not a type of chart?\n(a)\nColumn\n(b)\nBar\n(c)\nRow\n(d)\nPie\n2.\nComplete the sentences given below with appropriate words:\n(four, software, hardware)\n (i)\nTwo parts of computer are .......................... and ............................\n (ii) In word Processor, indentation is of ........................ types.\n3.\nAnswer the following questions in 10-20 words -\n(i)\nWhat do we call the strip at the bottom of the desktop?\n____________________________________________________________________\n(ii)\nWhich function is used to find out average in MS Excel?\n____________________________________________________________________\n4.\nAnswer the following questions in 80-100 words -\n(i)\nWhat is Word Art?\n____________________________________________________________________\n____________________________________________________________________\n(ii)\nFind out the sum of numbers from A1 to A10 using formula.\n____________________________________________________________________\n____________________________________________________________________",
+        "word_count": 147,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 47
+    },
+    {
+        "id": 44,
+        "chunk": 44,
+        "text": "40\n5.\nAnswer the following questions in 120-150 words -\n(i)\nWhat is 'Function'? Name fie functions used in MSExcel.\n____________________________________________________________________\n____________________________________________________________________\n____________________________________________________________________\n(ii)\nWhat is Operating System? Describe any four parts of it.\n____________________________________________________________________\n____________________________________________________________________\n____________________________________________________________________\nAnswer\n1.\n(i)\n(a) length\n(ii)\n(c) Row\n2.\n(i)\nHardware, Software\n(ii)\n Four\n3.\n(i)\nTask bar\n(ii)\nAVERAGE\n4.\n(i)\nWord Art means artistic form of words. Words are written in a decorative manner in\nWord Art.\n(ii)\n= SUM (A1:A10)\n5.\n(i)\nIn MS Excel, Function is an option through which calculations can be done easily\n Five functions are as follows:\n1.\nSum: Through this we can find the sum of numbers.\n2.\nMaximum: This function helps to find the maximum number in the selected cell\nrange.\n3.\nMinimum: It shows the minimum number in the selected cell range.\n4.\nAverage: Through this function, the average of the cell range is calculated.\n5.\nCount: Through this function we can find the total number of cells in a cell range.\n(ii)\nOperating system is considered to be the main part of the computer. It helps in the\nproper functioning of computer's hardware and software.\nIts four parts are -",
+        "word_count": 198,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 48
+    },
+    {
+        "id": 45,
+        "chunk": 45,
+        "text": "41\n(a)\nDesktop - The icon that we see on the computer monitor, that whole area is called\nthe desktop.\n(b)\nMouse Pointer - The arrow mark that we see on the computer screen is called\nmouse pointer.\n(c)\nTitle Bar - Whenever we open an application or a program, we find its name\nwritten in a bar at the top of the screen. This is known as the 'Title Bar'.\n(d)\nMenu Bar - There is a line at the bottom of the Title Bar on which usually File,\nEdit etc. are written. On clicking at them with a mouse, a list opens. That is called\nthe Menu Bar.",
+        "word_count": 110,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 49
+    },
+    {
+        "id": 46,
+        "chunk": 46,
+        "text": "42\n4\nPower Point Presentation\nWhenever we want to convey information or message to other people or want to explain a subject,\nwhat do we do? Either we will read out the information or convey to them by showing pictures. But\nnow in the age of computer, this trend has changed. Now we do it through a PowerPoint with the\nhelp of a projector. Its advantages are as follows:\n•\nThrough it we can provide full information.\n•\nCertain pieces of information that may be left out when we convey orally but in this nothing\nis left out.\n•\nWe can put sound effects in it and present information in a better way\n•\nBy adding videos in it we can easily explain even a difficult subject or it can be made more\ninteresting.\nThe presentation that we made earlier was too simple. At this level we will learn to make it more\ninteresting. Many facilities are available to make MSPowerPoint effective for example we can add\nsound like somebody's talk, or a song or our own recorded voice. In the same way we can add a\nvideo clip. In this chapter we will also learn how to run presentation in an automatic mode.\nObjectives\nAfter studying this lesson, you will be able to -\n•\nrevise things learnt at level B;",
+        "word_count": 222,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 50
+    },
+    {
+        "id": 47,
+        "chunk": 47,
+        "text": "43\n•\nmake your presentation effective;\n•\ninclude recorded voice (audio clip) in your presentation;\n•\ninclude video clip or movie in your presentation;\n•\nlearn to make presentation automatic;\n•\nmake the slide show attractive;\n•\nlearn the method of making slides.\n4.1\nLet's first revise the information you got at level B\n1.\nDescribing a topic by writing, with the help of pictures, graphs, and by the medium of sounds\nis called PowerPoint.\n2.\nFor making Power Point (presentation), we use MS Power Point.\n3.\nPresentation is shown with the help of a projector on a wall or a screen.\n4.\nWe can make a presentation on a subject and save it in the computer and use it again and\nagain, whenever required.\n5.\nThe steps involved in starting a PowerPoint are -\n Start Button \n All Programs \n Microsoft Office \n Power Point\nFig. 4.1: Opening a Power Point",
+        "word_count": 149,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 51
+    },
+    {
+        "id": 48,
+        "chunk": 48,
+        "text": "44\n6.\nWe see two parts in Power Point screen. On the right side is the bigger part that is called 'slide'\nand on the left side is its smaller version.\n7.\nName of the Power Point file is reflected on the Title Bar. For the first time, the name is\nwritten as 'Presentation 1'.\n8.\nSlide is like a page in which different types of information is placed that may be text, audio,\nvideo or a picture.\n9.\nTo make a new slide we click on the 'New Slide' button\n10.\nTo save a presentation, we can click on the buttons in the following sequence -\n Microsoft Office \n Save Button \n Type File’s name \n Save Button\n11.\nTo open a previously saved file, the steps are\n Microsoft Office Button \n Open Button \n Select File \n Open Button\n12.\nTo close the presentation, the steps are -\n13.\nWe can insert a new slide in an existing presentation. For doing this, we have to click on the\nslide after which we want to insert a new slide. Then we will go to 'Home' tab and click on\n'New Slide' button. This way a new slide will be created.\nSelect slide \n New Slide button\n14.\nTo make our presentation attractive, we can format the words.\nIntext Question\n4.1\n1.\nComplete the sentences given below with appropriate words:\n(New slide, power, video, save, open)\n(i)\nTo make a presentation ........................ Point is used\n(ii)\nA slide may have text, audio ........................ and pictures.\n(iii) To make a new slide we click on ........................ button.\n(iv)\nTo open a presentation -\nMicrosoft Office Button \n ............. Button \n Select File \n Open Button\n(v)\nTo save a presentation -\nMicrosoft Office Button \n ............. Button \n Type File’s name \n Save Button",
+        "word_count": 290,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 52
+    },
+    {
+        "id": 49,
+        "chunk": 49,
+        "text": "45\n 2.\nAnswer the following questions -\n(i)\nWhat is a Power Point?\n________________________________________________________________\n(ii)\nWhat is a slide?\n________________________________________________________________\n(iii) What is the method of closing a presentation?\n________________________________________________________________\n4.2\nWe can include sound also in our presentation\nWe can include certain special types of sounds in our presentation like mp3, mp4, midi, au, wav etc.\nThese are called file extensions. These are written after the file name and from these we come to\nknow for what purpose the sound has been recorded.\nWhile using an audio clip one has to take care that the copyright of the audio clip is not violated.\nFilm songs are usually copyright protected and we should use them with caution.\nWe can use copyright material only after making the payment. We can use their small clips on\nsymbolic basis but using full audio clip without permission may invite penalty.\n1.\nAdding sound or audio clip in presentation\n(i)\nFor adding an audio clip in a presentation, we will first open the prepared presentation\nand click on the 'Insert' tab in the ribbon.\n(ii)\nIn the Media Clips option look for the speaker button where the picture of a loud\nspeaker can be seen. Click on its drop box.\n(iii) Select second option 'Sound from Clip Organizer'. On clicking it a pane will open on the\nright side in which you will find some media clips. Select the first option. We will see its\nsign on the slide.\n(iv)\nNow we will save this presentation. This way this sound will be added to our presentation.\n(v)\nTo listen to it we can run the slide show. You might remember that for this purpose we\nuse the F5 key.\nNow when our presentation will run in slide show, we will hear the sound as well.",
+        "word_count": 300,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 53
+    },
+    {
+        "id": 50,
+        "chunk": 50,
+        "text": "46\nFig. 4.2: Sound in Presentation\n2.\nAdding video to the presentation\nApart from pictures and sounds, MS Power Point gives us facility to add movies and videos\nalso.\nTo add video in our presentation we have to go through the following steps -\n(i)\nSelect the desired slide\n(ii)\nClick on the 'Insert' tab. Go to Media Clips, click on the down arrow key of 'Movies'.\nSelect Movie from Clip organizer.\n(iii) You will see Clip Organizer pane that shows available movie clips.\n(iv)\nClick on the clip you wish to add. In the dialog box, click on 'Automatically' or 'When\nClicked' option. That clip will be added to our slide.\n3.\nRunning Slide Show\nNow we will click on the first button (From Beginning) present on the left side of 'Start Slide\nShow' group (figure 4.4). You will see first slide on full screen and the movie that we had\nadded. We will also hear the sound of the audio clip that we had inserted.\nIn the same way we can insert sound and movies in other slides as well.\n4.3\nSlide Transition\nThere are special effects in PowerPoint through which we change one slide to the other. This change\ncan be made very attractive with the help of transition.",
+        "word_count": 212,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 54
+    },
+    {
+        "id": 51,
+        "chunk": 51,
+        "text": "47\nFig. 4.3: Slide Transition\n4.4\nHow can we make presentation automatic?\nNow our presentation is ready. We will open the presentation and click on the Animation Button.\nWe will see picture 4.5 on the screen. There is an 'Advance Slide' button on the right side of the\n'Transition to the Slide' in Animation Tab. The first group in it is 'On Mouse Click'. If there is ? sign\non it that means the next slide will appear only when mouse is clicked. On clicking this group ? sign\nwill appear and on clicking it again this sign will disappear.\nWe will remove this sign as we want to make the presentation automatic so that there is no need to\nclick. Now we will click the group 'Automatically After' below it. The sign ? will come here. Now\nthe slides will keep on changing one after the other till the end.\nOn the left side of this group '00:00' is written in a rectangle. It shows time for which a slide will\nappear on screen in minutes and seconds. Now we will write 00:10 to delay the time for next slide\nby 10 seconds. That means this slide will remain on the screen for 10 seconds and then the next\nslide will appear.\nNow we will save the presentation.\nWe will open the presentation and click the Slide Show button on menu bar (Fig. 4.4).\nFig. 4.4: Automatic Presentation",
+        "word_count": 239,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 55
+    },
+    {
+        "id": 52,
+        "chunk": 52,
+        "text": "48\nNow we will click on 'From Beginning' button on the left side of Start Slide Show group and the\npresentation will begin.\nEach slide will remain on the screen for 10 seconds and then the next slide will appear. We won't\nhave to click the mouse.\n Animation Button \n Automatically After \n Time Lapse \n Apply to all \nSave \n Slide Show Button \n From Beginning\n4.5\nTime Gap in Different Slides\nIt is not necessary that we give equal time for each slide. We can explain one slide in 2 minutes and\nthe other one require 5 minutes. We can give different time to different slides. We can try by setting\ntime in the rectangle 00:00 and fix time as per our requirement.\nNow we will open mathematics presentation and click on the second slide. We will click on Animation\nButton and give time gap of 15 seconds and save the presentation.\nWe will open the presentation, click on the Slide Show button on the Menu Bar, click on 'From\nBeginning' present on the left side of the PowerPoint ribbon and our presentation will start.\nEvery slide will remain on the screen for 10 seconds but the second slide will be on the screen for\n15 seconds. This way we can fix the time for every slide to be visible on the screen.\nFig. 4.5: Time Gap\nThe transition of one slide to another can also be customized. There are different Transition Schemes\navailable. Select one of them. Let's select the first option by clicking on it. Now click on 'Apply to\nAll' button.",
+        "word_count": 261,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 56
+    },
+    {
+        "id": 53,
+        "chunk": 53,
+        "text": "49\nNow again we will open the presentation, click on the Slide Show button on the Menu Bar, click on\n'From Beginning' present on the left side of the PowerPoint ribbon and see that the second slide is\ncoming by rolling over the first one. We may select any other option of our choice and get different\nresults.\nWe can decide the time taken (more or less) in this process. For this purpose we can select the\ndesired button like Slow, Fast or Medium. By selecting them one by one we can select the speed\nthat we like and save that speed in our presentation. So, we can select the option and speed of slide\ntransition.\n4.6\nCustomized Animation\nWe can make our slide interesting using PowerPoint. For example, we can show our text appearing\non the slide in different ways - from above, from bottom, flying from right or left etc. Apart from\nthis we can animate our text and pictures in different ways.\nFor doing this we use 'Animations' tab.\n1.\nFirst of all, select the object that we want to animate Then click on the 'Animations' tab\n2.\nClick on 'Custom Animation' in Animations group. On doing this an animation pane will\nappear on the right side.\n3.\nClick on the 'Add Effect' button in\nthe Animations pane. Now a menu\nwill open with four options -\nEntrance, Emphasis Exit and\nMotion Paths. Select one of the\noptions and click on it.\n4.\nA sub menu will open. Click any\none category out of it.\n5.\nClick on O.K. Animate other\nobjects also in the same way. To see\nthe preview, click on the check box\nof 'Preview Effect'\n6.\nIn 'Custom Animation' pane click\non the drop down arrow of the 'Start' button and then click on the 'On Click' option. Now, our\nslide will move forward on clicking the mouse.\n7.\nDecide about the direction by clicking on the drop down of 'Direction' and below it in the\nSpeed option select slow, fast or medium as per your requirement.\nFig. 4.6: Customized Animation",
+        "word_count": 348,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 57
+    },
+    {
+        "id": 54,
+        "chunk": 54,
+        "text": "50\nIntext Question\n4.2\n1.\nMark the right statements as () and wrong statements as () -\n(i)\nWe can do recording also in PowerPoint.\n( )\n(ii)\nWe can use copyright material only after making the payment.\n( )\n(iii) We can insert any movie into the presentation.\n( )\n(iv)\nWe should give equal time to all the slides.\n( )\n(v)\nWe cannot insert video clips in the presentation.\n( )\nWhat you have learnt\n•\nWe use MS PowerPoint to make a presentation.\n•\nWe can insert an audio clip while making a presentation.\n•\nSlide Transition is a special effect of PowerPoint which helps to change the slide one\nafter the other in a slide show.\n•\nSlide is like a page in which different types of information is placed.\n•\nTo make our presentation attractive, we can format the words.\n•\nIn a presentation we can run the slide show in different ways.\nLet's do it\nMake a presentation and try to use different features in it.\nExercise\n1.\nSelect the correct alternative -\n(i)\nTo insert video clip in a presentation, which option will you select?\n(a)\nVideo Clip\n(b)\nAudio Clip\n(c)\nMovie from clip organizer\n(d)\nBoth (a) and (b)",
+        "word_count": 209,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 58
+    },
+    {
+        "id": 55,
+        "chunk": 55,
+        "text": "51\n(ii)\nWhich option will you select to start a slide show?\n(a)\nFrom Last\n(b)\nCurrent Slide\n(c)\nFrom Beginning\n(d)\nNone of the above\n(iii) Where do you find 'Animation Button' in the presentation?\n(a)\nRibbon\n(b)\nTitle Bar\n(c)\nMenu Bar\n(d)\nTask Bar\n2.\nFill in the blanks given in the sentences below with appropriate words:\n(save, audio, video, close, From Beginning)\n(i)\nTo close a presentation, we will select the option ........................\n(ii)\nTo start a slide show we will click on ........................\n(iii) We can include ........................ and ........................ in a slide.\n(iv)\nTo save a presentation\nMicrosoft Office Button \n ............. Button \n File’s name \n Save Button\n3.\nAnswer the following questions -\n(i)\nWrite down steps of starting a PowerPoint.\n________________________________________________________________\n(ii)\nWhat is a slide?\n________________________________________________________________\n(iii) What is a PowerPoint?\n________________________________________________________________\nAnswer\nAnswer to Questions from the Lesson\n4.1\n1.\n(i)\nPower\n(ii)\nVideo\n(iii) New Slide\n(iv)\nOpen\n(v)\nSave",
+        "word_count": 159,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 59
+    },
+    {
+        "id": 56,
+        "chunk": 56,
+        "text": "52\n2.\n(i)\nDescribing a topic by writing, with the help of pictures, graphs, and with the medium of\nsound is called PowerPoint.\n(ii)\nEach one of the pages of a PowerPoint is called a 'Slide'.\n(iii) To close a presentation, we will click on the Microsoft Office button and click on\n'Close'.\n4.2\n1.\n (i)\n\n(ii)\n\n(iii) \n(iv) \n(v)\n\nAnswer to Exercise Questions\n1.\n(i)\n(c)\n(ii)\n(c)\n(iii) (c)\n2.\n(i)\nClose\n(ii)\nFrom Beginning\n(iii) Audio. Video\n(iv) Save\n3.\n(i)\nTo start a PowerPoint, the steps are as follows -\nStart Button \n All programs \n Microsoft Office \n PowerPoint\n(ii)\nEach one of the pages of a PowerPoint is called a 'Slide'.\n(iii) Describing a topic by writing, with the help of pictures, graphs, and with the medium\nof sounds is called PowerPoint.",
+        "word_count": 140,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 60
+    },
+    {
+        "id": 57,
+        "chunk": 57,
+        "text": "53\n5\nComputer Network\nBy now you have understood the computer very well. We find that the use of computer is increasing\nvery much these days. Now the use of computer has increased so much that no area has been left\nuntouched. Computers are being used in the areas of education, business, technology and several\nother areas. These days computers are used the most by the people seeking jobs. But for this purpose\nthey are using internet in computers.\nNow we know that the use of computers has increased in all areas. We will now learn what things\nare required to join many computers with one another.\nObjectives\nAfter studying this lesson, you will be able to -\n•\ndescribe 'Network';\n•\ntell about working and utility of computer network;\n•\ndescribe types of computer networks;\n•\ntell the description of network tool;\n•\nspecify the advantages of network;\n•\ndescribe in detail the method of setting up of a computer network.",
+        "word_count": 162,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 61
+    },
+    {
+        "id": 58,
+        "chunk": 58,
+        "text": "54\n5.1\nWhat is a Computer Network?\nComputer Network: Usually it is seen that 2-4 people get connected to one another through a\nmedium. There they have sharing of thoughts among them. That medium may be education, business\nor employment; they get connected to form a network. Similarly when two or more computers get\nconnected with the help of wires, they form a network. Actually that network is called 'Computer\nNetwork'. Many accessory tools are required to make a computer network. To run a machine, a\nnumber of accessories linked to it are required. Similarly, to run a computer network, a few appliances\nand mainly wires are required.\nToday, the computer network has reached such a height all the computers of the world link to one\nanother through computer networks and share data or information. With the help of network, this\ninformation reaches easily from one place to another. Now we will find out how many types of\ncomputer networks are there.\n5.2\nTypes of Computer Networks\nComputer networks are mainly of three types -\n(a)\nLocal Area Network (LAN)\n(b)\nMetropolitan Area Network (MAN)\n(c)\nWide Area Network (WAN)\n(a)\nLAN (Local Area Network): In LAN (Local Area Network), computers kept in a building or\nparts of multistorey building are linked to one another. It can be used for a limited distance\nonly. For example an office, school or a college etc.\nFig. 5.2: Local Area Network",
+        "word_count": 238,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 62
+    },
+    {
+        "id": 59,
+        "chunk": 59,
+        "text": "55\n(b)\nMAN (Metropolitan Area Network): MAN or Metropolitan Area Network can work only\ninside a city. We can link all the computers of a city with this network. Its coverage area is\nbigger than LAN. We have channels on our T.V. managed by cable T.V. network. These channels\ncome at the same time in the entire city. Cable T.V. network is a sort of MAN only.\nApart from this, MAN is used to connect different computers of an organization present in\ndifferent offices in the city.\nFig. 5.2: Metropolitan Area Network\n(c)\nWAN (Wide Area Network): WAN or Wide Area Network is bigger than both LAN and\nMAN. Internet is the best example of this network. There is no defined boundary for this\nnetwork. This network links the whole world through satellite. It is also known as www.\nThese days the use of WAN has increased to a great extent.\nFig. 5.3: Wide Area Network",
+        "word_count": 156,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 63
+    },
+    {
+        "id": 60,
+        "chunk": 60,
+        "text": "56\nIntext Question\n5.1\n1.\nComplete the sentences given below with appropriate words:\n(Metropolitan Area Network, Internet, wires, tools, Wide Area Network, satellite)\n(i)\nComputer network is made of .............................\n(ii)\nTo make a computer network many accessory ............................. are required\n(iii) Full name of MAN is .......................................................................................\n(iv)\nThe best example of WAN Network is ..........................................................\n(v)\nWe can join the whole world with .............................\n(vi)\nFull name of WAN is .......................................................................................\n2.\nAnswer the questions -\n(i)\nWhat is a network?\n________________________________________________________________\n(ii)\nWhat is the second name of www? How does it work?\n________________________________________________________________\n(iii) What can we do with the help of a network?\n________________________________________________________________\n(iv)\nWhat is the full name of LAN? Where do we use it?\n________________________________________________________________\n5.3\nDifferent tools of Network (Appliances)\nBy now we have come to know that when more than one computers are joined to one another, it is\ncalled computer network. But to join these computers, we need some accessories about which we\nwill know now.\n(a)\nNetworking Cable\n(b)\nConnector (RJ -45)\n(c)\nModem\n(d)\nSwitch and Wi-fi",
+        "word_count": 180,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 64
+    },
+    {
+        "id": 61,
+        "chunk": 61,
+        "text": "57\n(a)\nNetworking Cable: Normally for networking CAT -5 or CAT -6 cable is used. They have 8\nwires made of 4 pair of different colours.\nFig. 5.4: Networking Cable\n(b)\nConnector: For networking, connectors are fixed on both sides of the cable. In the area of\ncomputers they are called RJ -45 connectors.\nFig. 5.5: Connectors\n(c)\nModem: The main function of modem is to convert digital information to analog and analog\ninformation to digital. Any information lying in the computer is in the digital form. But when\nthrough internet it has to be sent through telephone line or any other medium, it has to be\nchanged into analog which is done by the modem.\nFig. 5.6: Modem",
+        "word_count": 119,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 65
+    },
+    {
+        "id": 62,
+        "chunk": 62,
+        "text": "58\n(d)\nSwitch and Wi-fi: Switch is a device which plays a crucial role in making a network. One\nend of the network cable is connected to the computer and the other end to the switch. Similarly\nmany computers are connected to one another with the help of switches.\nThese days we hear a lot about Wi-fi that internet works with Wi-fi. Mostly we use Wi-fi\nconnection on laptop. It is also used as network tool. It is a wireless system in which wires are\nnot used.\nIntext Question\n5.2\n1.\nComplete the sentences given below with appropriate words:\n(CAT - 5 or CAT - 6, Wi-Fi, digital, analog, computer network, connector)\n(i)\nWhen more than one computers are joined to one another, it is called a ...................\n(ii)\n.................. cable is used for networking\n(iii) For networking ....................... is used at both the ends of cable\n(iv)\nModem mostly converts ....................... information into .......................\n(v)\n....................... connection is also used as a network tool.\n2.\nAnswer the following questions -\n(i)\nWhat is a switch?\n________________________________________________________________\n(ii)\nWhat is the other name of a connector?\n________________________________________________________________\n(iii) How does a modem work?\n________________________________________________________________",
+        "word_count": 194,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 66
+    },
+    {
+        "id": 63,
+        "chunk": 63,
+        "text": "59\nWhat you have learnt\n•\nComputer network is made by connecting more than one computers through special\nappliances.\n•\nLAN is used to connect computers kept in a building or parts of a multistorey building.\n•\nMAN network is used to connect computers kept in different offices of an organization\nin a city.\n•\nWAN network is made by connecting a number of LAN and MAN networks. It is spread\nover the whole world. It is also known as World Wide Network\n•\nTo make a network, network cable, RJ-45 connector, switch and modem are required\nLet's do it\nGo to a cyber café and learn about Local area Network (LAN)\nExercise\n1.\nSelect the correct alternative -\n(i)\nFull name of LAN is -\n(a)\nLocal Area Network\n(b)\nLight Area Network\n(c)\nNetwork Area Network\n(d)\nNo Area Network\n(ii)\nWhere do we find MAN (Metropolitan Area Network) useful?\n(a)\nMultistorey buildings\n(b)\nOne city\n(c)\nWhole World\n(d)\nIn a school premises\n(iii) Which cable is used for networking?\n(a)\nCAT - 5\n(b)\nCAT - 8\n(c)\nCAT - 7\n(d)\nCAT - 5 or CAT - 6\n(iv)\nWhich of the following is not a network tool?\n(a)\nConnector\n(b)\nSwitch\n(c)\nModem\n(d)\nComputer",
+        "word_count": 211,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 67
+    },
+    {
+        "id": 64,
+        "chunk": 64,
+        "text": "60\n(v)\nWhich of the following options is correct?\n(a)\nWires are not required for networking.\n( )\n(b)\nWires and accessories are required in networking.\n( )\n(c)\nComputer is not required in networking.\n( )\n(d)\nHouse is required for networking.\n( )\n2.\nFill in the blanks given in the sentences below with appropriate words:\n(RJ - 45 Connector, Digital, Analog, Network, CAT - 5 or CAT - 6 , Satellite,\nWide Area Network, Network Cable, Switch, Modem, Internet)\n(i)\n............................. is the full name of WAN.\n(ii)\nThe best example of network is ............................. .\n(iii) .........................., ............................, ......................... and ............................. are\nrequired in making networks.\n(iv)\nWe can join the whole world with ............................. .\n(v)\n............................. cable is used for networking.\n(vi)\nWhen two or more computers are linked together, it is called ............................. .\n(vii) The Modem mainly changes ............................. information to ............................ .\n3.\nAnswer the following questions -\n(i)\nWhat is a network? what type of work can we do with its help?\n________________________________________________________________\n(ii)\nWhat is a modem and what does it do?\n________________________________________________________________\n(iii) What is WAN? How does it work?\n________________________________________________________________\n(iv)\nWhat is a switch? What is the second name of a connector?\n________________________________________________________________\n(v)\nWhich accessories are required for networking?\n________________________________________________________________\n(vi)\nWhat is the full name of LAN? Where is it used?\n________________________________________________________________",
+        "word_count": 228,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 68
+    },
+    {
+        "id": 65,
+        "chunk": 65,
+        "text": "61\nAnswer\nAnswers to Questions from the Lesson\n5.1\n1.\n(i)\nWires\n(ii)\n Tools\n(iii) Metropolitan Area Network\n(iv)\nSatellite\n(v)\nWide Area Network\n2.\n(i)\nWhen two or more than two computers are connected with one another they make a\nnetwork. This network is usually called as a computer network.\n(ii)\nFull form of WWW is World Wide Web. This network connects the whole world through\nsatellite.\n(iii) We can send the data and information from one place to another very easily with the\nhelp of a network.\n(iv)\nFull form of LAN is Local Area Network. It is used for some limited distance like,\noffices, schools or colleges etc.\n5.2\n1.\n(i)\nComputer Network\n(ii)\nCAT-5 or CAT-6\n(iii) Connector\n(iv)\nDigital, Analog\n(v)\nWi-Fi\n2.\n(i)\nSwitch is a device through which many other computers get connected.\n(ii)\nConnector's second name is RJ-45 connector.\n(iii) Modem mainly coverts the digital information into analog and analog to digital\ninformation.\nAnswer to Exercise Questions\n1.\n(i)\n(a)\n(ii)\n(b)\n(iii) (c)\n(iv)\n(d)\n(v)\n(b)\n2.\n(i)\nWide Area Network\n(ii)\nInternet\n(iii) Network Cable, RJ-45 Connector, Switch, Modem\n(iv)\nSatellite\n(v)\nCAT-5 or CAT-6",
+        "word_count": 196,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 69
+    },
+    {
+        "id": 66,
+        "chunk": 66,
+        "text": "62\n(vi)\nNetwork\n(vii) Digital, Analog\n3.\n(i)\nWhen two or more than two computers are connected with one another they make a\nnetwork. This network is usually called a computer network.We can send the data and\ninformation from one place to another place very easily with the help of a network.\n(ii)\nModem is a helpful device which is used for making a computer network. Modem\nmainly coverts the digital information into analog and analog to digital information.\n(iii) Full form of WAN is Wide Area Network. This network has spread across the world.\nThis network connects the whole world through satellite. This is also known as World\nWide Web that is www.\n(iv)\nSwitch is a device which helps to make a network. While networking many computers\nget connected with one another through switch.\nConnectors are attached on both sides of cable for networking.RJ-45 is known as a\nconnector.\n(v)\nThe tools which are used for networking are as:\n(1)\nModem\n(2)\nConnector\n(3)\nNetworking cable\n(4)\nSwitch and Wi-Fi\n(vi)\nFull name of LAN is Local Area Network. This network is used to connect computers in\na building or to connect different computers kept in a multi-storey building. This is used\nin schools, colleges or universities etc.",
+        "word_count": 210,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 70
+    },
+    {
+        "id": 67,
+        "chunk": 67,
+        "text": "63\n6\nInternet\nInternet is playing an important role in every sector related to computer in today's world. Internet is\nmostly used in mobiles now a day. We can book rail and air tickets with movie tickets using internet.\nWe can also know happenings around the world sitting at our home.\nWe have already read about what is internet in level B. we have also learnt how information exchange\ntakes place using internet. You have already learnt about opening websites, getting information etc\nwith opening an e-mail account and sending e-mails in detail.\nObjectives\nAfter studying this lesson, you will be able to:\n•\nTell the meaning of internet\n•\nKnow about the classification of websites\n•\nKnow the utilities of internet on following subjects:\nI.\nDoing video conferencing\nII.\nDoing instant messaging\nIII.\nDoing chatting\nIV.\nUsing social networking\nV.\nKnowing about e-commerce\nVI.\nKnow about e-governance\nVII. Understanding e-ticketing",
+        "word_count": 151,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 71
+    },
+    {
+        "id": 68,
+        "chunk": 68,
+        "text": "64\n6.1\nWhat is Internet?\nTechnically, internet is a network of networks. It also refers to connect many network groups together.\nThis network can be located at any place, state, country or world.\nFig. 6.1: Internet\n6.2\nClassification of Websites\nWe already know that any institution, company or businessman can tell their subject to people by\nmaking websites on internet. One webpage consists of many web pages. We can identify the type\nof websites by its name.\nwww.indianrail.gov.in\n 1 2 3\n1.\nAfter reading the name, we know that this is the website of Indian railway.\n2.\nIt is also understood that it is a government website.\n3.\nThis shows the international code of India.",
+        "word_count": 115,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 72
+    },
+    {
+        "id": 69,
+        "chunk": 69,
+        "text": "65\n(a)\nDomain\nEvery website has an address on internet. For example, 203.94.243.70 but it is difficult to\nremember this address. We can remember name easily. Internet also gives us the facility of\nregistering a website. Internet provides an address to the registered websites. We should know\nthat address to access the website. Internet converts this website into address. The name of\nwebsite is registered and internet provides an address. We should remember this name only. It\nis known as domain. Internet converts website into address automatically.\n Fig. 6.2: Domain\n(b)\nURL\nURL refers to uniform resource locator. Whenever we want to search any information on\ninternet, we use google search engine in web browser. We can understand URL by the given\nexample.\nIf we type www.google.com in the address bar if browser to open google search engine and\npress enter then google web page gets opened. However, it should be noticed that your typed\naddress www.google.com gets converted to http://www.google.co.in. This is known as URL\nor web address. The main fact is that there is no her website of the same name in the world.\nFig. 6.3: URL",
+        "word_count": 189,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 73
+    },
+    {
+        "id": 70,
+        "chunk": 70,
+        "text": "66\nIntext Question\n6.1\n1.\nFill in the blanks by choosing from the following words:\n(Address, networks, web pages, international, network)\n(i)\nInternet is network of ______________.\n(ii)\nWebsite is made up of many _________.\n(iii) Every website has a ____________.\n(iv)\nInternet connects many ___________ groups together.\n(v) . in is the __________ code of India.\n2.\nAnswer the following questions:\n(i)\nWhat is internet?\n_______________________________________________________________\n(ii)\nWrite the full form of URL?\n_______________________________________________________________\n(iii) Tell any three works which are done with the help of internet?\n_______________________________________________________________\n6.3\nUtility of Internet\nWe have already learnt many things about internet in level B. For example, we already know that\nwe can gather information about country, world, new techniques about agriculture, new methods in\neducation, treatment in hospitals using internet.\nWe will learn about many other utilities using internet.\n(a)\nVideo Conferencing\nVideo conferencing has now become an important and modern medium of communication.\nWe can see computer screens of more than one people and can have face to face conversation\nusing projector and television screen. Video conferencing can also be done by using mobile.\nTools of video conferencing\nWe will require following tools to use the technique of video conferencing.\n1.\nWeb camera or video camera\n2.\nComputer monitor, projector or television",
+        "word_count": 213,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 74
+    },
+    {
+        "id": 71,
+        "chunk": 71,
+        "text": "67\n3.\nMicrophone (MIC)\n4.\nSpeaker\n5.\nInternet\n6.\nComputer\nAll these tools are connected for video conferencing. However, it should also be noted that\nthe person with whom you want to talk should also have all these tools.\nBenefits of Video Conferencing\n1.\nVideo conferencing helps in talking and seeing the person even if in far away place.\n2.\n A teacher can teach to students in different schools together. He can also monitor their\nactivities.\n3.\nMany live news reports are shown in news channels using video conferencing.\n4.\nA person can sit at home and can give job interviews. He need not visit other state or\ncountry for his interview.\n5.\nVideo conferencing helps in treatment of patients from a doctor sitting in other country.\nHe can also help the doctor sitting behind the patient.\nFig. 6.4: Video conferencing\n(b)\nInstant Messaging\nWe have already known that the modern technique of sending a message is e-mail. We have to\nmake our e-mail id before sending mail. We should know the mail id of other person to send\nthe message, this is also noted that all these Id consumer can be from different domain or with\nthe same company.",
+        "word_count": 200,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 75
+    },
+    {
+        "id": 72,
+        "chunk": 72,
+        "text": "68\nInstant messaging is just opposite of e-mail. It means that for sending an instant message we\nneed special software or messenger between two persons. This is used in mobiles.\nFig. 6.5: Instant Messaging\n(c)\nChatting\nComputer chatting refers to sending messages and receiving replies using special software.\nThis special software is called messenger, the message sent by messenger is received in the\nscreen or account of other persons at a fast pace. Chatting is an open option. It means that the\nperson with whom u want to chat should be online. You and your friend can read the message\nwritten in messenger window.\n(d)\nSocial networking\nSocial networking is the subject which is talk of the town these days. Every person is taking\ninterest in social networking. Crores of people have become consumers of networking in the\nworld.\nLet us know about social networking. Suppose I make my id or account on any social\nnetworking website. Then we will send friend requests to each other. In this way, many accounts\nwill be linked together.\nWe can also send friend requests to other persons to whom we want to make our friend. If he\naccepts the proposals then he will be added in our group. This will make our networking or\ngroup bigger. This is known as social networking. We can share our pictures, thoughts and\ntalking with each other.\n(e)\nE-commerce\nThe full form of e-commerce is electronic commerce. This is a medium of business where\ncompanies sell their products using internet.\nFor using e-commerce, companies make their own websites. They also paste product name\nwith price and its photos. The consumer can ask more details about his desired product.",
+        "word_count": 281,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 76
+    },
+    {
+        "id": 73,
+        "chunk": 73,
+        "text": "69\nLet us now understand how e-commerce works. Suppose you want to purchase a mobile\nphone, you will visit the website of the company from which you want to purchase the phone.\nThen, you will choose the mobile of your choice and payment method either using internet\nbanking, credit card or debit card. After giving the required details your payment will be done\nand mobile will soon reach your home.\nNote- be cautious to purchase only from original website. Fake website can cheat you and\nwaste your money.\n(f)\ne-governance\nThe main objective of e-governance is to bring transparency between the relation of common\npeople and government.\nWe have always seen or listened that government has started a scheme and has ended the\nscheme; but we were unaware of it. A tender was filled in a government office but only a few\npeople came to know about it.\nTo end such problems, government has established e-governance where the information and\nactivities of all government and non government institutions as placed on websites. This\nsystem has helped common people to know about the organization.\nWe can understand it with an example:\nIf road is built on our road then we can use e-governance. We come to know the cost, work\ntime period and other details on the website. You can also ask the reason for delay for work.\nE-governance was built so that common man can give suggestions or information regarding\nthe work.\nFig. 6.7: e-governance",
+        "word_count": 245,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 77
+    },
+    {
+        "id": 74,
+        "chunk": 74,
+        "text": "70\nIntext Question\n6.2\n1.\nFill in the blanks by choosing from the following words:\n(E-mail, news channels, Website, message, electronic commerce)\n(i)\n___ show live news using video conferencing.\n(ii)\n___________ is the modern message for sending message.\n(iii) __________ sent by messenger reaches the screen of other person instantly.\n(iv)\nCompanies make their own ______________ for e-commerce.\n(v )\nThe full form of e-commerce is ____________.\nWhat you have learnt\n•\nInternet is network of networks.\n•\nURL is Uniform Resource Locator.\n•\nOne can see others on screen in video conferencing.\n•\nMessages sent by messenger is instantly seen on other persons screen if he has logged\nin his account.\n•\nWe can connect with others using social networking.\n•\nWe can purchase products by e-commerce using internet.\n•\nThe main objective of e-governance is to keep transparency between common people\nand government.\nLet’s do it\n Open facebook or yahoo messenger using internet either in your computer or nearby cyber\n cafe.\nExercise\n1.\nChoose the correct option:\n(i)\nThe main tools of video conferencing\n(a)\nScreen\n(b)\nMike\n(c)\nComputer\n(d)\nAll the above",
+        "word_count": 187,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 78
+    },
+    {
+        "id": 75,
+        "chunk": 75,
+        "text": "71\n(ii)\nThe method of making payments in online shopping:\n(a)\nCredit card\n(b)\nDebit card\n(c)\nInternet banking\n(d)\nAll the above\n(iii) URL means:\n(a)\nUniversal resource locator\n(b)\nUniform resource locator\n(c)\nUnity resource link\n(d)\nUniverse resource language\n(iv)\nInstant messaging is used in:\n(a)\nMobile\n(b)\nMessenger\n(c)\nE-mail\n(d)\nInternet\n2.\nAnswer the following questions:\n(a)\nWhat is internet?\n________________________________________________________________\n(b)\nName any two benefits of video conferencing?\n________________________________________________________________\n(c)\nWhat is e-commerce?\n________________________________________________________________\n(d)\nWhat is the main objective of e-governance?\n________________________________________________________________\nAnswer Key\nAnswers to Questions from the Lesson\n6.1\n1.\n(i)\nNetwork\n(ii)\nWeb pages\n(iii) Address\n(iv)\nNetwork\n(v)\nInternational\n2.\n(i)\nInternet is network of networks.\n(ii)\nURL is uniform resource locator.\n(iii) We can book rail tickets, air tickets and movie tickets using internet.",
+        "word_count": 136,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 79
+    },
+    {
+        "id": 76,
+        "chunk": 76,
+        "text": "72\n6.2\n1.\n(i)\nNews channels\n(ii)\nE-mail\n(iii) Message\n(iv)\nWebsite\n(v)\nElectronic commerce\nAnswers to Exercise Questions\n1.\n(i)\nd\n(ii)\nd\n(iii) b\n(iv)\na\n2.\n(i)\nInternet is network of networks.\n(ii)\nTwo benefits of video conferencing\n(a)\nTo see live news\n(b)\nTo give interviews for jobs in other places\n(iii) E-commerce is electronic commerce. This is a medium for selling products by big\ncompanies.\n(iv)\nThe main objective of e-governance is to bring transparency between common man and\ngovernment.",
+        "word_count": 85,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 80
+    },
+    {
+        "id": 77,
+        "chunk": 77,
+        "text": "73\n7\nMultimedia\nWe are living in the world where the use of technology has increased. Multimedia is also a part of\ntechnology. Multimedia means using of more than one medium. Mostly, the use of texts, sounds\nand videos etc together for a representation or expression is known as multimedia.\nThe first use of multimedia was newspaper which has tests, pictures and images together. Radio\nonly used audio broadcasting. Television was developed which used only images. Computers were\ninvented which included multimedia. We can now hear music on computer using multimedia; we\ncan see movies and pictures on computer. Further, animated pictures can be created on computer.\nObjectives\nAfter studying this lesson, you will be able to:\n•\ntell about multimedia;\n•\nexplain various tools of multimedia;\n•\ndescribe the necessary objects and hardware required for using multimedia in computer;\n•\ngive knowledge about the usage of multimedia.",
+        "word_count": 148,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 81
+    },
+    {
+        "id": 78,
+        "chunk": 78,
+        "text": "74\n7.1\nElements of Multimedia\nMultimedia has five main elements:\nA.\ntext\nB.\nimage\nC.\naudio\nD.\nvideo\nE.\nanimation\nLet us learn about them in detail.\nA.\ntext - words are presented in an attractive way on screen by using many types of font, style,\ncolor etc.\nB.\nimages - when an object is presented by using image, it leaves a deep effect on our mind.\nThese images can be made by hand, clicked by camera or artwork prepared by using computer.\nAll these images are known as multimedia. It also includes 2D and 3D graphics.\nC.\naudio - audio can be anybody’s voice or sounds like splashing of water, thunder of clouds,\nclapping sounds etc. It also includes music coming out of a musical instrument.\nD.\nvideo - whenever we see a film on computer, it is known as video. This includes motion\npictures which also has sound in it. It is same as watching movies on television.\nE.\nanimation - we can see any object or a cartoon moving and taking by animation. Just like\nbows are shown in the wars in Ramayan from one corner to other. It can also be seen with the\nmoving chariot of Meghanad in Ramayan. These fixed images are shown in fast mode. This\nfast mode help images moving.\n7.2\nRequired Tools for Multimedia\nFollowing are the minimum hardware tools required for running multimedia in your computer:\nA.\nHigh processing power – for running a multimedia on our system, we require Pentium-IV\nprocessor or more. The speed of the processor should be minimum 1 GHZ.\nB.\nStorage requirement – multimedia presentation files require more space in memory. The\ndisk space of the computer should be around 120GB. This also requires more RAM.\nC.\nOperating system – multimedia requires such operating system which can access and process\nthe files in an easy and fast way. Today operating systems like windows-7 and its updated\nversions are helpful in this regard.\nD.\nSound and display card - audio and video are essential parts of multimedia. Therefore, a\ngood sound and colour display card is also required.",
+        "word_count": 352,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 82
+    },
+    {
+        "id": 79,
+        "chunk": 79,
+        "text": "75\nE.\nInput and output devices – multimedia requires a good colored monitor with 24X or higher\nresolution. Other required tools are CD ROM drive, key board, mouse, colour printer (300\nDPI or more capacity), scanner (300 DPI or more), video cameras, audio and video recorder,\nspeaker and microphone.\nIntext Question\n7.1\n1.\nFill in the blanks by choosing the correct option:\n(monitor, audio, video. 2D, 3D, newspaper, memory)\n(i)\nThe first use of multimedia was ________________________.\n(ii)\nMultimedia includes ___________ and ________________.\n(iii) Multimedia requires more __________.\n(iv)\n____________ is a better device for multimedia.\n(v)\nThe main components of multimedia are ____ and ____________.\n2.\nAnswer the following questions:\n(i)\nName the elements of multimedia?\n________________________________________________________________\n(ii)\nWhich are the essential components of multimedia?\n________________________________________________________________\n(iii) What is multimedia?\n________________________________________________________________\n7.3\nAreas where Multimedia is used\nMultimedia can be used in many areas. Some of them are:\n(a)\nIn education area – the main goal of a good teacher is to give complete knowledge about the\nsubject to the students, some students learn with lecture method, some with experiments and\nothers by audio visual technique.\nMultimedia has multiple uses for a teacher because we believe what we see. We can also\nunderstand the concept easily by seeing. For example, poem or multiple tables have to be",
+        "word_count": 218,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 83
+    },
+    {
+        "id": 80,
+        "chunk": 80,
+        "text": "76\nrepeated again and again whereas film songs based on numbers are remembered by the child\neasily. Teacher can also understand his subject easily through presentation. The role of a\nteacher has been reduced to a facilitator of solution provider or guide now days.\nFig. 7.1: Multimedia in education area\nChildren can also study from many multimedia tools like presentation tutorial, virtual lab,\nsimulation etc. On-line courses have also helped people in studying from their home.\n(b)\nIn entertainment area – children enjoy entertainment using multimedia CDs. They can play\n2D, 3D, action or other games using multimedia CDs. Children face completion from their\nfriends in video games on computer just like cricket, football, chess etc on play ground.\nMultimedia is also used in news papers. Both TV and films have increases the use of media.\nSinking of titanic in ‘titanic’ or voice or walking of dinosaurs in Jurassic park or Indian\nmovies like bahubali seem to be real because of multimedia.\nFig. 7.2: Multimedia in entertainment area",
+        "word_count": 168,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 84
+    },
+    {
+        "id": 81,
+        "chunk": 81,
+        "text": "77\n(c)\nIn training area – many multinational companies spend huge amount in the training of their\nemployees. Earlier they used to call some experts in their companies or they send their\nemployees to their place. This had huge expenditure but now this work is being done in their\ncompany using multimedia. Multimedia tools help the trainee students to evaluate themselves\nusing simulations; NASA trains their astronauts about flight control using multimedia. Pilots\nalso practice in virtual devices on computer before their real flight in plane.\nFig. 7.3: Multimedia in training\n(d)\nIn business - multimedia is maximum uses in business area. It is very important for every\nbusiness to make their concepts understood by the people.\nFig. 7.4: Multimedia in business",
+        "word_count": 122,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 85
+    },
+    {
+        "id": 82,
+        "chunk": 82,
+        "text": "78\nReaching out our product to common people is very easy using multimedia. The sales of\ncompany products can be increased by making people understand their points using\npresentation, electronic brochure, annual report, vision statement etc. Audios and videos of\nmultimedia files have a deep impact on people and they purchase the product easily.\nAdvertising has become very fast and better by the usage of multimedia, expansion and\nadvertising of the product can be done on internet using multimedia.\n(e)\n In fashion – computer was first used in fashion in 1980. This was a useful tool for designers.\nToday computer is not used not only to prepare designs but also in ordering fabric, preparing\nadvertisement etc. Computer helps us in contacting everyone using multimedia.\nThere are many software available to make designing easy like Corel draw, cameo, dress\nassistant etc.\nIntext Question\n7.2\n1.\nFill in the blanks choosing the correct option:\n(2D, 3D, Action, games, business, coral draw)\n(i)\nMultimedia is mostly used in __________ area.\n(ii)\n______________ is a type of multimedia software.\n(iii) Children play __________ games using multimedia CD.\n2.\nAnswer the following questions:\n(i)\nWhat are the uses of multimedia in entertainment area?\n________________________________________________________________\n(ii)\nWhen was computer first used in fashion area?\n________________________________________________________________\nWhat you have learnt\n•\nMultimedia is made up of two words- multi means many and media means channels.\n•\nMultimedia is the mixing of many methods. These methods or elements are text, images,\naudio, video, animation etc.\n•\nGraphics are an important part of multimedia. It can be used in many forms like images,\ncharts, flow charts, 2D or 3D, graphics etc.",
+        "word_count": 272,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 86
+    },
+    {
+        "id": 83,
+        "chunk": 83,
+        "text": "79\n•\nThe basic elements of multimedia are audio, text, image, video and animation.\n•\nMultimedia is used in many areas like entrainment, education, training, business,\nmarketing, fashion etc.\nLet’s do it\n Make a presentation using text, audio, video and graphics.\nExercise\n1.\nChoose the correct option:\n (i)\nWhich of the following is not a multimedia?\n (a)\nText\n(b)\nAudio\n(c)\nImage\n(d)\nInternet\n(ii)\nWhat is the minimum disk space required for running a multimedia?\n(a)\n120 GB\n(b)\n50 GB\n(c)\n100 GB\n(d)\n10 GB\n(iii) Which of the following is not a multimedia component ?\n(a)\nSound card\n(b)\nScanner\n(c)\nDisplay card\n(d)\nEducation\n(iv)\nWhich of the following is an important element of multimedia?\n(a)\nGraphics\n(b)\nMonitor\n(c)\nSound card\n(d)\nAll the above\n2.\nFill in the blanks choosing the correct option:\n(animation, multimedia, graphics, multimedia, education/entertainment/training)\n(i)\n ______________ is the mixing of many mediums.\n(ii)\n _________________ is an important part of multimedia. It can be used in many\nforms like picture, chart etc.\n(iii) The main components of multimedia are images, text, audio, video and ______.\n(iv)\nMultimedia is used in ______________ areas.\n(v)\nAdvertisement has made __________________ technology better.",
+        "word_count": 199,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 87
+    },
+    {
+        "id": 84,
+        "chunk": 84,
+        "text": "80\n3.\nAnswer the following questions:\n(i)\nWhat is multimedia?\n________________________________________________________________\n(ii)\nWhere is multimedia used?\n________________________________________________________________\n(iii) Write the names of channels of multimedia?\n________________________________________________________________\n(iv)\nWhere are the uses if multimedia in educational sector?\n________________________________________________________________\nAnswer\nAnswers to Question from the Lesson\n7.1\n1.\n (i)\nNews paper\n(ii)\n2D, 3D\n(iii) Memory\n(iv)\nMonitor\n(v)\naudio/video\n2.\n(i)\nFollowing are the elements of multimedia:\n(a)\nText\n(b)\nImage\n(c)\nAudio\n(d)\nVideo\n(e)\nAnimation\n(ii)\nFollowing tools are required for multimedia:\n(a)\nHigh processing power\n(b)\nStorage capacity\n(c)\nOperating system\n(d)\nSound and display card\n(e)\nInput and output device\n(iii) Multimedia refers to using one or more medium. Presentation of expression of views on\nany topic together with text, sound, video etc is known as multimedia.",
+        "word_count": 130,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 88
+    },
+    {
+        "id": 85,
+        "chunk": 85,
+        "text": "81\n7.2\n1.\n (i)\nBusiness\n(ii)\nCoral draw\n(iii) 2D, 3D, action games\n2.\n(i)\nMultimedia has been used mostly in entrainment area. Children play 2D or 3D games\nby CDs.\n(ii)\nComputer was used in fashion area in 1980.\nAnswers to Exercise Questions\n1.\n(i)\nd\n(ii)\na\n(iii) d\n(iv)\nd\n2.\n(i)\nMultimedia\n(ii)\nGraphics\n(iii) Animation\n(iv)\nEducation/Entertainment/Training\n(v)\nMultimedia\n3.\n(i)\nMultimedia is made up of two words- multi means many and media means channels\nlike images, audio, videos etc.\n(ii)\nMultimedia is used in many areas which are:\n(a)\nEducation\n(b)\nBusiness\n(c)\nEntertainment\n(d)\nFashion\n(iii) Following are requirements of multimedia:\n(a)\nHigh processing power\n(b)\nStorage\n(c)\nOperating system\n(d)\nInput and output devices\n(iv)\nMultimedia is mostly uses in educational sector. It is very useful for teacher. It is used t\nshow presentations to children.",
+        "word_count": 144,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 89
+    },
+    {
+        "id": 86,
+        "chunk": 86,
+        "text": "82\n8\nInternet Banking\nIndia is a developing nation. It is said that if development is not all round (meaning it covers all the\nareas), then it is not true. Nobody had ever thought that a small machine like computer will play an\nimportant role in our development. One machine does thousands of work and has become an\nimportant part of our life. This is natural that computer has now become important in areas of\npaying electricity and water bills with education, hospital, bank, railways, business etc.\nYou know that computer is now used in many areas. We will know about e-banking or banking\nthrough computer in this lesson. We all know that we have to go to many places to do many works.\nFor example, to deposit electricity bill we will have to go to electricity department and stand in\nlong time and same goes to water bill. We always think that there should be such a facility to do\nthese works at home. Then, stop thinking because you can do these things using e-banking. This\nsaves our time. It also saves us from many troubles.\nObjectives\nAfter studying this lesson, you will be able to:\n•\nexplain e-banking;\n•\nname the types of e-banking;\n•\ndescribe the list of facilities of e-banking;\n•\nknow the precautions of e-banking;\n•\nexplain the contribution of e-banking in development and business;",
+        "word_count": 230,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 90
+    },
+    {
+        "id": 87,
+        "chunk": 87,
+        "text": "83\n8.1\n What is e-banking?\n E-banking means electronic banking. This is also known as internet banking, this facility is controlled\nby bank. The main requirement of e-banking is to have an account in the bank. Bank provides our\naccount online. We can do all works related to bank using this facility. We need not to go bank for\nthose works. These works include checking balances, fixed deposits, transferring amount etc. The\nmain point is that these facilities can be used even when bank is closed.\nWe apply for e- banking after going in our bank. There is an employee appointed in every branch of\nthe bank to help customers in providing help about facilities related to e-banking. We will see the\nexample of e-banking facility of State Bank of India in this lesson. We will talk about internet\nbanking also. To open e-banking website of state Bank of India, we will type www.onlinesbi.com\nin the address bar. The banking website of state bank of India will be opened. We can also choose\nHindi option here. The English version of this website will look like figure 8.1.\nFig. 8.1: e-banking website\n8.2\n Types of e-banking\nThere are two types of e-banking- (i) corporate banking and (ii) personal banking which is seen in\nabove picture. Let us know about them in detail.",
+        "word_count": 220,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 91
+    },
+    {
+        "id": 88,
+        "chunk": 88,
+        "text": "84\n(i)\nCorporate banking - this facility is given to an institution or company. This includes one or\nmore than one officers of a firm, all these embers are given different corporate user ID to\ncontrol their bank account, to use e-banking we must keep the username and password provided\nby our branch secret.\n(ii)\nRetail banking - this facility is also like corporate user. Hover, it is given to a single individual.\nThe person has to take username and password from the bank. On case of joint account, every\naccount holder is given user ID.\nLet us see how it is used. If we click on the option of retail user in state bank of India website then\nwe will see figure 8.2.\nFig. 8.2: e-banking\nThis window has many information and precautions which are supposed to be known before using\ne-banking. After reading this, we will click on log in button. This will open fig. 8.3 which will ask\nfor username and password.",
+        "word_count": 165,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 92
+    },
+    {
+        "id": 89,
+        "chunk": 89,
+        "text": "85\nFig. 8.3: Login\nWe will write user name and password in the given section, then we will click on log in, here, we\nwill use an imagination user name and password. Username will be seen in correct way as written\nwhereas password will be seen in small dots. Don't worry, this is done for the security of our\naccount, nobody else can read our password even sitting besides us.\nYou can see the changes password in Fig. 8.3: log in.\nFig. 8.4: Details of account",
+        "word_count": 86,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 93
+    },
+    {
+        "id": 90,
+        "chunk": 90,
+        "text": "86\nNow we will click on log in button, if we had filled the username and password correctly then the\naccount will be opened. If the input data is wrong, then we will be asked to input details again. This\nwill open fig. 8.4 which will show account details and other information.\nIntext Question\n8.1\n1.\nFill in the blanks by choosing the correct option:\n(electronic banking, corporate banking, retail banking, demand draft, user ID)\n(i)\n_____________ is given to different corporate control a bank account online.\n(ii)\nE banking refers to ________.\n(iii) We can apply for _______________ using e banking.\n(iv)\nThe two types of e banking are _____________ and ___________________.\n8.3\nPrecautions in e-banking\nWe see that the details of account are presented in fig. 8.4. However, still there are some more\nprecautions that need to be taken. These are:\n1.\nRegister your mobile number and e mail ID with bank to know the transactions happening in\nour account, if somebody steals our user ID and password, we will get the message of\ninformation.\n2.\nBe cautious about fishing attack who ask for account details through e mail or message,\n3.\nWe should also save our self from any e mail related to prize or lottery,\n4.\nInstall antivirus in your computer or laptop and keep it updated.\n5.\nIf you find any mail suspicious in the name of bank or institution then do not open it and\ndelete it soon.\n8.4\nFacilities of e- banking\n1.\nDetails of account- we can get details of our account and its transactions by sitting at our\nhome.\n2.\nNEFT - NEFT means national electronic fund transfer which is used to transfer money from\nour account to other person, firm or institution account, for example, if we have account in",
+        "word_count": 300,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 94
+    },
+    {
+        "id": 91,
+        "chunk": 91,
+        "text": "87\nState Bank of India and we want to transfer amount in any account of Punjab National Bank.\nThis feature is used in such cases.\n3.\nRTGS - this system also works like NEFT. The only difference is that it is related to the\ntransactions of huge amount. The minimum limit of RTGS is 2 lac rupees, bank also charges\nsome amount of RTGS which is Rs. 30 for the transaction of 5 lac rupees.\n4.\nE- fixed deposit - this facility used to deposit some amount of our account as fixed deposit or\ntime deposit. We are not required to go to bank for getting a fixed deposit.\n5.\nDemand draft - we can also apply for demand draft using e-banking, we can fill the form of\ninformation for making demand draft online just like we fill in the form in the bank. We can\ncollect our draft from bank afterwards.\n6.\nOnline payment - we can pay for our shipping from online banking. It can also be used to\ndeposit electricity bill, water bill and also for credit card.\n8.5\nContribution of e-banking in development and business\nContribution of e-banking in development and business\nThis is a fact that money is playing an important role in the development related to a person, society\nor business. Money was transferred personally but it is not possible everywhere. We can understand\nit with examples.\nPost office and postman are old familiar words with money order. Money order means giving\nmoney, if we live in city we send money to villages by money order, but money order takes many\nweeks to reach the person, government has now released instant money transfer which helps in\nreaching money in few hours to our nearest post office.\nE-banking requires account for both sender and receiver. Sender should also have e-banking facilities\nin his account.\nIn this way we can transfer and receive amount relating to your business by e-banking.\nIntext Question\n8.2\n1.\nFill in the blanks by choosing the correct option:\n(easy, NEFT, e-banking)\n(i)\nWe should use _________ cautiously.\n(ii)\ne-banking makes all our works___________________.\n(iii) RTGS works like ______________.",
+        "word_count": 357,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 95
+    },
+    {
+        "id": 92,
+        "chunk": 92,
+        "text": "88\nWhat you have learnt\n•\nE banking has made all our works easy.\n•\nBoth types of user corporate banking and retail banking can control their accounts by\ne-banking.\n•\nE-banking should be done cautiously otherwise we can be cheated by fishing activities.\n•\nWe can get account details by sitting at home. We can also book rail, air and bus tickets\nby using e-banking.\n•\nE-banking is playing an important role in the development of our business and our\ncountry.\nLet’s do it\n'Apply for internet banking in the nearest bank or where you have account. Learn more about\ninternet banking from the customer service officer present there.\nExercise\n1.\nWhat do you mean by internet banking?\n_____________________________________________________________________\n2.\nWhat are the benefits of e-banking?\n_____________________________________________________________________\n3.\nHow many types of e-banking are there?\n_____________________________________________________________________\n4.\nExplain some of the facilities of e-banking?\n_____________________________________________________________________\n5.\nDescribe the contribution of e-banking in development and business?\n_____________________________________________________________________\n6.\nWhat is the difference between retail user and corporate banking ?\n_____________________________________________________________________",
+        "word_count": 170,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 96
+    },
+    {
+        "id": 93,
+        "chunk": 93,
+        "text": "89\n7.\nFill in the blanks by choosing the correct option:\n(retail, two lac, electronic banking, NEFT)\n(i)\nThe full form of e-banking is __________.\n(ii)\n__________ banking has only one user.\n(iii) We can deposit amount from one bank to other through ___________.\n(iv)\nThe minimum amount of transaction through RTGS is _______________.\n8.\nTick () the correct statement and cross () the wrong one:\n(i)\nWe can deposit any bill from e-banking.\n( )\n(ii)\nWe can transfer money after closure of bank by e-banking.\n( )\n(iii) Retail bank can be opened by more than one people.\n( )\n(iv) There are no charges for transferring amount through RTGS system.\n( )\n(v)\nInstant money order takes many weeks to reach money.\n( )\nAnswer\nAnswers to Questions from the Lesson\n8.1\n1.\n (i)\nUser ID\n(ii)\nElectronic banking\n(iii) Demand draft\n(iv)\nCorporate banking, retail banking\n8.2\n1.\n(i)\nE banking\n(ii)\nEasy\n(iii) NEFT\nAnswers to Exercise Questions\n1.\nGetting information about bank account and transferring amount using internet is known as\ninternet banking.\n2.\nE-banking gives us facilities like checking balance, transferring amount, fixed deposit etc.\n3.\nE-banking is of two types- retail banking and corporate banking",
+        "word_count": 203,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 97
+    },
+    {
+        "id": 94,
+        "chunk": 94,
+        "text": "90\n4.\nWe can deposit electricity bill, telephone bill, water bill and also book bus, air and rail tickets\nsitting at home.\n5.\nWe can sell and purchase items by e-banking; we can send money through instant money\norder in short time, this saves time and money which is helpful in development and business.\n6.\nOnly one person can open account in retail banking whereas one or more officers of company\ncan open corporate banking.\n7.\n(i)\nElectronic banking\n(ii)\nRetail\n(iii) NEFT\n(iv) Two lac\n8.\n(i)\n\n(ii)\n\n(iii) \n(iv)\n\n(v)\n",
+        "word_count": 97,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 98
+    },
+    {
+        "id": 95,
+        "chunk": 95,
+        "text": "91\n9\nJob Opportunities in various areas\nof Computer\nThere was a doubt in many minds that if computer comes in our country, many people will be\nunemployed. Some people thought that works of many people can be done by computer alone. This\nwill lead to an increase in unemployment. However, the expansion and use of computer despite its\nprotest has increased day by day. People thought use of computers in many offices profitable.\nTherefore the use of computer increased in every sector and many employment opportunities also\nincreases. Now a day's people can't think of living without computer. Many computers have been\nmade in our country. Thousand of new industries relating to computer sector are also being\nestablished.\nObjectives\nAfter studying this lesson, you will be able to:\n•\nknow the areas of job opportunities in computer sector;\n•\ntell which areas give jobs after learning computer;\n•\nlearn the way to get a job using computer.\n9.1\nJob opportunities in various areas of computer\nToday computer has taken over all the work in offices. Therefore, a person with knowledge of\ncomputer is required, especially in these areas:",
+        "word_count": 189,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 99
+    },
+    {
+        "id": 96,
+        "chunk": 96,
+        "text": "92\n•\nBanking sector - computer is used to take care of accounts of all customers in bank.\n•\nComputer is used to keep both new and old records in safe way.\n•\nCourts- Lawyers and judge use computer to store their records.\n•\nDevelopment of farming - farmers can use computer to check the quality of their crop, correct\nmaintenance of seeds and production of better quality of crops.\n•\nReading - writing work in education - the use of computer on education is a revolutionary\nstep. Students are doing their work like writing lesson, making lessons, collecting information\netc with the help of computer.\n•\nComputer is used in keeping, sharing and using records in various institutions.\n•\nComputer is playing an important role in information exchange.\n•\nWe can use computer to get any information in the world.\n•\nComputer is used to keep records of patients in hospital.\n•\nComputer is used to keep student records in school. A computer teacher is appointed to make\nchildren learn about computer. A person having computer knowledge is also appointed.\n9.2\n Searching jobs using computer knowledge\nYou can search a good job by using computer knowledge. Today many institutions and companies\nhave their own website; we can check there our qualifications are suitable for which posts and can\napply by writing an application. Many applications are available on websites and some of them are\nsent through e mail. There are many other methods also in this regard. These are:\n•\nEmployment exchange - we can register our name according to our qualification. We can get\nour registration number which is required at the time of appointment in job. Employment\nexchange gives us information regarding vacant job vacancies.\n•\nWe can also apply on various websites in getting information about vacancies. Many companies\nalso send us information about vacant jobs on our e mail id.\n•\nWe can also get job opportunities on TV channels.\n•\nWe can also get information about various job opportunities through news papers. Employment\nnews and other news papers also give information regarding vacant jobs from time to time.\nWe can learn computer at any age. The only thing required is to write and read language. Some\npeople think that only highly educated people can learn computer but it is not. Computer is a\nmedium through which less educated people can earn their income. After learning computer, we\ncan do jobs like computer operator, cyber cage, printing press, billing clerk etc.",
+        "word_count": 416,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 100
+    },
+    {
+        "id": 97,
+        "chunk": 97,
+        "text": "93\nIntext Question\n9.1\n1.\nFill in the blanks by choosing the correct option:\n (Necessary, computer, job, records)\n(i)\nNow a day's ________________ helps in banking.\n(ii)\nKnowledge of computer is ___________________ in the educational sector.\n(iii) Computer is used for keeping ___________ of students in schools.\n(iv)\n____________ have increased with coming of computer.\n2.\nName any two means by which new can get the knowledge of job opportunities?\n_____________________________________________________________________\n3.\nWhat are the facilities provided by employment exchange in searching for a job?\n_____________________________________________________________________\nWhat you have learnt\n•\nComputer is a blessing in today's world.\n•\nKnowledge of computer is necessary for us.\n•\nComputer helps in our daily works and it also helps us in educational area, agriculture\nsector etc.\n•\nKnowledge of computer is requires to start our own business.\n•\nKnowledge of computer is beneficial in finding job because mostly offices have their\nown websites where we can apply according to our qualifications.\n•\nWe can also apply for job through news paper.\n•\nLess educated people can also earn their living using computer.\nLet’s do it\nGo to a nearby cyber café and apply for a job and know about vacant jobs.",
+        "word_count": 199,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 101
+    },
+    {
+        "id": 98,
+        "chunk": 98,
+        "text": "94\nExercise\n1.\nFill in the blanks by choosing the correct option:\n (Customer, employment, news, computer)\n(i)\nComputer is used in banks to make safe the account of __________.\n(ii)\nLawyers use ________________ to keep their records.\n(iii) News papers like ___________ help in finding out a job.\n2.\nAnswer the following questions:\n(i)\nExplain any two working areas section of computer?\n________________________________________________________________\n(ii)\nName any two jobs which is possible after having knowledge of computer?\n________________________________________________________________\n(iii) What are the areas of business after having computer knowledge? Explain any\none area?\n________________________________________________________________\n(iv)\nWhat is the use of computer in courts?\n________________________________________________________________\nAnswer\nAnswers to Question from the Lesson\n9.1\n1.\n (i)\nComputer\n(ii)\nNecessary\n(iii) Records\n(iv)\nJobs\n2.\nTV channels, news papers etc are mediums that help to know vacant jobs.\n3.\nWe can get registration number after registering in employment exchange. We get information\nabout vacancies on the basis of registration.",
+        "word_count": 155,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 102
+    },
+    {
+        "id": 99,
+        "chunk": 99,
+        "text": "95\nAnswers to Exercise Questions\n1.\n (i)\nCustomer\n(ii)\nComputer\n(iii) Employment news\n2.\n(i)\nBanking sector\nEducation sector\n(ii)\nKnowledge of computer helps us in getting jobs like computer operator, billing clerk\netc.\n(iii) Preparing documents\n(iv)\nLawyers and judge store their records using computers.",
+        "word_count": 46,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 103
+    },
+    {
+        "id": 100,
+        "chunk": 100,
+        "text": "96\nOpen Basic Education Programme\nCurriculum\nBasic Computer Skills (C-104)\nLevel C\n1.\nRationale\nIndia is a developing country and it is said that if the development is not all round, that is\nitspans all the fields, it cannot be meaningful. Who had thought that the small machine like\ncomputer will play such an important role in development? One machine and thousands of\nfunctions! See howit has become an integral part of our daily life. This is almost natural when\ncomputers are being vastly used in all the fields like electricity, water, education, hospitals,\nrailways, business etc. In this situation it becomes necessary that we should know how to use\ncomputers. Not only knowing about computers is necessary, it is also important how efficiently\nwe can use computers in our daily life. This curriculum of Basic Computer Skills is focused\non application along with knowledge.\n2.\nPre-Requisites\nBefore going through this curriculum it is expected that the student-\n•\nhas completed level A and B of curriculum successfully or has knowledge equivalent to\nthe same.\n•\nidentifies all the tools of computers and knows how to use them.\n•\ncan use computers and also the facilities of the operating system.\n•\nis aware of the dangers and security related to internet and computer and knows the\nways to keep to keep the computer safe.\n3.\nObjectives\nThe common and the specific objectives of the curriculum are as follows:\na.\nCommon Objectives\nAfter completing this curriculum, the students will be able to use advanced methods in\ncomputers to make documents, spreadsheets and presentations using picture, text and\nchat at individual level. The student can use various formulae in spreadsheet, search\nmovies and recorded voices from the internet and use them in presentations.\nThe student will be able to know which type of job is available and sent application\nletters matching the same.",
+        "word_count": 311,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 104
+    },
+    {
+        "id": 101,
+        "chunk": 101,
+        "text": "97\nb.\nSpecific Jobs\nAfter completing this curriculum the students will be able to________\n1.\nUse tabs and indentation to make the document attractive.\n2.\nMake columns and fill information in them.\n3.\nPrint documents properly by using page set-up method\n4.\nTo see the print preview on the monitor before printing the document.\n5.\nInclude chart and formulae in spreadsheet.\n6.\nUse PowerPpoint template to add sound and movies.\n7.\nLearn attractive methods of presentation.\n8.\nUnderstand different type of networks.\n9.\nKnow different parts of internet and their applications.\n10.\nUnderstand the achievement of mass usage of internet like video conferencing,\nsocial networking, e-commerce.\n11.\nDescribe various parts, tools of multimedia and their uses.\n12.\nKnow various job options and apply for the same with the knowledge of computer\napplications.\n4.\nBrief introduction to the Curriculum\nThis curriculum has been made in such a way that before using any option there is a provision\nto explain and revise it. What all can be achieved by the use of computers in real life and how\nwe can get them has also been discussed. Methods of finding job or employment through\ncomputer knowledge has also been given adequate coverage.The present curriculum has been\ngiven in simple language and description and examples from day-to-day life have been added\nin the lessons. This curriculum will be delivered through distance education system. The\nentire cCurriculum has been divided into nine lessons.\n5.\nStructure of Curriculum\nThe total duration of this curriculum is 100 hours in all. It has been divided into nine lessons.\nDivision of curriculum on the basis of time duration and marks is as follows:",
+        "word_count": 274,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 105
+    },
+    {
+        "id": 102,
+        "chunk": 102,
+        "text": "98\n Serial No.\nLesson\nTime (in hours)\nMarks\n1.\nRecapitulation\n06\n08\n2.\nWord Processing\n16\n12\n3.\nSpreadsheets\n16\n12\n4.\nPowePoint Presentation\n16\n12\n5.\nComputer Network\n10\n12\n6.\nInternet\n16\n12\n7.\nMultimedia\n05\n12\n 8.\nInternet Banking\n10\n12\n 9.\nScope of jobs in the field of computer\n05\n08\n100\n100\n6.\nStudy Plan\nThis curriculum will be delivered through the means of distance education. Curriculum is\nmainly based on self-study. With this fact in mind the learning material has been prepared\naccording to the mental level of the students. Practice questions have been given at the end of\neach lesson so that retention ability of students is developed and capacity to write and think\nalso increases. There is also a provision of contact classes at study centers. The students will\nbe able to discuss solutions to their subject related problems in these classes. They will also\nbe able to discuss these problems with fellow students over there.\nStudents will be able to solve their subject-related problems at Literacy centers/ Adult Education\nCenters.\n7.\nDescription of the Curriculum\nAccording to the topic, each lesson has been divided into different units. This will help the\nstudents to read and understand the lesson better.\nLesson 1: Recapitulation- Introduction to computer, operating system, word processing,\nspreadsheets, PowerPoint Presentation, computer security, internet, e-mail.",
+        "word_count": 225,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 106
+    },
+    {
+        "id": 103,
+        "chunk": 103,
+        "text": "99\nLesson 2: Word Processing- Introduction, objectives, tabs and indentation, making columns,\npage-set up, print preview, printing, word art.\nLesson 3: Spreadsheet- Introduction, objectives, types of charts, inserting chart, formulae\nand functions (basic only)\nLesson 4: PowerPoint - Introduction, objectives, making presentations using template, inserting\naudio clip, inserting video clip, slide transition, customize animation.\nLesson 5: Computer network-Meaning of computer network and its objectives. functioning\nof computer network, types of network, tools of network, network connections.\nLesson 6: Internet- Introduction, objectives, classification of websites, uses of internet, video\nconference, social networking, e-governance, e-commerce, chatting, instant messaging.\nLesson 7: Multimedia- Introduction, objectives, multimedia elements, areas of multimedia-\neducation, entertainment, market, fashion etc. tools of multimedia -(i) CD-ROM (II) Speaker,\nmike (iii) Hard disk\nLesson 8: Internet banking- Meaning of e-banking, types of e-banking, facilities of e- banking,\nprecautions in use of e-banking, contribution of e-banking in development and business.\nLesson 9: Job opportunities in the field of computers - availability of job opportunities in the\nfield of computer, searching job opportunities through computer.\n8.\nAssessment Plan\na.\nSelf-assessment: Students will be assessing themselves as part of the curriculum. For\nthis,one assessment sheet has been given after every three lessons. The question in the\nassessment sheets are related to those three lessons only. Students have to answer these\nquestions. Correct answers to the assessment sheets are given at the end of the book.\nStudents will be assessing themselves by matching their answers with the correct ones.\nThis is how, the scheme of self-assessment has been integrated into the curriculum.\nb.\nExternal Assessment: After completing the curriculum, there will be external assessment\nof the students. For this, a total of hundred marks have been assigned. Question papers\nwill be of three hours' duration. It will have questions based on the lessons. Questions\nbased on understanding will also be there. It will also have questions based on common\nsense. Questions will include objective type, very short answer type, short answer type\nand long answer type.",
+        "word_count": 331,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 107
+    },
+    {
+        "id": 104,
+        "chunk": 104,
+        "text": "100\nQuestion Paper Design\nOpen Basic Education Programme (Adult)\nSubject: Basic Computer Skills\nLevel: C\nTotal Marks: 100\nTime: 3 hrs\nA.\nObjective wise distribution of marks\nObjective\nMarks\nTotal Percentage\nKnowledge\n 30\n 30\nEducation\n 40\n 40\nApplication\n 30\n 30\nTotal\n100\n100\nB.\n Distribution of marks based on type of questions\nTypes of questions\nMarks\n Number of\nTotal marks\n Time\n questions\n(in minutes)\nLong Answer\n 06\n05\n30\n 12x5=60\nShort Answer\n 04\n10\n40\n 08x10=80\nVery Short Answer\n 02\n10\n20\n 02x10=20\nMultiple choice questions\n 01\n01\n10\n 10x01=10\n(MCQ)\n(10 questions)\n26\n100\n 170+10\n (For reading\n and correction)\n =180 minutes",
+        "word_count": 102,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 108
+    },
+    {
+        "id": 105,
+        "chunk": 105,
+        "text": "101\nC.\nDistribution of marks based on chapters\nLesson\nHeading\n Marks\n 1.\nRecapitulation\n08\n 2.\nWord Processing\n12\n 3.\nSpreadsheet\n12\n 4.\nPresentation\n12\n 5.\nCompute Network\n12\n 6.\nInternet\n12\n 7.\nMultimedia\n12\n 8.\nInternet Banking\n12\n 9.\nScope of jobs in computer field\n08\nTotal Marks\n100\nD.\nDifficulty Level\nLevel\n Marks\nTotal Percentage\nDifficult\n 10\n 10\nAverage\n 60\n 60\nEasy\n 30\n 30\n100\n100",
+        "word_count": 67,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 109
+    },
+    {
+        "id": 106,
+        "chunk": 106,
+        "text": "102\nSample Question Paper\nBasic Computer Skills (C-104)\nMaximum marks: 100\n Time: 3 hours\nInstructions:\n•\nThis paper has 26 questions which have been divided into four parts A, B, C and D.\n•\nPart A has one question in which 10 multiple choice questions are given. Each multiple\nchoice question carries one mark. Out of four options given only one option is correct and\nyou have to select that and write the same in your answer sheet.\n•\nPart B (2 to 11) has very short answer questions each of which carries two marks.\n•\nPart C (12 to 21) has short answer questions each of which carries 4 marks.\n•\nPart D (22 to 26) has long answer questions each of which carries 6 marks.\n•\nAll questions are compulsory.\nPart A\n1.\nChoose the correct answer:\n(i)\nWhich of the following option is not a part of operating system?\n(a)\nFile\n(b)\nDesktop\n(c)\nFolder\n(d)\nProjection\n(ii)\nFull form of U.R.L is-\n(a)\nUniform Resource Locator\n(b)\nUniversal Resource Locator\n(c)\nUniform Research Locator\n(d)\nUniform Research Location\n(iii) In which of the following menu is Word Art is available?\n(a)\nFile\n(b)\nView\n(c)\n Insert\n(d)\nTools\n(iv)\nWhich of following is not a part of Page set up\n(a)\nOrientation\n(b)\n Margin\n(c)\n Page size\n(d)\n Header\n(v)\n Which of following Is not a tool of video conferencing\n(a)\nWeb Camera\n(b)\nMicrophone\n(c)\nMS Word\n(d)\nSpeaker",
+        "word_count": 244,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 110
+    },
+    {
+        "id": 107,
+        "chunk": 107,
+        "text": "103\n(vi)\nThe ways for payment in online shopping\n(a)\nCredit card\n(b)\nDebit card\n(c)\nInternet banking\n(d)\nAll of above\n(vii) Full form of N.E.F.T is :\n(a)\nNation Electronic funds transfer\n(b)\nNational Electronic funds transfer\n(c)\nNon Electronic funds transfer\n(d)\nNational Electrical fund transfer\n(viii) _____ can be done through E-banking.\n(a)\nBalance check\n(b)\nFund transfer\n(c)\nFixed deposit\n(d)\nAll of these\n(ix)\nIn E-banking user id is given by:\n(a)\nPassport office\n(b)\nBank\n(c)\nInternet customer\n(d)\ncustomer\n(x)\nYou can apply for a Job through:\n(a)\nInternet\n(b)\n Application form\n(c)\nEmployment News\n(d)\n All the above\nPart B\n2.\nFrom which English word has the term computer been derived?\n3.\nHow many types of orientation are there?\n4.\nThrough which function can we find out maximum number?\n5.\nWhat is a slide?\n6.\nWrite the name of connector which is attached on both sides of the networking cable.\n7.\nWhat is Multimedia?\n8.\nWrite the names of some software of Multimedia design.\n9.\nName the types of e-banking.\n10.\nWhat do you mean by E-banking?\n11.\nWhich newspaper tells about jobs?",
+        "word_count": 192,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 111
+    },
+    {
+        "id": 108,
+        "chunk": 108,
+        "text": "104\nPart C\n12.\nAt which places is computer used?\n13.\nWhat is Internet?\n14.\nWhat is page size? Write about the different types of page size.\n15.\nWrite about any four types of Charts?\n16.\nWrite the steps to save projection.\n17.\nWrite the tools of computer network.\n18.\nWhat is E-commerce?\n19.\nWrite the names of devices used in multimedia.\n20.\nWhere is Multimedia used? Write the names of any five fields.\n21.\nHow is computer useful in development of agriculture?\nPart D\n22.\nWrite the types of computer network in detail.\n23.\nWhat is a chart?\n24.\nWhat is Animation? How many types of this are there?\n25.\nWrite any five facilities given by internet banking.\n26.\nWhat is video conferencing? Describe the different tools used for this.",
+        "word_count": 131,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 112
+    },
+    {
+        "id": 109,
+        "chunk": 109,
+        "text": "105\nQuestion\nNumber\n1. (i)\n (ii)\n (iii)\n (iv)\n (v)\n (vi)\n (vii)\n (viii)\n (ix)\n (x)\n(2)\n(3)\n(4)\n(5)\n(6)\n(7)\n(8)\nPart A\n(d)\n(a)\n(c)\n(d)\n(c)\n(d)\n(b)\n(d)\n(b)\n(d)\n Part B\nComputer\nOrientation is of two types\n(a)\nPortrait\n(b)\nLandscape\nThrough Maximum functions we can find out\nmaximum numbers.\nDifferent stages of PowerPoint.\nThe connector which is attached on both sides of\nnetworking cable is also called RJ-45.\nCoordination between different forms of media\nis called Multimedia. These forms are: text,\npicture, images, audio, video, animation etc.\nMany software are available for multimedia\ndesigning. Some of which are as follows:\n(a)\nCorelDRAW\nDistribution\nof Marks\n(1)\n(1)\n(1)\n(1)\n(1)\n(1)\n(1)\n(1)\n(1)\n(1)\n(2)\n(2)\n(2)\n(2)\n(2)\n(2)\n(2)\nTotal\nMarks\n(10)\n(2)\n(2)\n(2)\n(2)\n(2)\n(2)\n(2)\nMarking Scheme for Sample Question Paper",
+        "word_count": 143,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 113
+    },
+    {
+        "id": 110,
+        "chunk": 110,
+        "text": "106\n(9)\n(10)\n(11)\n(12)\n(13)\n(14)\n(b)\nCameo\n(c)\nDress Assistant\nE-Banking is of two types.\n(a)\nCorporate Banking\n(b)\nPersonal Banking\nTo operate your bank account for information,\ncollection or payments through internet is called\nInternet banking or E-banking.\nEmployment news provides information about new\njobs\nPart C\nComputer is used in different fields :\n(a)\n education\n(b)\n occupation\n(c)\n agriculture\n(d)\n art\n(e)\n entertainment\n(f)\n transport\nIndentation is known as a space between page\nmargin and paragraph. We can show how one or\nmore paragraphs are different from others with\nthe use of indentation.\nPage size means shape of a page. Page sizes are of\ndifferent types:\n(a)\nA4 (201*297 mm)\n(b)\nA5 (148*210 mm)\n(c)\nA6 (105*148 mm)\n(d)\nA3 (297*42mm )\n(2)\n(2)\n(2)\n(4)\n(4)\n(4)\n(2)\n(2)\n(2)\n(4)\n(4)\n(4)\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks",
+        "word_count": 145,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 114
+    },
+    {
+        "id": 111,
+        "chunk": 111,
+        "text": "107\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks\n(15)\n(16)\n(17)\n(18)\n(19)\n(20)\nCharts are of different types. Four of them are as\nfollows:\n(a)\nColumn Chart\n(b)\nBar Chart\n(c)\nPie Chart\n(d)\nLine Chart\nSteps to save presentation are as follows:\nMicrosoft Office Button Save button\nFile name Save button\nSome accessories of computer network are as\nfollows:\n(a)\nNetwork cable\n(b)\nConnectors\n(c)\nSwitch, Router\n(d)\nModem\nFull form of e-Commerce is Electronic\ncommerce. This is a source of business through\nwhich companies sells their products with the use\nof internet. We can sell or buy anything through\ne-Commerce. Some of the shopping websites are\n-www.ebay.com, www.homeshop18.com\nUseful tools of Multimedia are as follows:\n(a)\nHigh Processing power\n(b)\nStorage\n(c)\nOperating\n(d)\nSound and display card\n(e)\nInput and output device\nMultimedia is used in different fields such as :\n(a)\neducation\n(b)\nentertainment\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)\n(4)",
+        "word_count": 161,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 115
+    },
+    {
+        "id": 112,
+        "chunk": 112,
+        "text": "108\n(21)\n(22)\n(23)\n(c)\ntraining\n(d)\nbusiness, and\n(e)\nfashion\nThrough the use of computers farmers can easily\nget information about the quality of crops, take\nappropriate care of seeds and can know about the\nnew techniques of agriculture.\nPart D\nComputer Networks are mainly of three types:\n(a)\nLAN: Full form of LAN is Local Area\nNetwork.\nThrough this network computers kept at\ndifferent places in one building or in multi-\nstorey building are connected. For example,\nin offices, schools or universities etc.\n(b)\nMAN: Full form of MAN is Metropolitan\nArea Network. Through this network\ndifferent computers in a city can be\nconnected.For example: different branches\nof a bank or office etc.\n(c)\nWAN: Full form of WAN is Wide Area\nNetwork. This network connects the\ncomputer all over the world. The best\nexample of this is internet.\nIn MS-Excel data can be shown in the form of a\npicture, which we called a Chart. Some of the\nnames are like this:\n(a)\nColumn Chart: This chart is made up of\nrectangular vertical stripes.\n(4)\n(2)\n(2)\n(2)\n(2)\n(4)\n(6)\n(6)\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks",
+        "word_count": 192,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 116
+    },
+    {
+        "id": 113,
+        "chunk": 113,
+        "text": "109\n(b)\nBar Chart: Bar Chart is the same as column\nchart but its stripes go from left to right.\n(2)\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks\n\n110\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks\n(c)\nPie Chart: This is a round shaped chart,\nwhich is divided into different ratios.\n(d)\nLine Chart: This chart is shown through\nlines .\n(6)\n(2)",
+        "word_count": 63,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 117
+    },
+    {
+        "id": 114,
+        "chunk": 114,
+        "text": "111\n(24)\n(25)\n(26)\nMoving of words, pictures, charts etc. up and down\nor left and right, or flying in/over slides is called\nanimation. Animations are of four types:\n(a)\nEntrance\n(b)\nEmphasis\n(c)\nExit\n(d)\nMotion Paths\nThe five facilities given by internet banking are as\nfollows:\n(a)\nThrough internet banking we can get the\ndetails of our account while sitting at home.\n(b)\nThrough N.E.F.T we can send the money\nfrom our bank account to another bank\naccount.\n(c)\nThrough R.T.G.S we can send two lakhs or\nmore to another bank account.\n(d)\nThrough E-fixed deposits we can open/close\nfixed deposit and save money in the bank.\n(e)\nThrough internet banking we can pay our\nelectricity, water, telephone bills etc.\nThrough video conferencing we can talk with\ndifferent people at different places by seeing one\nanother on the computer screen. We can do it by\nusing the following tools:\n(a)\nWeb Camera or Video camera\n(b)\nComputer monitor, projector or television\n(c)\nMicrophone\n(d)\nSpeaker\n(e)\nInternet\n(f)\nComputer\n(6)\n(6)\n(6)\n(4)\n(6)\n(6)\nQuestion\nNumber\nDistribution\nof Marks\nTotal\nMarks",
+        "word_count": 184,
+        "source": "Basic_computer_skills_Level C.pdf",
+        "category": "School",
+        "page": 119
+    }
+]

@@ -10,7 +10,7 @@ app = FastAPI(title="AIOS Local Whisper", version="1.0.0")
 
 MODEL_NAME = os.getenv("WHISPER_LOCAL_MODEL", "small")
 MAX_AUDIO_BYTES = int(os.getenv("AIOS_MAX_AUDIO_MB", "25")) * 1024 * 1024
-SUPPORTED_LANGUAGES = {"en", "zh", "ta", "hi", "mr", "te", "ml"}
+SUPPORTED_LANGUAGES = {"en", "zh", "ta", "hi", "mr", "te", "ml", "kn", "ru", "ko"}
 
 _model: WhisperModel | None = None
 _model_lock = Lock()

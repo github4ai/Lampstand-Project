@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 import AppErrorBoundary from "./components/ErrorBoundary/AppErrorBoundary";
+import CloudAccessGate from "./components/Access/CloudAccessGate";
 
 import "./index.css";
 import "./styles/index.css";
@@ -19,7 +20,7 @@ createRoot(rootElement).render(
   <StrictMode>
     <AppErrorBoundary>
       <BrowserRouter>
-        <App />
+        <CloudAccessGate><App /></CloudAccessGate>
       </BrowserRouter>
     </AppErrorBoundary>
   </StrictMode>,
