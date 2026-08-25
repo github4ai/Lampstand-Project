@@ -30,7 +30,7 @@ export function loadConfig(env = process.env) {
       .split(',').map((value) => value.trim()).filter(Boolean),
     ollamaUrl: cleanUrl(env.OLLAMA_URL, 'http://127.0.0.1:11434'),
     ollamaModel: env.OLLAMA_MODEL?.trim() || 'qwen3:8b',
-    ollamaTranslationModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'translategemma:4b',
+    ollamaTranslationModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen3:8b',
     whisperUrl: cleanUrl(env.WHISPER_URL, 'http://127.0.0.1:8000'),
     whisperModel: env.WHISPER_MODEL?.trim() || 'whisper-1',
     comfyUrl: cleanUrl(env.COMFYUI_URL, 'http://127.0.0.1:8188'),
@@ -86,3 +86,4 @@ export function loadConfig(env = process.env) {
     ministryLibraryDir: resolve(env.AIOS_MINISTRY_LIBRARY_DIR?.trim() || join(process.cwd(), 'data', 'ministry-library')),
   }
 }
+

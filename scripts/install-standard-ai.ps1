@@ -102,7 +102,7 @@ try {
     }
   }
 
-  foreach ($model in @('qwen3:8b', 'translategemma:4b')) {
+  foreach ($model in @('qwen3:8b')) {
     Set-SetupStatus 'installing' 'ollama-models' "Downloading $model."
     & $ollama pull $model
     if ($LASTEXITCODE -ne 0) { throw "The Ollama model $model could not be downloaded." }
@@ -120,3 +120,4 @@ try {
   Set-SetupStatus 'failed' 'setup' $_.Exception.Message
   exit 1
 }
+
