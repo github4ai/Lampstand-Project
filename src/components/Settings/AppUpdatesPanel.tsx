@@ -92,8 +92,15 @@ export default function AppUpdatesPanel({
     } finally { setBusy(false) }
   }
 
+  async function reinstallCurrentVersion() {
+    if (!updates || !window.confirm('Download the installer for this version? Run it after the download finishes to repair or reinstall Lampstand Project. Your personal data is preserved.')) return
+    setBusy(true)
+    try { await updates.reinstall() }
+    finally { setBusy(false) }
+  }
+
   const checking = busy || state.status === 'checking'
-  return <section className="settings-panel settings-updates-panel">
+  return <section id="app-updates" className="settings-panel settings-updates-panel">
     <div className="settings-panel-title"><Download size={19} /><div><h2>App updates</h2><p>Updates are delivered through Lampstand Project GitHub releases.</p></div></div>
     <div className="settings-update-summary">
       <span className={state.status === 'error' ? 'settings-service-dot' : 'settings-service-dot online'} />
@@ -105,11 +112,12 @@ export default function AppUpdatesPanel({
       {state.status === 'available' && <button type="button" disabled={busy} onClick={() => void run('download')}><Download size={14} /> Download version {state.availableVersion}</button>}
       {state.status === 'ready' && <button type="button" className="primary" onClick={() => void run('install')}><RotateCcw size={14} /> Restart and install</button>}
       {state.status === 'current' && <span><CheckCircle2 size={14} /> Up to date</span>}
+      {updates && state.status !== 'development' && <button type="button" disabled={busy || state.status === 'downloading'} onClick={() => void reinstallCurrentVersion()}><RotateCcw size={14} /> Reinstall this version</button>}
     </div>
-    {state.status === 'ready' && <label className="settings-update-reset-option">
+    <label className="settings-update-reset-option">
       <input type="checkbox" checked={resetPersonalDataAfterUpdate} onChange={(event) => setResetPersonalDataAfterUpdate(event.target.checked)} />
       <span><strong>Reset personal data after update</strong><small>Clears profiles, conversations, reading progress, annotations, results, drafts, and preferences when the updated app starts. Your signed-in session, installed libraries, and models are retained.</small></span>
-    </label>}
+    </label>
     <p className="settings-update-note">{resetPersonalDataAfterUpdate && state.status === 'ready'
       ? 'The selected reset will run once when the updated app starts.'
       : 'App updates replace program files only. Your profiles, reading progress, annotations, conversations, and other personal data remain in the Lampstand data folder.'}</p>

@@ -63,6 +63,8 @@ export function loadConfig(env = process.env) {
     anthropicUrl: cleanUrl(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1'),
     anthropicApiKey: env.ANTHROPIC_API_KEY?.trim() || '',
     anthropicTextModel: env.ANTHROPIC_TEXT_MODEL?.trim() || 'claude-3-5-haiku-latest',
+    tavilyUrl: cleanUrl(env.TAVILY_BASE_URL, 'https://api.tavily.com'),
+    tavilyApiKey: env.TAVILY_API_KEY?.trim() || '',
     maxAudioBytes: Number(env.AIOS_MAX_AUDIO_MB || 25) * 1024 * 1024,
     maxDocumentBytes: Number(env.AIOS_MAX_DOCUMENT_MB || 50) * 1024 * 1024,
     documentPython: documentPython(env, aiRoot),
@@ -91,4 +93,3 @@ export function loadConfig(env = process.env) {
     ministryLibraryDir: resolve(env.AIOS_MINISTRY_LIBRARY_DIR?.trim() || join(process.cwd(), 'data', 'ministry-library')),
   }
 }
-

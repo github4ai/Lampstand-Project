@@ -19,6 +19,7 @@ export interface ProviderPreferences {
   geminiTextModel: string
   anthropicConfigured: boolean
   anthropicTextModel: string
+  webSearchConfigured: boolean
 }
 
 async function request(path: string, method = 'GET', signal?: AbortSignal): Promise<AiServiceStatus> {
@@ -38,7 +39,7 @@ export async function getProviderPreferences(signal?: AbortSignal): Promise<Prov
   return response.json() as Promise<ProviderPreferences>
 }
 
-export async function saveProviderPreferences(input: { mode: ProviderPreferences['mode']; openaiApiKey?: string; geminiApiKey?: string; anthropicApiKey?: string }): Promise<ProviderPreferences> {
+export async function saveProviderPreferences(input: { mode: ProviderPreferences['mode']; openaiApiKey?: string; geminiApiKey?: string; anthropicApiKey?: string; tavilyApiKey?: string; openaiTextModel?: string; geminiTextModel?: string; anthropicTextModel?: string }): Promise<ProviderPreferences> {
   const response = await fetch(`${AIOS_API_BASE_URL}/services/preferences`, {
     method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input),
   })

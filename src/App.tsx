@@ -220,9 +220,11 @@ function App() {
     persistenceError,
     ministrySource,
     schoolSource,
+    webSearch,
     setQuestion,
     setMinistrySource,
     setSchoolSource,
+    setWebSearch,
     handleSubmit,
     cancelResponse,
     startNewChat,
@@ -540,6 +542,8 @@ function App() {
         onMinistrySourceChange={selectedAgent?.id === 'ministry' ? setMinistrySource : undefined}
         schoolSource={selectedAgent?.id === 'school' ? schoolSource : undefined}
         onSchoolSourceChange={selectedAgent?.id === 'school' ? setSchoolSource : undefined}
+        webSearch={webSearch}
+        onWebSearchChange={setWebSearch}
       />
     </main>
   )

@@ -37,6 +37,7 @@ export default function AccessSettingsPanel() {
   const [state, setState] = useState(() => loadOrCreateAccessState(localStorage))
   const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState<UserRole>('adult')
+  const [newRoleLabel, setNewRoleLabel] = useState('')
   const [notice, setNotice] = useState('')
   const activeProfile = useMemo(() => state.profiles.find((profile) => profile.id === state.activeProfileId) ?? state.profiles[0], [state])
   const canManage = activeProfile?.role === 'owner'
@@ -55,11 +56,12 @@ export default function AccessSettingsPanel() {
     if (!name || newRole === 'owner') return
     const timestamp = new Date().toISOString()
     const profile: LocalUserProfile = {
-      id: crypto.randomUUID(), name, role: newRole,
+      id: crypto.randomUUID(), name, role: newRole, roleLabel: newRoleLabel.trim() || undefined,
       permissions: defaultPermissions(newRole), createdAt: timestamp, updatedAt: timestamp,
     }
     commit((current) => ({ ...current, profiles: [...current.profiles, profile] }), `${name} was added.`)
     setNewName('')
+    setNewRoleLabel('')
   }
 
   function updateProfile(profileId: string, changes: Partial<LocalUserProfile>) {
@@ -122,19 +124,21 @@ export default function AccessSettingsPanel() {
   return (
     <section className="settings-panel settings-access-panel">
       <div className="settings-panel-title"><UserRoundCog size={19} /><div><h2>Users &amp; Access</h2><p>Create local family profiles and choose which workspaces each person may use.</p></div></div>
-      <div className="settings-active-user"><ShieldCheck size={18} /><span><strong>Currently using Lampstand as {activeProfile.name}</strong><small>{roles.find((role) => role.id === activeProfile.role)?.label} profile · permissions are stored locally on this computer.</small></span></div>
+      <div className="settings-active-user"><ShieldCheck size={18} /><span><strong>Currently using Lampstand as {activeProfile.name}</strong><small>{activeProfile.roleLabel || roles.find((role) => role.id === activeProfile.role)?.label} profile · permissions are stored locally on this computer.</small></span></div>
 
       {canManage && <div className="settings-add-user">
         <label><span>Name</span><input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Family member name" /></label>
         <label><span>Role</span><select value={newRole} onChange={(event) => setNewRole(event.target.value as UserRole)}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
+        <label><span>Custom role title</span><input value={newRoleLabel} onChange={(event) => setNewRoleLabel(event.target.value)} placeholder="Optional, e.g. Teacher" maxLength={40} /></label>
         <button type="button" onClick={addProfile} disabled={!newName.trim()}><Plus size={15} /> Add user</button>
       </div>}
 
       <div className="settings-user-list">
         {state.profiles.map((profile) => <article className={profile.id === state.activeProfileId ? 'active' : ''} key={profile.id}>
-          <header><div className="settings-user-avatar">{profile.name.slice(0, 1).toUpperCase()}</div><div><strong>{profile.name}</strong><small>{roles.find((role) => role.id === profile.role)?.label}{profile.suspended ? ' · Suspended' : ''}</small></div>{profile.id === state.activeProfileId && <span className="settings-current-badge"><Check size={12} /> Current</span>}</header>
+          <header><div className="settings-user-avatar">{profile.name.slice(0, 1).toUpperCase()}</div><div><strong>{profile.name}</strong><small>{profile.roleLabel || roles.find((role) => role.id === profile.role)?.label}{profile.suspended ? ' · Suspended' : ''}</small></div>{profile.id === state.activeProfileId && <span className="settings-current-badge"><Check size={12} /> Current</span>}</header>
           {canManage && profile.role !== 'owner' && <>
             <label className="settings-role-select"><span>Role</span><select value={profile.role} onChange={(event) => changeRole(profile, event.target.value as UserRole)}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
+            <label className="settings-role-select"><span>Custom role title</span><input value={profile.roleLabel || ''} onChange={(event) => updateProfile(profile.id, { roleLabel: event.target.value.trimStart() || undefined })} placeholder="Optional, e.g. Teacher" maxLength={40} /></label>
             <fieldset><legend>Allowed workspaces</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={profile.permissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleWorkspace(profile, workspace.id)} />{workspace.label}</label>)}</div></fieldset>
             <div className="settings-user-actions"><label><input type="checkbox" checked={profile.suspended === true} onChange={(event) => updateProfile(profile.id, { suspended: event.target.checked })} /> Suspend access</label><button type="button" onClick={() => removeProfile(profile)}><Trash2 size={14} /> Remove</button></div>
           </>}

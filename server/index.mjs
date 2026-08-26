@@ -17,6 +17,7 @@ import { createOnlinePronunciation, supportsOnlinePronunciation } from './pronun
 import { translateDocument } from './document-translation.mjs'
 import { answerSchoolQuestion, searchLocalKnowledge } from './knowledge-search.mjs'
 import { loadProviderPreferences, publicProviderPreferences, saveProviderPreferences } from './provider-preferences.mjs'
+import { searchWeb, webSearchPrompt } from './web-search.mjs'
 
 const supportedLanguages = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml', 'kn', 'ru', 'ko'])
 const languageAliases = new Map([
@@ -213,6 +214,18 @@ export function createAiosServer() {
         const requestedAgent = getAgent(input?.agent_id)
         if (!requestedAgent) return send(response, 404, { detail: 'Assistant not found.' }, origin)
         const agentId = requestedAgent.id
+        if (input?.web_search === true) {
+          const question = String(input.question || '').trim()
+          if (!question) return send(response, 400, { detail: 'A question is required.' }, origin)
+          const sources = await searchWeb(question, config)
+          if (!sources.length) return send(response, 404, { detail: 'No relevant web results were found.' }, origin)
+          const result = await generateTextWithProviders(webSearchPrompt(question, sources), config)
+          return sendNdjson(response, [
+            { type: 'metadata', agent_id: agentId, category: 'Web', model: `${result.model} + Tavily`, grounded: true, source_count: sources.length, sources },
+            { type: 'chunk', content: result.text },
+            { type: 'done', grounded: true, completed: true },
+          ], origin)
+        }
         if (agentId === 'general') {
           const question = String(input.question || '').trim()
           if (!question) return send(response, 400, { detail: 'A question is required.' }, origin)

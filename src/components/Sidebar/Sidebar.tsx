@@ -16,7 +16,6 @@ import {
   Command,
   Copy,
   Database,
-  Download,
   FileJson,
   FileText,
   GraduationCap,
@@ -563,10 +562,6 @@ function Sidebar({
           <Settings size={17} /><span>Settings</span>
         </NavLink>
 
-        <NavLink to="/updates" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Download size={17} /><span>App Updates</span>
-        </NavLink>
-
         <NavLink to="/help" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <BookOpen size={17} /><span>Help & Guides</span>
         </NavLink>
@@ -589,7 +584,7 @@ function Sidebar({
       <div className="sidebar-profile-switcher">
         <label htmlFor="lampstand-profile">Profile</label>
         <select id="lampstand-profile" value={activeProfile.id} onChange={(event) => void switchProfile(event.target.value)}>
-          {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.role}</option>)}
+          {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.roleLabel || profile.role}</option>)}
         </select>
         {activeProfile.pinHash && <button type="button" className="sidebar-lock-profile" onClick={() => { lockProfile(activeProfile.id); window.location.reload() }}>Lock profile</button>}
         {loadCloudSession() && <button type="button" className="sidebar-sign-out" disabled={signingOut} onClick={() => void signOut()}><LogOut size={14} /> {signingOut ? 'Signing out...' : 'Sign out'}</button>}

@@ -15,6 +15,7 @@ export interface LocalUserProfile {
   id: string
   name: string
   role: UserRole
+  roleLabel?: string
   avatar?: string
   pinHash?: string
   permissions: WorkspacePermission[]

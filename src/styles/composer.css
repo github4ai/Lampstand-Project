@@ -63,7 +63,7 @@
   display: grid;
   width: min(100%, 980px);
   margin: 0 auto;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: end;
   gap: 10px;
   padding: 10px;
@@ -71,6 +71,24 @@
   border-radius: 17px;
   background: var(--panel);
   box-shadow: var(--shadow);
+}
+
+.composer button.composer-web-search {
+  display: flex;
+  width: auto;
+  min-width: 46px;
+  padding: 0 11px;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.composer button.composer-web-search.active {
+  border-color: var(--primary);
+  background: rgba(54, 181, 224, 0.14);
+  color: var(--text);
 }
 
 .composer:focus-within {

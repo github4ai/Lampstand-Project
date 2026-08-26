@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('lampstandDesktop', {
     check: () => ipcRenderer.invoke('lampstand:check-update'),
     download: () => ipcRenderer.invoke('lampstand:download-update'),
     install: () => ipcRenderer.invoke('lampstand:install-update'),
+    reinstall: () => ipcRenderer.invoke('lampstand:reinstall-current'),
     subscribe: (listener) => {
       const handler = (_event, state) => listener(state)
       ipcRenderer.on('lampstand:update-status', handler)

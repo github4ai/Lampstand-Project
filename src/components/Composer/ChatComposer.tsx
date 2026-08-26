@@ -3,6 +3,7 @@ import type {
 } from 'react'
 
 import {
+  Globe2,
   Send,
   Square,
 } from 'lucide-react'
@@ -23,6 +24,8 @@ interface ChatComposerProps {
   onMinistrySourceChange?: (source: MinistrySource) => void
   schoolSource?: SchoolSource
   onSchoolSourceChange?: (source: SchoolSource) => void
+  webSearch?: boolean
+  onWebSearchChange?: (enabled: boolean) => void
 }
 
 const ministrySources: Array<{ value: MinistrySource; label: string }> = [
@@ -57,6 +60,8 @@ function ChatComposer({
   onMinistrySourceChange,
   schoolSource,
   onSchoolSourceChange,
+  webSearch = false,
+  onWebSearchChange,
 }: ChatComposerProps) {
   return (
     <div className="composer-area">
@@ -113,6 +118,7 @@ function ChatComposer({
         className="composer"
         onSubmit={onSubmit}
       >
+        {onWebSearchChange && <button type="button" className={webSearch ? 'composer-web-search active' : 'composer-web-search'} onClick={() => onWebSearchChange(!webSearch)} aria-pressed={webSearch} title="Use current web results for this question"><Globe2 size={17} /><span>{webSearch ? 'Web on' : 'Web'}</span></button>}
         <textarea
           value={value}
           onChange={(event) =>

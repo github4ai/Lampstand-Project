@@ -25,6 +25,7 @@ declare global {
         check(): Promise<LampstandUpdateState>
         download(): Promise<LampstandUpdateState>
         install(): Promise<boolean>
+        reinstall(): Promise<boolean>
         subscribe(listener: (state: LampstandUpdateState) => void): () => void
       }
       libraries: {

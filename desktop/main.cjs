@@ -136,6 +136,13 @@ function configureUpdater() {
     if (app.isPackaged) setImmediate(() => autoUpdater.quitAndInstall(false, true))
     return true
   })
+  ipcMain.handle('lampstand:reinstall-current', async () => {
+    if (!app.isPackaged) return false
+    const version = app.getVersion()
+    const installer = `Lampstand-Project-Setup-${version}.exe`
+    await shell.openExternal(`https://github.com/github4ai/Lampstand-Studio-Releases/releases/download/v${version}/${installer}`)
+    return true
+  })
 }
 
 function configurePresentationWindows() {
@@ -248,7 +255,10 @@ async function startLocalServices(root) {
     AIOS_KNOWLEDGE_INDEX_DIR: knowledgeIndexDir,
     AIOS_KNOWLEDGE_TRASH_DIR: join(userData, 'data', 'knowledge-trash'),
     AIOS_DOCUMENT_PYTHON: join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
+    AIOS_PRONUNCIATION_PYTHON: join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
     AIOS_DOCUMENT_TRANSLATION_SCRIPT: join(root, 'scripts', 'translate-document.py'),
+    AIOS_PRONUNCIATION_SCRIPT: join(root, 'server', 'edge-pronunciation.py'),
+    AIOS_PYTHON_OVERRIDES: join(root, 'python_overrides'),
   })
   startupLog(`Knowledge source: ${knowledgeDir}`)
   startupLog(`Knowledge index: ${knowledgeIndexDir}`)

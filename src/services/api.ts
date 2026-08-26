@@ -42,6 +42,7 @@ export interface StreamSource {
   page: number | null
   chunk: number | null
   rerank_score: number | null
+  url?: string
 }
 
 export interface StreamMetadata {
@@ -160,6 +161,7 @@ export async function streamAIOS(
   callbacks: StreamCallbacks,
   ministrySource = 'all',
   signal?: AbortSignal,
+  webSearch = false,
 ): Promise<void> {
   const response = await fetch(
     `${AIOS_API_BASE_URL}/ask/stream`,
@@ -173,6 +175,7 @@ export async function streamAIOS(
         question,
         agent_id: agentId,
         ministry_source: ministrySource,
+        web_search: webSearch,
       }),
       signal,
     },

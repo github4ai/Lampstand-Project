@@ -10,6 +10,10 @@ export function loadProviderPreferences(config) {
     if (typeof saved.openaiApiKey === 'string') config.openaiApiKey = saved.openaiApiKey.trim()
     if (typeof saved.geminiApiKey === 'string') config.geminiApiKey = saved.geminiApiKey.trim()
     if (typeof saved.anthropicApiKey === 'string') config.anthropicApiKey = saved.anthropicApiKey.trim()
+    if (typeof saved.tavilyApiKey === 'string') config.tavilyApiKey = saved.tavilyApiKey.trim()
+    if (typeof saved.openaiTextModel === 'string' && saved.openaiTextModel.trim()) config.openaiTextModel = saved.openaiTextModel.trim()
+    if (typeof saved.geminiTextModel === 'string' && saved.geminiTextModel.trim()) config.geminiTextModel = saved.geminiTextModel.trim()
+    if (typeof saved.anthropicTextModel === 'string' && saved.anthropicTextModel.trim()) config.anthropicTextModel = saved.anthropicTextModel.trim()
   } catch { /* First run or an unreadable optional preferences file. */ }
   return publicProviderPreferences(config)
 }
@@ -24,6 +28,7 @@ export function publicProviderPreferences(config) {
     geminiTextModel: config.geminiTextModel,
     anthropicConfigured: Boolean(config.anthropicApiKey),
     anthropicTextModel: config.anthropicTextModel,
+    webSearchConfigured: Boolean(config.tavilyApiKey),
   }
 }
 
@@ -34,12 +39,20 @@ export function saveProviderPreferences(input, config) {
   if (typeof input.openaiApiKey === 'string') config.openaiApiKey = input.openaiApiKey.trim()
   if (typeof input.geminiApiKey === 'string') config.geminiApiKey = input.geminiApiKey.trim()
   if (typeof input.anthropicApiKey === 'string') config.anthropicApiKey = input.anthropicApiKey.trim()
+  if (typeof input.tavilyApiKey === 'string') config.tavilyApiKey = input.tavilyApiKey.trim()
+  if (typeof input.openaiTextModel === 'string' && input.openaiTextModel.trim()) config.openaiTextModel = input.openaiTextModel.trim()
+  if (typeof input.geminiTextModel === 'string' && input.geminiTextModel.trim()) config.geminiTextModel = input.geminiTextModel.trim()
+  if (typeof input.anthropicTextModel === 'string' && input.anthropicTextModel.trim()) config.anthropicTextModel = input.anthropicTextModel.trim()
   mkdirSync(dirname(config.providerPreferencesFile), { recursive: true })
   writeFileSync(config.providerPreferencesFile, JSON.stringify({
     mode: config.providerMode,
     openaiApiKey: config.openaiApiKey,
     geminiApiKey: config.geminiApiKey,
     anthropicApiKey: config.anthropicApiKey,
+    tavilyApiKey: config.tavilyApiKey,
+    openaiTextModel: config.openaiTextModel,
+    geminiTextModel: config.geminiTextModel,
+    anthropicTextModel: config.anthropicTextModel,
   }, null, 2), { encoding: 'utf8', mode: 0o600 })
   return publicProviderPreferences(config)
 }

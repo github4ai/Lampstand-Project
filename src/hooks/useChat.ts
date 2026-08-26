@@ -41,6 +41,7 @@ const ministrySourceStorageKey = 'aios-ministry-source'
 const ministrySources: MinistrySource[] = ['all', 'bible', 'hwmr', 'life-study', 'ministry-books', 'hymnal']
 const schoolSourceStorageKey = 'lampstand-school-source'
 const schoolSources: SchoolSource[] = ['all', 'English', 'Science', 'Mathematics', 'Computer Skills', 'Social Science', 'Tailoring']
+const webSearchStorageKey = 'lampstand-chat-web-search-v1'
 
 function createWelcomeMessage(
   assistantName = 'AIOS',
@@ -283,6 +284,12 @@ export function useChat(
     loadMinistrySource,
   )
   const [schoolSource, setSchoolSourceState] = useState<SchoolSource>(loadSchoolSource)
+  const [webSearch, setWebSearchState] = useState(() => localStorage.getItem(webSearchStorageKey) === 'true')
+
+  function setWebSearch(enabled: boolean) {
+    setWebSearchState(enabled)
+    localStorage.setItem(webSearchStorageKey, String(enabled))
+  }
 
   function setMinistrySource(source: MinistrySource) {
     setMinistrySourceState(source)
@@ -718,6 +725,7 @@ export function useChat(
         },
         ministrySource,
         requestController.signal,
+        webSearch,
       )
 
       updateAssistantMessage(conversationId, assistantMessageId, (message) => ({
@@ -1038,9 +1046,11 @@ export function useChat(
     persistenceError,
     ministrySource,
     schoolSource,
+    webSearch,
     setQuestion,
     setMinistrySource,
     setSchoolSource,
+    setWebSearch,
     handleSubmit,
     cancelResponse,
     startNewChat,

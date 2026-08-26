@@ -64,6 +64,7 @@
         "to": "server",
         "filter": [
           "**/*.mjs",
+          "**/*.py",
           "!**/*.test.mjs"
         ]
       },

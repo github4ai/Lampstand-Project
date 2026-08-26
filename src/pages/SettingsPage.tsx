@@ -37,6 +37,10 @@ function SettingsPage() {
   const [geminiApiKey, setGeminiApiKey] = useState('')
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [anthropicApiKey, setAnthropicApiKey] = useState('')
+  const [tavilyApiKey, setTavilyApiKey] = useState('')
+  const [geminiTextModel, setGeminiTextModel] = useState('gemini-2.5-flash')
+  const [openaiTextModel, setOpenaiTextModel] = useState('gpt-4.1-mini')
+  const [anthropicTextModel, setAnthropicTextModel] = useState('claude-3-5-haiku-latest')
   const [savingProviders, setSavingProviders] = useState(false)
   const [providerNotice, setProviderNotice] = useState('')
   const [refreshingServices, setRefreshingServices] = useState(false)
@@ -118,7 +122,12 @@ function SettingsPage() {
       const next = await getAiServicesStatus(controller.signal)
       if (controller.signal.aborted) return
       setServices(next)
-      if (next.preferences) setProviderMode(next.preferences.mode)
+      if (next.preferences) {
+        setProviderMode(next.preferences.mode)
+        setGeminiTextModel(next.preferences.geminiTextModel)
+        setOpenaiTextModel(next.preferences.openaiTextModel)
+        setAnthropicTextModel(next.preferences.anthropicTextModel)
+      }
       setLastServiceCheck(new Date())
       setServiceError(
         next.errors?.map(
@@ -137,23 +146,28 @@ function SettingsPage() {
     }
   }, [])
 
-  const updateProviderPreferences = useCallback(async (removeProvider?: 'gemini' | 'openai' | 'anthropic') => {
+  const updateProviderPreferences = useCallback(async (removeProvider?: 'gemini' | 'openai' | 'anthropic' | 'tavily') => {
     setSavingProviders(true)
     setProviderNotice('')
     const previousMode = services?.preferences?.mode ?? providerMode
     const previousPreferences = services?.preferences
     try {
-      const input: { mode: ProviderPreferences['mode']; geminiApiKey?: string; openaiApiKey?: string; anthropicApiKey?: string } = { mode: providerMode }
+      const input: { mode: ProviderPreferences['mode']; geminiApiKey?: string; openaiApiKey?: string; anthropicApiKey?: string; tavilyApiKey?: string; geminiTextModel?: string; openaiTextModel?: string; anthropicTextModel?: string } = {
+        mode: providerMode, geminiTextModel: geminiTextModel.trim(), openaiTextModel: openaiTextModel.trim(), anthropicTextModel: anthropicTextModel.trim(),
+      }
       if (removeProvider === 'gemini') input.geminiApiKey = ''
       else if (geminiApiKey.trim()) input.geminiApiKey = geminiApiKey.trim()
       if (removeProvider === 'openai') input.openaiApiKey = ''
       else if (openaiApiKey.trim()) input.openaiApiKey = openaiApiKey.trim()
       if (removeProvider === 'anthropic') input.anthropicApiKey = ''
       else if (anthropicApiKey.trim()) input.anthropicApiKey = anthropicApiKey.trim()
+      if (removeProvider === 'tavily') input.tavilyApiKey = ''
+      else if (tavilyApiKey.trim()) input.tavilyApiKey = tavilyApiKey.trim()
       const saved = await saveProviderPreferences(input)
       setGeminiApiKey('')
       setOpenaiApiKey('')
       setAnthropicApiKey('')
+      setTavilyApiKey('')
       setServices((current) => current ? { ...current, preferences: saved } : current)
       setProviderNotice(removeProvider ? 'Cloud provider removed. Local services remain available.' : 'Provider preference saved. New requests will use this mode.')
       await refreshServices()
@@ -162,7 +176,7 @@ function SettingsPage() {
       if (previousPreferences) setServices((current) => current ? { ...current, preferences: previousPreferences } : current)
       setProviderNotice(error instanceof Error ? error.message : 'Unable to save provider preferences.')
     } finally { setSavingProviders(false) }
-  }, [anthropicApiKey, geminiApiKey, openaiApiKey, providerMode, refreshServices, services?.preferences])
+  }, [anthropicApiKey, anthropicTextModel, geminiApiKey, geminiTextModel, openaiApiKey, openaiTextModel, providerMode, refreshServices, services?.preferences, tavilyApiKey])
 
   const toggleServices = useCallback(async () => {
     setManagingServices(true)
@@ -453,6 +467,15 @@ function SettingsPage() {
                 </label>
                 {configured ? <button type="button" className="settings-remove-provider" disabled={savingProviders} onClick={() => void updateProviderPreferences(id)}><Trash2 size={14} /> Remove</button> : null}
               </div>)}
+              <div className="settings-cloud-provider-card">
+                <label className="settings-cloud-key"><span><KeyRound size={15} /><strong>Tavily web search key</strong><small>{services?.preferences?.webSearchConfigured ? 'Configured securely. Used only when Web search is selected in Chat.' : 'Optional search API; a free developer allowance may be available.'}</small></span><input type="password" autoComplete="off" value={tavilyApiKey} onChange={(event) => setTavilyApiKey(event.target.value)} placeholder={services?.preferences?.webSearchConfigured ? 'Enter a new key to replace it' : 'Paste Tavily API key'} /></label>
+                {services?.preferences?.webSearchConfigured ? <button type="button" className="settings-remove-provider" disabled={savingProviders} onClick={() => void updateProviderPreferences('tavily')}><Trash2 size={14} /> Remove</button> : null}
+              </div>
+            </div>
+            <div className="settings-cloud-providers settings-model-options">
+              <label className="settings-cloud-provider-card"><span><strong>Gemini model</strong><small>Choose any model enabled for your Gemini API key.</small></span><input value={geminiTextModel} onChange={(event) => setGeminiTextModel(event.target.value)} placeholder="gemini-2.5-flash" /></label>
+              <label className="settings-cloud-provider-card"><span><strong>OpenAI model</strong><small>Choose any model enabled for your OpenAI API project.</small></span><input value={openaiTextModel} onChange={(event) => setOpenaiTextModel(event.target.value)} placeholder="gpt-4.1-mini" /></label>
+              <label className="settings-cloud-provider-card"><span><strong>Claude model</strong><small>Choose any model enabled for your Anthropic API key.</small></span><input value={anthropicTextModel} onChange={(event) => setAnthropicTextModel(event.target.value)} placeholder="claude-3-5-haiku-latest" /></label>
             </div>
             <div className="settings-provider-mode-actions">
               <button type="button" className="primary" disabled={savingProviders || (providerMode === 'cloud' && !services?.preferences?.geminiConfigured && !services?.preferences?.openaiConfigured && !services?.preferences?.anthropicConfigured && !geminiApiKey.trim() && !openaiApiKey.trim() && !anthropicApiKey.trim())} onClick={() => void updateProviderPreferences()}>{savingProviders ? <RefreshCw className="spin" size={14} /> : <Check size={14} />} Save provider choice</button>
