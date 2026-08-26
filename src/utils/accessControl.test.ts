@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { ACCESS_CONTROL_STORAGE_KEY, canAccess, createInitialAccessState, defaultPermissions, loadOrCreateAccessState, parseAccessControlState } from './accessControl'
+import { ACCESS_CONTROL_STORAGE_KEY, canAccess, canManageUsers, createInitialAccessState, defaultPermissions, loadOrCreateAccessState, parseAccessControlState } from './accessControl'
 
 describe('Lampstand local access control', () => {
   it('migrates the existing single-user workspace to an Owner profile', () => {
@@ -15,6 +15,23 @@ describe('Lampstand local access control', () => {
     const owner = createInitialAccessState().profiles[0]
     expect(canAccess(owner, 'settings', 'manage')).toBe(true)
     expect(canAccess(owner, 'media', 'delete')).toBe(true)
+    expect(canAccess(owner, 'presentation')).toBe(true)
+    expect(canManageUsers(owner)).toBe(true)
+  })
+
+  it('allows every active role to open Settings without granting user administration', () => {
+    const owner = createInitialAccessState().profiles[0]
+    const student = { ...owner, id: 'student', role: 'student' as const, permissions: defaultPermissions('student') }
+    const familyAdmin = { ...owner, id: 'family-admin', role: 'family-admin' as const, permissions: defaultPermissions('family-admin') }
+    expect(canManageUsers(student)).toBe(false)
+    expect(canManageUsers(familyAdmin)).toBe(false)
+    expect(canManageUsers(owner)).toBe(true)
+  })
+
+  it('supports independently enabled and disabled Presentation access', () => {
+    const adult = { ...createInitialAccessState().profiles[0], role: 'adult' as const, permissions: defaultPermissions('adult') }
+    expect(canAccess(adult, 'presentation')).toBe(true)
+    expect(canAccess({ ...adult, permissions: adult.permissions.filter((permission) => permission.workspace !== 'presentation') }, 'presentation')).toBe(false)
   })
 
   it('keeps restricted roles away from administrative workspaces', () => {
@@ -32,6 +49,16 @@ describe('Lampstand local access control', () => {
     const storage = { getItem: vi.fn((key: string) => values.get(key) ?? null), setItem: vi.fn((key: string, value: string) => values.set(key, value)) }
     const state = loadOrCreateAccessState(storage as unknown as Storage)
     expect(canAccess(state.profiles[0], 'documents', 'import')).toBe(true)
+    expect(storage.setItem).toHaveBeenCalled()
+  })
+
+  it('migrates saved profiles without Presentation access from their existing Ministry access', () => {
+    const permissions = defaultPermissions('adult').filter((permission) => permission.workspace !== 'presentation')
+    const profile = { ...createInitialAccessState().profiles[0], id: 'adult', role: 'adult' as const, permissions }
+    const values = new Map([[ACCESS_CONTROL_STORAGE_KEY, JSON.stringify({ version: 1, activeProfileId: 'adult', profiles: [profile] })]])
+    const storage = { getItem: vi.fn((key: string) => values.get(key) ?? null), setItem: vi.fn((key: string, value: string) => values.set(key, value)) }
+    const state = loadOrCreateAccessState(storage as unknown as Storage)
+    expect(canAccess(state.profiles[0], 'presentation')).toBe(true)
     expect(storage.setItem).toHaveBeenCalled()
   })
 

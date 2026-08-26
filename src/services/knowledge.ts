@@ -12,6 +12,7 @@ export interface KnowledgeFile {
 export interface KnowledgeDocument {
   id: string
   name: string
+  relative_path: string
   stem: string
   category: string
 

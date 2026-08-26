@@ -21,6 +21,7 @@ import {
   FileText,
   GraduationCap,
   Languages,
+  LogOut,
   MessageSquare,
   MessagesSquare,
   PanelLeftClose,
@@ -58,6 +59,7 @@ import type {
 } from '../../types/chat'
 import { ACCESS_CONTROL_STORAGE_KEY, canAccess, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
 import { lockProfile, markProfileUnlocked, verifyPin } from '../../utils/pinSecurity'
+import { clearCloudSession, loadCloudSession, signOutOwner } from '../../utils/remoteAccess'
 
 import {
   exportConversationAsJson,
@@ -127,6 +129,7 @@ function Sidebar({
 }: SidebarProps) {
   const navigate =
     useNavigate()
+  const [signingOut, setSigningOut] = useState(false)
 
   const openCommandPalette =
     useAppStore(
@@ -353,6 +356,15 @@ function Sidebar({
     window.location.assign(canAccess(profile, 'chat') ? '/' : canAccess(profile, 'school') ? '/school' : canAccess(profile, 'ministry') ? '/ministry' : '/language-tools')
   }
 
+  async function signOut() {
+    const session = loadCloudSession()
+    if (!session) return
+    setSigningOut(true)
+    try { await signOutOwner(session) } catch { /* Clear local access even when the server is unavailable. */ }
+    clearCloudSession()
+    window.location.reload()
+  }
+
   function handleOpenConversation(
     conversationId: string,
   ) {
@@ -518,7 +530,7 @@ function Sidebar({
         {canAccess(activeProfile, 'ministry') && <NavLink to="/ministry" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <LibraryBig size={17} /><span>Ministry</span>
         </NavLink>}
-        {canAccess(activeProfile, 'ministry') && <NavLink to="/presentation" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        {canAccess(activeProfile, 'presentation') && <NavLink to="/presentation" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Presentation size={18} />
           <span>Presentation</span>
         </NavLink>}
@@ -547,9 +559,9 @@ function Sidebar({
           <Clock3 size={17} /><span>History</span>
         </NavLink>}
 
-        {activeProfile.role === 'owner' && <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
+        <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Settings size={17} /><span>Settings</span>
-        </NavLink>}
+        </NavLink>
 
         <NavLink to="/updates" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
           <Download size={17} /><span>App Updates</span>
@@ -580,6 +592,7 @@ function Sidebar({
           {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.role}</option>)}
         </select>
         {activeProfile.pinHash && <button type="button" className="sidebar-lock-profile" onClick={() => { lockProfile(activeProfile.id); window.location.reload() }}>Lock profile</button>}
+        {loadCloudSession() && <button type="button" className="sidebar-sign-out" disabled={signingOut} onClick={() => void signOut()}><LogOut size={14} /> {signingOut ? 'Signing out...' : 'Sign out'}</button>}
       </div>
 
       <div className="category-section">

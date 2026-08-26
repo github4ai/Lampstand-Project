@@ -770,6 +770,9 @@ export function useChat(
   }
 
   function startNewChat(agentOverride?: AgentSummary) {
+    if (isLoading) {
+      requestControllerRef.current?.abort()
+    }
     const agent = agentOverride ?? selectedAgent
     if (!agent) {
       return

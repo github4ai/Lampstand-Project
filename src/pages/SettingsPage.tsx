@@ -7,6 +7,8 @@ import RemoteAccessPanel from '../components/Settings/RemoteAccessPanel'
 import AppUpdatesPanel from '../components/Settings/AppUpdatesPanel'
 import { BIBLE_VOICE_STORAGE_KEY, INDIA_VOICE_PROFILES } from '../utils/bibleVoices'
 import { collectWorkspaceBackup, parseWorkspaceBackup, restoreWorkspaceBackup as applyWorkspaceBackup, workspaceBackupSize, type WorkspaceBackup } from '../utils/workspaceBackup'
+import { canManageUsers } from '../utils/accessControl'
+import { useAccessControl } from '../hooks/useAccessControl'
 const STORAGE_KEY = 'aios-studio-settings-v1'
 
 interface Preferences { compactUi: boolean; reducedMotion: boolean; highContrast: boolean }
@@ -20,6 +22,8 @@ function loadPreferences(): Preferences {
 }
 
 function SettingsPage() {
+  const { profile } = useAccessControl()
+  const canManage = canManageUsers(profile)
   const [preferences, setPreferences] = useState<Preferences>(loadPreferences)
   const [checking, setChecking] = useState(true)
   const [online, setOnline] = useState(false)
@@ -374,10 +378,10 @@ function SettingsPage() {
       </header>
 
       <div className="settings-grid">
-        <AccessSettingsPanel />
-        <RemoteAccessPanel />
-        <AppUpdatesPanel allowManifestConfiguration allowPublishing />
-        <section className="settings-panel settings-ai-services">
+        {canManage && <AccessSettingsPanel />}
+        {canManage && <RemoteAccessPanel />}
+        <AppUpdatesPanel />
+        {canManage && <section className="settings-panel settings-ai-services">
           <div className="settings-panel-title"><Activity size={19} /><div><h2>AI Services</h2>
             <p>One switch starts every local dependency. Large GPU models are managed automatically.</p></div></div>
           <div className="settings-master-control">
@@ -456,7 +460,7 @@ function SettingsPage() {
             {providerNotice ? <p className="settings-provider-notice" role="status">{providerNotice}</p> : null}
           </div>
           {serviceError && <div className="settings-service-error" role="alert"><strong>AI Services need attention</strong><span>{serviceError}</span><button type="button" onClick={() => void refreshServices()} disabled={refreshingServices}><RefreshCw size={13} /> Try again</button></div>}
-        </section>
+        </section>}
 
         <section className="settings-panel settings-appearance-panel">
           <div className="settings-panel-title"><SlidersHorizontal size={19} /><div><h2>Appearance</h2><p>Preferences are saved in this browser.</p></div></div>

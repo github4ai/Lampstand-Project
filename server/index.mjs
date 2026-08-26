@@ -199,7 +199,10 @@ export function createAiosServer() {
 
       if (request.method === 'POST' && request.url === '/ask/stream') {
         const input = await readJson(request)
-        if (input?.agent_id === 'general') {
+        const requestedAgent = getAgent(input?.agent_id)
+        if (!requestedAgent) return send(response, 404, { detail: 'Assistant not found.' }, origin)
+        const agentId = requestedAgent.id
+        if (agentId === 'general') {
           const question = String(input.question || '').trim()
           if (!question) return send(response, 400, { detail: 'A question is required.' }, origin)
           const result = await generateTextWithProviders(
@@ -212,7 +215,7 @@ export function createAiosServer() {
             { type: 'done', grounded: false, completed: true },
           ], origin)
         }
-        if (input?.agent_id === 'school') {
+        if (agentId === 'school') {
           const question = String(input.question || '').trim()
           if (!question) return send(response, 400, { detail: 'A question is required.' }, origin)
           const school = await answerSchoolQuestion(question, config)
@@ -310,6 +313,7 @@ export function createAiosServer() {
       const knowledgeUrl = new URL(request.url, `http://${request.headers.host}`)
       const outlineMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/outline$/)
       if (outlineMatch) {
+        if (decodeURIComponent(outlineMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeOutline(
           decodeURIComponent(outlineMatch[1]), decodeURIComponent(outlineMatch[2]), config,
         ), origin)
@@ -317,6 +321,7 @@ export function createAiosServer() {
 
       const contextMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/viewer\/(\d+)\/context$/)
       if (contextMatch) {
+        if (decodeURIComponent(contextMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeContext(
           decodeURIComponent(contextMatch[1]), decodeURIComponent(contextMatch[2]), contextMatch[3],
           knowledgeUrl.searchParams.get('radius'), config,
@@ -325,6 +330,7 @@ export function createAiosServer() {
 
       const viewerMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/viewer\/(\d+)$/)
       if (viewerMatch) {
+        if (decodeURIComponent(viewerMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeViewer(
           decodeURIComponent(viewerMatch[1]), decodeURIComponent(viewerMatch[2]), viewerMatch[3], config,
         ), origin)

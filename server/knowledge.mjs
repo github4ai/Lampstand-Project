@@ -1,7 +1,7 @@
 import { mkdir, readFile, readdir, rename, stat, writeFile } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { basename, delimiter, extname, resolve, sep } from 'node:path'
+import { basename, delimiter, extname, relative, resolve, sep } from 'node:path'
 import { spawn } from 'node:child_process'
 
 let indexJob = { state: 'idle', startedAt: null, finishedAt: null, output: '', exitCode: null, processed: 0, total: 0, current: '', errors: 0 }
@@ -95,7 +95,7 @@ export async function listKnowledgeSources(config) {
       const fullPath = resolve(folder, entry.name)
       if (!fullPath.startsWith(root + sep)) continue
       if (entry.isDirectory()) await walk(fullPath, nextParts)
-      else if (entry.isFile() && supportedKnowledgeExtensions.has(extname(entry.name).toLowerCase()) &&
+      else if (parts.length > 1 && entry.isFile() && supportedKnowledgeExtensions.has(extname(entry.name).toLowerCase()) &&
         !entry.name.toLowerCase().endsWith(generatedIndexSuffix)) {
         const file = await stat(fullPath)
         let metadata = {}
@@ -139,15 +139,31 @@ export async function readKnowledgeLibrary(config) {
     } catch { /* Missing or unreadable artifacts are reported as pending. */ }
     let embeddings = null
     try { await stat(embeddingPath); embeddings = chunks ?? 0 } catch { /* Optional artifact. */ }
+    const fileDetails = async (filePath) => {
+      try {
+        const file = await stat(filePath)
+        return {
+          name: basename(filePath),
+          stem: basename(filePath, extname(filePath)),
+          extension: extname(filePath),
+          relative_path: relative(resolve(config.knowledgeIndexDir), filePath).replace(/\\/g, '/'),
+          size_bytes: file.size,
+          modified_at: file.mtime.toISOString(),
+        }
+      } catch { return null }
+    }
+    const chunkFile = chunks === null ? null : await fileDetails(chunkPath)
+    const embeddingFile = embeddings === null ? null : await fileDetails(embeddingPath)
     const faissFiles = []
     try { await stat(faissPath); faissFiles.push(basename(faissPath)) } catch { /* Optional artifact. */ }
+    const detailedFaissFiles = (await Promise.all(faissFiles.map(() => fileDetails(faissPath)))).filter(Boolean)
     return {
       stem,
       chunks,
       embeddings,
-      chunk_file: chunks === null ? null : basename(chunkPath),
-      embedding_file: embeddings === null ? null : basename(embeddingPath),
-      faiss_files: faissFiles,
+      chunk_file: chunkFile,
+      embedding_file: embeddingFile,
+      faiss_files: detailedFaissFiles,
     }
   }
 
@@ -158,6 +174,7 @@ export async function readKnowledgeLibrary(config) {
     grouped.get(source.category).push({
       id: source.relativePath,
       name: source.name,
+      relative_path: source.relativePath,
       stem: artifacts.stem,
       category: source.category,
       chunks: artifacts.chunks,
@@ -170,8 +187,23 @@ export async function readKnowledgeLibrary(config) {
     })
   }
 
+  const metadataByCategory = new Map()
+  for (const name of grouped.keys()) {
+    const metadataRoot = resolve(config.knowledgeIndexDir, name, 'Metadata')
+    try {
+      const entries = await readdir(metadataRoot, { withFileTypes: true })
+      const files = await Promise.all(entries.filter((entry) => entry.isFile()).map(async (entry) => {
+        const path = resolve(metadataRoot, entry.name)
+        const file = await stat(path)
+        return { name: entry.name, stem: basename(entry.name, extname(entry.name)), extension: extname(entry.name), relative_path: relative(resolve(config.knowledgeIndexDir), path).replace(/\\/g, '/'), size_bytes: file.size, modified_at: file.mtime.toISOString() }
+      }))
+      metadataByCategory.set(name, files)
+    } catch { metadataByCategory.set(name, []) }
+  }
+
   const categories = [...grouped.entries()].map(([name, documents]) => {
     const faissFiles = documents.flatMap((document) => document.faiss_files)
+    const metadataFiles = metadataByCategory.get(name) || []
     return {
       name,
       document_count: documents.length,
@@ -179,11 +211,11 @@ export async function readKnowledgeLibrary(config) {
       chunk_count: documents.reduce((total, document) => total + (document.chunks ?? 0), 0),
       embedding_count: documents.reduce((total, document) => total + (document.embeddings ?? 0), 0),
       faiss_index_count: faissFiles.length,
-      metadata_file_count: 0,
+      metadata_file_count: metadataFiles.length,
       modified_at: documents.map((document) => document.modified_at).sort().at(-1) || null,
       documents,
       faiss_files: faissFiles,
-      metadata_files: [],
+      metadata_files: metadataFiles,
     }
   }).sort((left, right) => left.name.localeCompare(right.name, undefined, { sensitivity: 'base' }))
 
@@ -234,7 +266,7 @@ async function loadViewerDocument(categoryValue, documentValue, config) {
     throw error
   }
   const categoryRoot = resolve(config.knowledgeIndexDir, category.name)
-  const chunkPath = resolve(categoryRoot, 'Chunks', document.chunk_file)
+  const chunkPath = resolve(categoryRoot, 'Chunks', document.chunk_file.name)
   if (!chunkPath.startsWith(categoryRoot + sep)) {
     const error = new Error('The knowledge document path is invalid.')
     error.status = 400
@@ -262,7 +294,7 @@ export async function readKnowledgeViewer(categoryValue, documentValue, chunkIdV
     error.status = 404
     throw error
   }
-  const normalized = chunks.map((item, index) => normalizeViewerChunk(item, index, chunks.length, document, category.name, document.chunk_file))
+  const normalized = chunks.map((item, index) => normalizeViewerChunk(item, index, chunks.length, document, category.name, document.chunk_file.name))
   const pages = new Set(normalized.map((item) => item.page).filter((page) => page !== null))
   return {
     category: category.name,
@@ -281,7 +313,8 @@ export async function readKnowledgeViewer(categoryValue, documentValue, chunkIdV
 export async function readKnowledgeContext(categoryValue, documentValue, chunkIdValue, radiusValue, config) {
   const { category, document, chunks } = await loadViewerDocument(categoryValue, documentValue, config)
   const chunkId = Number(chunkIdValue)
-  const radius = Math.min(10, Math.max(0, Number.parseInt(radiusValue, 10) || 1))
+  const parsedRadius = Number.parseInt(radiusValue, 10)
+  const radius = Math.min(10, Math.max(0, Number.isNaN(parsedRadius) ? 1 : parsedRadius))
   if (!Number.isInteger(chunkId) || chunkId < 1 || chunkId > chunks.length) {
     const error = new Error('The requested knowledge chunk was not found.')
     error.status = 404
@@ -290,7 +323,7 @@ export async function readKnowledgeContext(categoryValue, documentValue, chunkId
   const start = Math.max(0, chunkId - 1 - radius)
   const end = Math.min(chunks.length, chunkId + radius)
   const selected = chunks.slice(start, end).map((item, offset) => {
-    const normalized = normalizeViewerChunk(item, start + offset, chunks.length, document, category.name, document.chunk_file)
+    const normalized = normalizeViewerChunk(item, start + offset, chunks.length, document, category.name, document.chunk_file.name)
     const { position: _position, previous_chunk_id: _previous, next_chunk_id: _next, ...contextChunk } = normalized
     return { ...contextChunk, is_current: normalized.id === chunkId || start + offset + 1 === chunkId }
   })

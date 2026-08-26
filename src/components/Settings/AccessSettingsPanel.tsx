@@ -23,6 +23,7 @@ const roles: Array<{ id: UserRole; label: string }> = [
 const workspaces: Array<{ id: WorkspaceId; label: string }> = [
   { id: 'chat', label: 'Chat' }, { id: 'knowledge', label: 'Knowledge' },
   { id: 'agents', label: 'Agents' }, { id: 'ministry', label: 'Ministry' },
+  { id: 'presentation', label: 'Presentation' },
   { id: 'church', label: 'Church' }, { id: 'school', label: 'School' },
   { id: 'media', label: 'Media Studio' }, { id: 'language-tools', label: 'Language Tools' },
   { id: 'documents', label: 'Documents' }, { id: 'history', label: 'History' },

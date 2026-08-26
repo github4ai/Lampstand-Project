@@ -1,6 +1,6 @@
 import { KeyRound, LogIn, ShieldCheck } from 'lucide-react'
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react'
-import { ACCESS_CONTROL_STORAGE_KEY, defaultPermissions, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
+import { ACCESS_CONTROL_STORAGE_KEY, defaultPermissions, migrateLegacyPermissions, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
 import { claimFirstRemoteOwner, clearCloudSession, cloudConfiguration, ensureFreshCloudSession, getOwnedRemoteFamily, loadCloudSession, loadSignedInMembership, saveCloudSession, signInOwner, signUpOwner, type CloudSession } from '../../utils/remoteAccess'
 import { FIRST_RUN_KEY } from '../Onboarding/FirstRunWizard'
 
@@ -35,7 +35,7 @@ export default function CloudAccessGate({ children }: { children: ReactNode }) {
         const membership = await loadSignedInMembership(activeSession)
         if (membership) {
           if (membership.suspended) throw new Error('Your Lampstand access has been suspended by the Owner.')
-          activateProfile({ id: membership.id, name: membership.display_name, role: membership.role, permissions: membership.permissions, suspended: membership.suspended, createdAt: membership.created_at, updatedAt: membership.updated_at })
+          activateProfile({ id: membership.id, name: membership.display_name, role: membership.role, permissions: migrateLegacyPermissions(membership.role, membership.permissions), suspended: membership.suspended, createdAt: membership.created_at, updatedAt: membership.updated_at })
           if (!cancelled) setState('ready')
           return
         }

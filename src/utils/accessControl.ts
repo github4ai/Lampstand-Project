@@ -2,7 +2,7 @@ export type UserRole = 'owner' | 'family-admin' | 'adult' | 'student' | 'child' 
 
 export type WorkspaceId =
   | 'chat' | 'knowledge' | 'agents' | 'ministry' | 'church'
-  | 'school' | 'media' | 'language-tools' | 'documents' | 'history' | 'settings'
+  | 'presentation' | 'school' | 'media' | 'language-tools' | 'documents' | 'history' | 'settings'
 
 export type AccessAction = 'view' | 'create' | 'edit' | 'delete' | 'import' | 'export' | 'share' | 'manage'
 
@@ -32,15 +32,15 @@ export interface AccessControlState {
 export const ACCESS_CONTROL_STORAGE_KEY = 'lampstand-access-control-v1'
 
 const allActions: AccessAction[] = ['view', 'create', 'edit', 'delete', 'import', 'export', 'share', 'manage']
-const allWorkspaces: WorkspaceId[] = ['chat', 'knowledge', 'agents', 'ministry', 'church', 'school', 'media', 'language-tools', 'documents', 'history', 'settings']
+const allWorkspaces: WorkspaceId[] = ['chat', 'knowledge', 'agents', 'ministry', 'presentation', 'church', 'school', 'media', 'language-tools', 'documents', 'history', 'settings']
 
 const roleWorkspaces: Record<UserRole, WorkspaceId[]> = {
   owner: allWorkspaces,
   'family-admin': allWorkspaces.filter((workspace) => workspace !== 'settings'),
-  adult: ['chat', 'knowledge', 'agents', 'ministry', 'church', 'media', 'language-tools', 'documents', 'history'],
+  adult: ['chat', 'knowledge', 'agents', 'ministry', 'presentation', 'church', 'media', 'language-tools', 'documents', 'history'],
   student: ['chat', 'knowledge', 'school', 'language-tools', 'documents', 'history'],
   child: ['school', 'language-tools'],
-  guest: ['chat', 'ministry', 'language-tools'],
+  guest: ['chat', 'ministry', 'presentation', 'language-tools'],
 }
 
 function actionsForRole(role: UserRole): AccessAction[] {
@@ -55,6 +55,12 @@ function actionsForRole(role: UserRole): AccessAction[] {
 export function defaultPermissions(role: UserRole): WorkspacePermission[] {
   const actions = actionsForRole(role)
   return roleWorkspaces[role].map((workspace) => ({ workspace, actions: [...actions] }))
+}
+
+export function migrateLegacyPermissions(role: UserRole, permissions: WorkspacePermission[]): WorkspacePermission[] {
+  if (permissions.some((permission) => permission.workspace === 'presentation')) return permissions
+  if (!permissions.some((permission) => permission.workspace === 'ministry')) return permissions
+  return [...permissions, defaultPermissions(role).find((permission) => permission.workspace === 'presentation') ?? { workspace: 'presentation', actions: ['view'] }]
 }
 
 export function createInitialAccessState(now = new Date()): AccessControlState {
@@ -87,8 +93,10 @@ export function loadOrCreateAccessState(storage: Pick<Storage, 'getItem' | 'setI
   if (existing) {
     let changed = false
     const profiles = existing.profiles.map((profile) => {
-      if (profile.role !== 'student') return profile
-      const permissions = profile.permissions.map((permission) => {
+      let permissions = migrateLegacyPermissions(profile.role, profile.permissions)
+      if (permissions !== profile.permissions) changed = true
+      if (profile.role !== 'student') return permissions === profile.permissions ? profile : { ...profile, permissions }
+      permissions = permissions.map((permission) => {
         if ((permission.workspace !== 'documents' && permission.workspace !== 'knowledge') || permission.actions.includes('import')) return permission
         changed = true
         return { ...permission, actions: [...permission.actions, 'import' as const] }
@@ -108,4 +116,8 @@ export function canAccess(profile: LocalUserProfile | null | undefined, workspac
   if (!profile || profile.suspended) return false
   if (profile.role === 'owner') return true
   return profile.permissions.some((permission) => permission.workspace === workspace && permission.actions.includes(action))
+}
+
+export function canManageUsers(profile: LocalUserProfile | null | undefined): boolean {
+  return Boolean(profile && !profile.suspended && profile.role === 'owner')
 }

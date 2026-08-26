@@ -598,4 +598,4 @@
   .sidebar-collapsed .workspace-navigation-link span { display: inline; }
 }
 .sidebar-profile-switcher{display:grid;gap:6px;padding:10px 0}.sidebar-profile-switcher label{color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}.sidebar-profile-switcher select{width:100%;min-height:38px;padding:0 9px;border:1px solid var(--border);border-radius:8px;background:var(--panel-light);color:var(--text);font-size:11px}.sidebar-collapsed .sidebar-profile-switcher{display:none}
-.sidebar-lock-profile{min-height:30px;border:1px solid var(--border);border-radius:7px;background:rgba(255,255,255,.03);color:var(--text-muted);font-size:10px;cursor:pointer}.sidebar-lock-profile:hover{color:#bae6fd}
+.sidebar-lock-profile,.sidebar-sign-out{min-height:30px;border:1px solid var(--border);border-radius:7px;background:rgba(255,255,255,.03);color:var(--text-muted);font-size:10px;cursor:pointer}.sidebar-lock-profile:hover,.sidebar-sign-out:hover{color:#bae6fd}.sidebar-sign-out{display:flex;align-items:center;justify-content:center;gap:6px}.sidebar-sign-out:disabled{opacity:.55;cursor:wait}

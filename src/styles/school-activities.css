@@ -17,3 +17,4 @@
 }
 .school-create-notes-button:disabled { cursor: not-allowed; opacity: .45; }
 .school-notes-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.school-more-questions{display:block;margin:12px 0 0 auto;padding:9px 16px;border:1px solid #0e7490;border-radius:8px;background:#ecfeff;color:#155e75;font-weight:700;cursor:pointer}.school-more-questions:hover{background:#cffafe}

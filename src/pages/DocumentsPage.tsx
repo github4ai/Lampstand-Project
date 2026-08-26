@@ -148,8 +148,10 @@ function DocumentsPage() {
   const documents = useMemo(() => {
     const indexed = data?.categories.flatMap((item) => item.documents.map((document) => {
       const indexedSourceStem = document.stem.replace(/\.aios-index$/i, '')
-      const source = sourceFiles.find((file) => file.category === item.name &&
+      const matchingSources = sourceFiles.filter((file) => file.category === item.name &&
         file.name.replace(/\.(?:pdf|html?|epub|docx|txt|md|markdown|pdb)$/i, '') === indexedSourceStem)
+      const source = matchingSources.find((file) => file.relativePath === document.relative_path) ??
+        (matchingSources.length === 1 ? matchingSources[0] : undefined)
       return { id: document.id, name: source?.name ?? document.name, stem: document.stem, category: item.name,
         subcollection: source?.subcollection ?? null, relativePath: source?.relativePath ?? null, indexed: document.indexed, chunks: document.chunks,
         embeddings: document.embeddings, modified_at: document.modified_at, title: source?.title ?? '', description: source?.description ?? '', tags: source?.tags ?? [] }

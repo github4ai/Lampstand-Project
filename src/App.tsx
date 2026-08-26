@@ -280,6 +280,13 @@ function App() {
   ])
 
   useEffect(() => {
+    if (location.pathname !== '/' || !selectedAgent || isLoading || !activeConversationId) return
+    const activeConversation = conversations.find((conversation) => conversation.id === activeConversationId)
+    if (!activeConversation || activeConversation.agentId === selectedAgent.id) return
+    startNewChat(selectedAgent)
+  }, [activeConversationId, conversations, isLoading, location.pathname, selectedAgent])
+
+  useEffect(() => {
     function handleGlobalKeyDown(
       event: KeyboardEvent,
     ) {
@@ -590,7 +597,7 @@ function App() {
           element={protect('chat', chatPage)}
         />
 
-        <Route path="/settings" element={activeProfile.role === 'owner' ? <main className="workspace-panel"><SettingsPage /></main> : protect('settings', null)} />
+        <Route path="/settings" element={<main className="workspace-panel"><SettingsPage /></main>} />
         <Route path="/updates" element={<main className="workspace-panel"><AppUpdatesPage /></main>} />
         <Route path="/help" element={<main className="workspace-panel"><HelpPage /></main>} />
 
@@ -608,7 +615,7 @@ function App() {
 
         <Route path="/ministry-books" element={protect('ministry', <main className="workspace-panel"><MinistryBooksPage /></main>)} />
         <Route path="/ministry" element={protect('ministry', <main className="workspace-panel"><MinistryPage /></main>)} />
-        <Route path="/presentation" element={protect('ministry', <main className="workspace-panel"><PresentationPage /></main>)} />
+        <Route path="/presentation" element={protect('presentation', <main className="workspace-panel"><PresentationPage /></main>)} />
         <Route path="/school" element={protect('school', <main className="workspace-panel"><SchoolPage /></main>)} />
         <Route path="/school/read" element={protect('school', <main className="workspace-panel"><SchoolLessonReaderPage /></main>)} />
         <Route path="/ministry/hwmr" element={protect('ministry', <main className="workspace-panel"><HwmrPage /></main>)} />

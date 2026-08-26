@@ -13,6 +13,7 @@ const KEYS = {
   assessments: 'aios-school-assessments-v1', plans: 'aios-school-study-plans-v1', profile: 'aios-school-profile-v1',
 } as const
 const schoolBackupKeys = Object.values(KEYS)
+const NOTE_OPTIONS = ['10-point summary', 'Summary', 'Key ideas', 'Vocabulary', 'Important facts', 'Questions to review', 'Definitions', 'Examples', 'Practice questions', 'Answer key']
 type View = 'dashboard' | 'read' | 'library' | 'quiz' | 'flashcards' | 'revision' | 'notes' | 'planner' | 'results'
 type ProgressEntry = { openedAt?: string; completed?: boolean; percent?: number; minutes?: number }
 type SchoolProgress = Record<string, ProgressEntry>
@@ -30,6 +31,12 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'Which word is an adjective?', choices: ['beautiful', 'slowly', 'school', 'write'], answer: 0, explanation: '“Beautiful” describes a noun, so it is an adjective.' },
     { question: 'Choose the correct plural of “child”.', choices: ['childs', 'childes', 'children', 'childrens'], answer: 2, explanation: '“Children” is the irregular plural of “child”.' },
     { question: 'Which word means the opposite of “ancient”?', choices: ['old', 'modern', 'historic', 'past'], answer: 1, explanation: '“Modern” is the opposite of “ancient”.' },
+    { question: 'Which word is a verb?', choices: ['quickly', 'blue', 'jump', 'happiness'], answer: 2, explanation: '“Jump” describes an action, so it is a verb.' },
+    { question: 'What is the subject in “The children read books”?', choices: ['books', 'read', 'The children', 'the'], answer: 2, explanation: '“The children” tells who performs the action.' },
+    { question: 'Which word is spelled correctly?', choices: ['becaus', 'because', 'becouse', 'becuase'], answer: 1, explanation: 'The correct spelling is “because”.' },
+    { question: 'Which sentence is in the future tense?', choices: ['She walked home.', 'She walks home.', 'She will walk home.', 'She is walking home.'], answer: 2, explanation: '“Will walk” describes an action that has not happened yet.' },
+    { question: 'What is the comparative form of “small”?', choices: ['smallest', 'more small', 'smaller', 'smalling'], answer: 2, explanation: 'The comparative form of “small” is “smaller”.' },
+    { question: 'Which punctuation mark ends a statement?', choices: ['Full stop', 'Question mark', 'Comma', 'Apostrophe'], answer: 0, explanation: 'A full stop ends an ordinary statement.' },
   ],
   Science: [
     { question: 'Which process allows green plants to make food?', choices: ['Respiration', 'Photosynthesis', 'Digestion', 'Evaporation'], answer: 1, explanation: 'Plants use sunlight, water, and carbon dioxide during photosynthesis.' },
@@ -38,6 +45,12 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'Which organ pumps blood around the body?', choices: ['Lungs', 'Brain', 'Heart', 'Stomach'], answer: 2, explanation: 'The heart pumps blood through the circulatory system.' },
     { question: 'Water changes into vapour by which process?', choices: ['Freezing', 'Melting', 'Condensation', 'Evaporation'], answer: 3, explanation: 'Evaporation changes liquid water into water vapour.' },
     { question: 'Which force pulls objects toward Earth?', choices: ['Magnetism', 'Gravity', 'Friction', 'Electricity'], answer: 1, explanation: 'Gravity attracts objects toward Earth.' },
+    { question: 'Which gas do humans need for respiration?', choices: ['Oxygen', 'Carbon dioxide', 'Nitrogen only', 'Water vapour'], answer: 0, explanation: 'Humans use oxygen during respiration.' },
+    { question: 'What happens when water freezes?', choices: ['It becomes a gas.', 'It becomes a solid.', 'It disappears.', 'It becomes salt.'], answer: 1, explanation: 'Freezing changes liquid water into solid ice.' },
+    { question: 'Which part of a plant absorbs water from soil?', choices: ['Flower', 'Leaf', 'Root', 'Fruit'], answer: 2, explanation: 'Roots absorb water and minerals from the soil.' },
+    { question: 'Which object is attracted by a magnet?', choices: ['Iron nail', 'Glass cup', 'Wooden ruler', 'Rubber band'], answer: 0, explanation: 'Iron is a magnetic material.' },
+    { question: 'What is a habitat?', choices: ['A type of food', 'A place where an organism lives', 'A weather instrument', 'A plant part'], answer: 1, explanation: 'A habitat provides an organism with a place to live.' },
+    { question: 'Which source gives Earth most of its light and heat?', choices: ['The Moon', 'The Sun', 'Clouds', 'Wind'], answer: 1, explanation: 'The Sun provides most of Earth’s light and heat.' },
   ],
   Mathematics: [
     { question: 'What is 3/4 of 20?', choices: ['5', '10', '15', '18'], answer: 2, explanation: '20 ÷ 4 = 5, and 5 × 3 = 15.' },
@@ -46,6 +59,12 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'What is 25% of 80?', choices: ['10', '20', '25', '40'], answer: 1, explanation: '25% is one quarter, and one quarter of 80 is 20.' },
     { question: 'What is 7 × 8?', choices: ['48', '54', '56', '64'], answer: 2, explanation: 'Seven groups of eight equal 56.' },
     { question: 'Which fraction equals one half?', choices: ['2/3', '3/6', '4/5', '5/8'], answer: 1, explanation: '3/6 simplifies to 1/2.' },
+    { question: 'What is 45 + 27?', choices: ['62', '72', '82', '92'], answer: 1, explanation: '45 + 27 = 72.' },
+    { question: 'What is 96 ÷ 8?', choices: ['10', '11', '12', '14'], answer: 2, explanation: '96 divided by 8 equals 12.' },
+    { question: 'Which angle is a right angle?', choices: ['45°', '90°', '120°', '180°'], answer: 1, explanation: 'A right angle measures 90 degrees.' },
+    { question: 'What is the place value of 6 in 4,682?', choices: ['6', '60', '600', '6,000'], answer: 2, explanation: 'The 6 is in the hundreds place, so its value is 600.' },
+    { question: 'A rectangle is 5 cm long and 3 cm wide. What is its area?', choices: ['8 cm²', '15 cm²', '16 cm²', '30 cm²'], answer: 1, explanation: 'Area is length multiplied by width: 5 × 3 = 15 cm².' },
+    { question: 'What is 0.5 equal to as a fraction?', choices: ['1/2', '1/4', '2/5', '5/2'], answer: 0, explanation: '0.5 is one half, written as 1/2.' },
   ],
   'Computer Skills': [
     { question: 'Which program is mainly used to create text documents?', choices: ['Word processor', 'Calculator', 'Media player', 'Paint program'], answer: 0, explanation: 'A word processor is designed to create, edit, and format text documents.' },
@@ -54,6 +73,12 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'Which key starts a new line?', choices: ['Shift', 'Enter', 'Escape', 'Tab'], answer: 1, explanation: 'The Enter key starts a new line or confirms an action.' },
     { question: 'What is a folder used for?', choices: ['Organizing files', 'Playing sound', 'Printing only', 'Turning off the screen'], answer: 0, explanation: 'Folders organize files and other folders.' },
     { question: 'Which application is used for slide presentations?', choices: ['PowerPoint', 'Notepad', 'Calculator', 'Paint'], answer: 0, explanation: 'PowerPoint is designed for slide presentations.' },
+    { question: 'Which device displays words and pictures from a computer?', choices: ['Monitor', 'Keyboard', 'Microphone', 'Router'], answer: 0, explanation: 'A monitor displays the computer’s output.' },
+    { question: 'What is the purpose of saving a file?', choices: ['To keep work for later', 'To increase volume', 'To clean the screen', 'To disconnect the keyboard'], answer: 0, explanation: 'Saving stores work so it can be opened again later.' },
+    { question: 'Which of these is an internet browser?', choices: ['Chrome', 'Windows', 'Keyboard', 'USB cable'], answer: 0, explanation: 'Chrome is software used to visit websites.' },
+    { question: 'What should you do with an unknown email attachment?', choices: ['Open it immediately', 'Share it with everyone', 'Avoid opening it and check the sender', 'Rename it as a picture'], answer: 2, explanation: 'Unknown attachments may be unsafe, so verify them first.' },
+    { question: 'What does Ctrl+C commonly do?', choices: ['Copy', 'Close', 'Cut', 'Create a folder'], answer: 0, explanation: 'Ctrl+C copies selected text or files.' },
+    { question: 'Which storage device can hold files outside a computer?', choices: ['USB flash drive', 'Monitor', 'Mouse pad', 'Speaker'], answer: 0, explanation: 'A USB flash drive stores and transfers files.' },
   ],
   'Social Science': [
     { question: 'Which level of government is closest to a local community?', choices: ['Local government', 'National government', 'International organization', 'Parliament only'], answer: 0, explanation: 'Local government manages many services within towns, cities, and villages.' },
@@ -62,6 +87,12 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'Which direction is opposite to east?', choices: ['North', 'South', 'West', 'North-east'], answer: 2, explanation: 'West is opposite to east.' },
     { question: 'What does a timeline show?', choices: ['Events in date order', 'Only map symbols', 'Weather forecasts', 'Building plans'], answer: 0, explanation: 'A timeline arranges events in chronological order.' },
     { question: 'Which body makes laws for a country?', choices: ['Library', 'Legislature', 'Hospital', 'Market'], answer: 1, explanation: 'The legislature debates and makes laws.' },
+    { question: 'What is a citizen?', choices: ['A person who belongs to a country', 'A type of road', 'A map symbol', 'A weather event'], answer: 0, explanation: 'A citizen is a recognized member of a country.' },
+    { question: 'Which is a primary source of information?', choices: ['A diary written at the time', 'A later summary', 'A fictional story', 'A guessing game'], answer: 0, explanation: 'A diary written at the time records direct experience.' },
+    { question: 'What does a compass help us find?', choices: ['Directions', 'Temperature', 'Population', 'Rainfall'], answer: 0, explanation: 'A compass helps identify directions.' },
+    { question: 'Which service is usually provided by a school?', choices: ['Education', 'Banking loans', 'Road construction only', 'Weather forecasting'], answer: 0, explanation: 'Schools provide education and learning services.' },
+    { question: 'Why do communities have rules?', choices: ['To support safety and order', 'To stop all movement', 'To remove cooperation', 'To make maps colourful'], answer: 0, explanation: 'Rules help people live and work together safely.' },
+    { question: 'Which activity is part of farming?', choices: ['Growing crops', 'Repairing computers', 'Printing books', 'Flying aeroplanes'], answer: 0, explanation: 'Farming includes growing crops and raising animals.' },
   ],
   'Cutting and Tailoring': [
     { question: 'What should be done before cutting fabric?', choices: ['Stitch the hem', 'Take accurate measurements', 'Attach buttons', 'Iron the finished garment'], answer: 1, explanation: 'Accurate measurements are required before marking and cutting fabric.' },
@@ -70,28 +101,33 @@ const FULL_QUIZ_BANK: Record<string, QuizQuestion[]> = {
     { question: 'Which tool marks fabric without permanent ink?', choices: ['Tailor’s chalk', 'Seam ripper', 'Thimble', 'Button'], answer: 0, explanation: 'Tailor’s chalk makes removable construction marks.' },
     { question: 'What protects a finger while hand sewing?', choices: ['Bodkin', 'Thimble', 'Ruler', 'Bobbin'], answer: 1, explanation: 'A thimble protects the finger when pushing a needle.' },
     { question: 'Why should fabric grain be checked before cutting?', choices: ['For correct drape and fit', 'To change its colour', 'To sharpen scissors', 'To count buttons'], answer: 0, explanation: 'Correct grain helps a garment hang and fit properly.' },
+    { question: 'What is a pattern used for?', choices: ['Guiding fabric cutting', 'Polishing shoes', 'Measuring temperature', 'Writing an invoice'], answer: 0, explanation: 'A pattern guides the shape and size of fabric pieces.' },
+    { question: 'Which measurement is taken around the body?', choices: ['Circumference', 'Grainline', 'Seam', 'Hem'], answer: 0, explanation: 'Circumference is a measurement around a body part.' },
+    { question: 'What is pressing used for during sewing?', choices: ['Flattening seams and shaping fabric', 'Cutting thread', 'Changing fabric fibre', 'Counting stitches'], answer: 0, explanation: 'Pressing helps seams lie flat and improves garment shape.' },
+    { question: 'Which stitch is commonly used to join fabric by machine?', choices: ['Lockstitch', 'Chain of paper', 'Knot stitch only', 'Loop drawing'], answer: 0, explanation: 'A lockstitch is a common machine stitch for joining fabric.' },
+    { question: 'Why are fabric scissors kept sharp?', choices: ['For clean and accurate cutting', 'To make fabric heavier', 'To remove colour', 'To lengthen a pattern'], answer: 0, explanation: 'Sharp scissors cut fabric cleanly and accurately.' },
+    { question: 'What is a hem?', choices: ['A finished edge of a garment', 'A measuring tape', 'A pattern symbol', 'A sewing machine pedal'], answer: 0, explanation: 'A hem finishes and protects the edge of a garment.' },
   ],
 }
 
 function randomQuestions(subject: string) {
   const source = FULL_QUIZ_BANK[subject] ?? FULL_QUIZ_BANK.English
-  const prefixes = ['', 'Review: ', 'From the selected lesson: ', 'Choose carefully: ']
-  const questions = source.flatMap((item) => prefixes.map((prefix) => {
+  const questions = source.map((item) => {
     const choices = item.choices.map((choice, index) => ({ choice, correct: index === item.answer }))
     for (let index = choices.length - 1; index > 0; index -= 1) {
       const swap = Math.floor(Math.random() * (index + 1)); [choices[index], choices[swap]] = [choices[swap], choices[index]]
     }
     return {
-      question: `${prefix}${prefix ? item.question.charAt(0).toLowerCase() + item.question.slice(1) : item.question}`,
+      question: item.question,
       choices: choices.map((entry) => entry.choice),
       answer: choices.findIndex((entry) => entry.correct),
       explanation: item.explanation,
     }
-  }))
+  })
   for (let index = questions.length - 1; index > 0; index -= 1) {
     const swap = Math.floor(Math.random() * (index + 1)); [questions[index], questions[swap]] = [questions[swap], questions[index]]
   }
-  return questions.slice(0, Math.min(10, questions.length))
+  return questions.slice(0, Math.min(20, questions.length))
 }
 function normalizeSubject(value = '') {
   const text = value.toLowerCase().replace(/[^a-z]+/g, ' ').trim()
@@ -122,6 +158,7 @@ function categoryFromSources(files: KnowledgeSourceFile[]): KnowledgeCategory {
   const documents: KnowledgeDocument[] = files.map((file) => ({
     id: file.relativePath,
     name: file.name,
+    relative_path: file.relativePath,
     stem: file.name.replace(/\.[^.]+$/, ''),
     category: 'School',
     chunks: null,
@@ -160,7 +197,7 @@ export default function SchoolPage() {
   const [knownFlashcards, setKnownFlashcards] = useState<number[]>([])
   const [revisionStarted, setRevisionStarted] = useState(false)
   const [generatedQuestions, setGeneratedQuestions] = useState<QuizQuestion[]>([])
-  const [noteOptions, setNoteOptions] = useState(['10-point summary', 'Key ideas', 'Vocabulary'])
+  const [noteOptions, setNoteOptions] = useState(NOTE_OPTIONS)
   const [readingSubject, setReadingSubject] = useState('')
   const [readingDocument, setReadingDocument] = useState('')
   const [readingSection, setReadingSection] = useState('')
@@ -261,6 +298,15 @@ export default function SchoolPage() {
     const result: Assessment = { id: crypto.randomUUID(), title: `${quizSubject}: ${chapterLabel}`, subject: quizSubject, document: `${quizDocument} | ${labels.join(' | ')}`, score, total: questions.length, date: new Date().toISOString(), type: 'Quiz' }
     const next = [result, ...assessments]; setAssessments(next); writeJson(KEYS.assessments, next); setQuizSubmitted(true); setNotice(`Quiz completed: ${score} of ${questions.length}. The score was saved in Results.`)
   }
+  function startMoreQuestions() {
+    setGeneratedQuestions(randomQuestions(quizSubject))
+    setQuizAnswers({})
+    setQuizSubmitted(false)
+    setFlashcardIndex(0)
+    setFlashcardFlipped(false)
+    setKnownFlashcards([])
+    setNotice(`A new ${quizSubject} practice round is ready.`)
+  }
   function updateProgress(name: string, update: Partial<ProgressEntry>) { const next = { ...progress, [name]: { ...progress[name], ...update } }; setProgress(next); writeJson(KEYS.progress, next) }
   function openDocument(document: KnowledgeDocument) { updateProgress(document.name, { openedAt: new Date().toISOString() }); navigate(`/documents/${encodeURIComponent(document.category)}/${encodeURIComponent(document.name)}?from=school`) }
   function toggleComplete(name: string) { updateProgress(name, { completed: !progress[name]?.completed, percent: progress[name]?.completed ? Math.min(progress[name]?.percent ?? 0, 99) : 100 }) }
@@ -280,11 +326,14 @@ export default function SchoolPage() {
   return <section className="school-page">
     <header className="school-header"><span><GraduationCap size={28} /></span><div><h1>School</h1><p>Structured Level C learning, practice, and progress grounded in your School library.</p></div><div><button type="button" onClick={downloadBackup}><Download size={15} /> Backup</button><button type="button" onClick={() => restoreInput.current?.click()}><Upload size={15} /> Restore</button><input ref={restoreInput} hidden type="file" accept=".json,application/json" onChange={restoreBackup} /></div></header>
     {notice && <p className="school-notice" role="status">{notice}</p>}
+    {view === 'quiz' && quizSubmitted && <button className="school-more-questions" type="button" onClick={startMoreQuestions}>More Questions</button>}
+    {view === 'flashcards' && flashcardsStarted && <button className="school-more-questions" type="button" onClick={startMoreQuestions}>More Questions</button>}
+    {view === 'revision' && revisionStarted && <button className="school-more-questions" type="button" onClick={startMoreQuestions}>More Questions</button>}
     {view === 'notes' && <section className="school-card school-notes-builder">
       <header><div><h2><FileText size={19} /> Create lesson notes</h2><p>Choose the sections you need, then create notes from your selected Level C lesson or chapter.</p></div></header>
       <section className="school-notes-source"><label>Subject<select value={quizSubject} onChange={(event) => { const next = event.target.value; const first = (library?.documents ?? []).find((document) => normalizeSubject(metadata.get(document.name)?.subject) === normalizeSubject(next)); setQuizSubject(next); setQuizDocument(first?.name ?? ''); setQuizChapters([]) }}>{Object.keys(QUIZ_BANK).map((item) => <option key={item}>{item}</option>)}</select></label><label>Book / material<select value={quizDocument} onChange={(event) => { setQuizDocument(event.target.value); setQuizChapters([]) }}><option value="">Choose material</option>{quizDocuments.map((document) => <option key={document.id} value={document.name}>{cleanName(document.name)}</option>)}</select></label></section>
       <div className="school-notes-lessons">{quizOutline.length ? quizOutline.map((item) => <label key={item.id}><input type="checkbox" checked={quizChapters.includes(item.id)} onChange={() => setQuizChapters((current) => current.includes(item.id) ? current.filter((id) => id !== item.id) : [...current, item.id])} /> {item.label}</label>) : <p>Choose a material to see its lessons or chapters.</p>}</div>
-      <div className="school-note-options">{['10-point summary', 'Summary', 'Key ideas', 'Vocabulary', 'Important facts', 'Questions to review', 'My own notes'].map((option) => <label key={option}><input type="checkbox" checked={noteOptions.includes(option)} onChange={() => setNoteOptions((current) => current.includes(option) ? current.filter((item) => item !== option) : [...current, option])} /> {option}</label>)}</div>
+      <div className="school-note-options">{[...NOTE_OPTIONS, 'My own notes'].map((option) => <label key={option}><input type="checkbox" checked={noteOptions.includes(option)} onChange={() => setNoteOptions((current) => current.includes(option) ? current.filter((item) => item !== option) : [...current, option])} /> {option}</label>)}</div>
       <div className="school-notes-actions"><button className="school-create-notes-button" type="button" disabled={!quizDocument || quizChapters.length === 0 || noteOptions.length === 0} onClick={() => askSchool(`Create structured notes from ${cleanName(quizDocument)}, ${quizChapters.map((id) => quizOutline.find((item) => item.id === id)?.label ?? id).join(', ')}. Include only: ${noteOptions.join(', ')}. When 10-point summary is selected, provide exactly ten numbered, distinct, lesson-grounded points. Use only the indexed School material.`)}><FileText size={16} /> Create notes from selected lesson</button><PresentOnDisplay disabled={!quizDocument || quizChapters.length === 0} title={`${quizSubject} — selected lesson${quizChapters.length === 1 ? '' : 's'}`} subtitle={cleanName(quizDocument)} html={`<h2>Selected lessons or chapters</h2><ol>${quizChapters.map((id) => `<li>${quizOutline.find((item) => item.id === id)?.label ?? id}</li>`).join('')}</ol>`} /></div>
     </section>}
     <section className="school-profile"><label>Learner<input value={profile.learner} onChange={(event) => updateProfile({ ...profile, learner: event.target.value })} /></label><div className="school-fixed-level"><span>Learning level</span><strong>Level C</strong></div><p className="school-activity-note">Activities use the complete available question set. Starting again creates a freshly ordered set.</p><nav aria-label="School workspace views">{(['dashboard', 'read', 'library', 'quiz', 'flashcards', 'revision', 'notes', 'planner', 'results'] as View[]).map((item) => <button type="button" className={view === item ? 'active' : ''} key={item} onClick={() => item === 'read' ? openReader() : item === 'quiz' ? openQuiz() : item === 'flashcards' ? openFlashcards() : item === 'revision' ? openRevision() : item === 'notes' ? openNotes() : setView(item)}>{item === 'read' ? 'Read lessons' : item === 'revision' ? 'Revision sheet' : item === 'notes' ? 'Create notes' : item[0].toUpperCase() + item.slice(1)}</button>)}</nav></section>
