@@ -14,6 +14,11 @@ __pycache__/
 dist
 dist-ssr
 release/
+release-*/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+tmp/electron-*/
 .pnpm-store/
 build-assets/*.png
 data/hymnal-library.json
