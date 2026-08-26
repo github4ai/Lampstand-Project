@@ -25,10 +25,19 @@ type HistoryRange = 'all' | 'today' | '7days' | '30days'
 
 const historyPreferencesKey = 'aios-history-preferences'
 const recoveryStorageKey = 'aios-studio-conversations-recovery-v1'
+const deletedRecoveryStorageKey = 'aios-studio-deleted-conversations-recovery-v1'
 
 function loadRecoveryCopy(): string {
   try {
     return localStorage.getItem(recoveryStorageKey) || ''
+  } catch {
+    return ''
+  }
+}
+
+function loadDeletedRecoveryCopy(): string {
+  try {
+    return localStorage.getItem(deletedRecoveryStorageKey) || ''
   } catch {
     return ''
   }
@@ -66,6 +75,7 @@ function HistoryPage({ conversations, agents, isLoading, onNewConversation, onOp
   const [folder, setFolder] = useState('all')
   const [importError, setImportError] = useState('')
   const [recoveryCopy, setRecoveryCopy] = useState(loadRecoveryCopy)
+  const [deletedRecoveryCopy, setDeletedRecoveryCopy] = useState(loadDeletedRecoveryCopy)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
 
   useEffect(() => {
@@ -157,6 +167,17 @@ function HistoryPage({ conversations, agents, isLoading, onNewConversation, onOp
     }
   }
 
+  function removeDeletedRecoveryCopy() {
+    if (!canDelete) { setImportError('Your profile cannot remove recovery data.'); return }
+    if (!window.confirm('Remove the deleted-conversation recovery copy? Download it first if you may need it later.')) return
+    try {
+      localStorage.removeItem(deletedRecoveryStorageKey)
+      setDeletedRecoveryCopy('')
+    } catch {
+      setImportError('The deleted-conversation recovery copy could not be removed from browser storage.')
+    }
+  }
+
   function renameConversation(item: ChatConversation) {
     if (!canEdit) { setImportError('Your profile cannot rename conversations.'); return }
     const title = window.prompt('Rename conversation', item.title)
@@ -191,6 +212,11 @@ function HistoryPage({ conversations, agents, isLoading, onNewConversation, onOp
         <div><strong>Conversation recovery copy available</strong><span>AIOS preserved the original browser data after finding damaged conversation records. Download it before removing it.</span></div>
         {canExport && <button type="button" onClick={() => exportConversationRecovery(recoveryCopy)}><Download size={15} /> Download recovery</button>}
         {canDelete && <button type="button" className="danger" onClick={removeRecoveryCopy}><Trash2 size={15} /> Remove copy</button>}
+      </div>}
+      {deletedRecoveryCopy && <div className="history-recovery" role="status">
+        <div><strong>Deleted conversation recovery copy available</strong><span>The most recently deleted conversations are preserved here until you remove this copy.</span></div>
+        {canExport && <button type="button" onClick={() => exportConversationRecovery(deletedRecoveryCopy)}><Download size={15} /> Download recovery</button>}
+        {canDelete && <button type="button" className="danger" onClick={removeDeletedRecoveryCopy}><Trash2 size={15} /> Remove copy</button>}
       </div>}
       <div className="history-summary">
         <span><strong>{conversations.length}</strong> saved</span>

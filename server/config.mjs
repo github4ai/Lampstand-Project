@@ -26,8 +26,13 @@ export function loadConfig(env = process.env) {
     port: Number(env.AIOS_API_PORT || 9656),
     providerMode: env.AIOS_PROVIDER_MODE?.trim() || 'hybrid',
     providerPreferencesFile: resolve(env.AIOS_PROVIDER_PREFERENCES_FILE?.trim() || join(homedir(), '.lampstand-project', 'provider-settings.json')),
-    allowedOrigins: (env.AIOS_ALLOWED_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174')
-      .split(',').map((value) => value.trim()).filter(Boolean),
+    allowedOrigins: [...new Set([
+      ...(env.AIOS_ALLOWED_ORIGINS || '').split(',').map((value) => value.trim()).filter(Boolean),
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:5174',
+      'http://127.0.0.1:5174',
+    ])],
     ollamaUrl: cleanUrl(env.OLLAMA_URL, 'http://127.0.0.1:11434'),
     ollamaModel: env.OLLAMA_MODEL?.trim() || 'qwen3:8b',
     ollamaTranslationModel: env.OLLAMA_TRANSLATION_MODEL?.trim() || 'qwen3:8b',

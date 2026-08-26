@@ -1,4 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { cancelMediaGeneration, createMediaGeneration, getMediaGeneration, listMediaGenerations } from './media.mjs'
 
 const config = { comfyUrl: 'http://comfy', comfyCheckpoint: 'model.safetensors',
@@ -100,5 +103,18 @@ describe('ComfyUI image generation', () => {
     ]))
     expect(cancelMediaGeneration(queued.id, config)).toMatchObject({ status: 'cancelled', progress: 100 })
     await expect(getMediaGeneration(queued.id, config, fetcher)).resolves.toMatchObject({ status: 'cancelled' })
+  })
+
+  it('persists jobs as readable JSON when a jobs file is configured', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'lampstand-media-'))
+    const mediaJobsFile = join(directory, 'media-jobs.json')
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ prompt_id: 'persisted-job' }), { status: 200 }))
+    try {
+      const job = await createMediaGeneration({ kind: 'image', prompt: 'Persist this job' }, { ...config, mediaJobsFile }, fetcher)
+      const saved = JSON.parse(await readFile(mediaJobsFile, 'utf8'))
+      expect(saved).toEqual(expect.arrayContaining([expect.objectContaining({ id: job.id, prompt: 'Persist this job' })]))
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
   })
 })

@@ -33,11 +33,22 @@ function normalizeLanguageCode(value, fallback = '') {
 const config = loadConfig()
 loadProviderPreferences(config)
 
+function isLocalOrigin(origin) {
+  try {
+    const url = new URL(origin)
+    return url.protocol === 'http:' && (url.hostname === 'localhost' || url.hostname === '127.0.0.1')
+  } catch { return false }
+}
+
+function allowedOrigin(config, origin) {
+  return config.allowedOrigins.includes(origin) || isLocalOrigin(origin) ? origin : config.allowedOrigins[0]
+}
+
 function send(response, status, body, origin = '') {
-  const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+  const responseOrigin = allowedOrigin(config, origin)
   response.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Origin': responseOrigin,
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
     Vary: 'Origin',
@@ -46,11 +57,11 @@ function send(response, status, body, origin = '') {
 }
 
 function sendAudio(response, status, audio, origin = '', headers = {}) {
-  const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+  const responseOrigin = allowedOrigin(config, origin)
   response.writeHead(status, {
     'Content-Type': 'audio/mpeg',
     'Content-Length': audio.length,
-    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Origin': responseOrigin,
     'Access-Control-Expose-Headers': 'X-AIOS-Voice, X-AIOS-Provider',
     Vary: 'Origin',
     ...headers,
@@ -59,22 +70,22 @@ function sendAudio(response, status, audio, origin = '', headers = {}) {
 }
 
 function sendFile(response, result, origin='') {
-  const allowedOrigin=config.allowedOrigins.includes(origin)?origin:config.allowedOrigins[0]
-  response.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.buffer.length,'Content-Disposition':`attachment; filename="${result.filename.replaceAll('"','')}"`,'X-AIOS-Layout-Fidelity':result.fidelity,'X-AIOS-Segments':String(result.segments),'Access-Control-Allow-Origin':allowedOrigin,'Access-Control-Expose-Headers':'Content-Disposition, X-AIOS-Layout-Fidelity, X-AIOS-Segments',Vary:'Origin'})
+  const responseOrigin=allowedOrigin(config, origin)
+  response.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.buffer.length,'Content-Disposition':`attachment; filename="${result.filename.replaceAll('"','')}"`,'X-AIOS-Layout-Fidelity':result.fidelity,'X-AIOS-Segments':String(result.segments),'Access-Control-Allow-Origin':responseOrigin,'Access-Control-Expose-Headers':'Content-Disposition, X-AIOS-Layout-Fidelity, X-AIOS-Segments',Vary:'Origin'})
   response.end(result.buffer)
 }
 
 function sendPreview(response, result, origin='') {
-  const allowedOrigin=config.allowedOrigins.includes(origin)?origin:config.allowedOrigins[0]
-  response.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.buffer.length,'Content-Disposition':`inline; filename="${result.filename.replaceAll('"','')}"`,'Access-Control-Allow-Origin':allowedOrigin,Vary:'Origin'})
+  const responseOrigin=allowedOrigin(config, origin)
+  response.writeHead(200,{'Content-Type':result.contentType,'Content-Length':result.buffer.length,'Content-Disposition':`inline; filename="${result.filename.replaceAll('"','')}"`,'Access-Control-Allow-Origin':responseOrigin,Vary:'Origin'})
   response.end(result.buffer)
 }
 
 function sendNdjson(response, events, origin = '') {
-  const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
+  const responseOrigin = allowedOrigin(config, origin)
   response.writeHead(200, {
     'Content-Type': 'application/x-ndjson; charset=utf-8',
-    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Origin': responseOrigin,
     Vary: 'Origin',
   })
   for (const event of events) response.write(`${JSON.stringify(event)}\n`)

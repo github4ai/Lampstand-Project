@@ -35,6 +35,8 @@ const STORAGE_KEY =
   'aios-studio-conversations-v1'
 const RECOVERY_STORAGE_KEY =
   'aios-studio-conversations-recovery-v1'
+const DELETED_RECOVERY_STORAGE_KEY =
+  'aios-studio-deleted-conversations-recovery-v1'
 const ministrySourceStorageKey = 'aios-ministry-source'
 const ministrySources: MinistrySource[] = ['all', 'bible', 'hwmr', 'life-study', 'ministry-books', 'hymnal']
 const schoolSourceStorageKey = 'lampstand-school-source'
@@ -988,6 +990,18 @@ export function useChat(
     }
 
     const deletedIds = new Set(conversationIds)
+    const deleted = conversations.filter((conversation) => deletedIds.has(conversation.id))
+    try {
+      localStorage.setItem(DELETED_RECOVERY_STORAGE_KEY, JSON.stringify({
+        format: 'aios-deleted-conversations-recovery',
+        version: 1,
+        deletedAt: new Date().toISOString(),
+        conversations: deleted,
+      }, null, 2))
+    } catch (storageError) {
+      console.error('Unable to save deleted conversation recovery copy.', storageError)
+      setPersistenceError('The deleted conversation recovery copy could not be saved.')
+    }
 
     setConversations(
       (current) => {

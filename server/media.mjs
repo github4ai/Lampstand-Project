@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { closeSync, createReadStream, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { basename, dirname, extname, join } from 'node:path'
 import { pipeNodeStream, pipeWebStream } from './streaming.mjs'
 
@@ -14,7 +14,12 @@ function loadJobs(config) {
     if (Array.isArray(saved)) saved.forEach((job) => {
       if (job?.id && job?.kind && job?.status) jobs.set(job.id, job)
     })
-  } catch { /* A new installation has no persisted queue yet. */ }
+  } catch {
+    try {
+      const recovered = JSON.parse(readFileSync(`${config.mediaJobsFile}.tmp`, 'utf8'))
+      if (Array.isArray(recovered)) recovered.forEach((job) => { if (job?.id && job?.kind && job?.status) jobs.set(job.id, job) })
+    } catch { /* A new installation has no persisted queue yet. */ }
+  }
   loadedJobsFile = config.mediaJobsFile
 }
 
@@ -23,7 +28,8 @@ function saveJobs(config) {
   mkdirSync(dirname(config.mediaJobsFile), { recursive: true })
   const temporary = `${config.mediaJobsFile}.tmp`
   writeFileSync(temporary, JSON.stringify([...jobs.values()], null, 2), 'utf8')
-  if (existsSync(config.mediaJobsFile)) rmSync(config.mediaJobsFile)
+  const descriptor = openSync(temporary, 'r')
+  try { try { fsyncSync(descriptor) } catch { /* Some Windows filesystems reject fsync; rename remains atomic. */ } } finally { closeSync(descriptor) }
   renameSync(temporary, config.mediaJobsFile)
 }
 

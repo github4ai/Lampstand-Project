@@ -140,6 +140,8 @@ function SettingsPage() {
   const updateProviderPreferences = useCallback(async (removeProvider?: 'gemini' | 'openai' | 'anthropic') => {
     setSavingProviders(true)
     setProviderNotice('')
+    const previousMode = services?.preferences?.mode ?? providerMode
+    const previousPreferences = services?.preferences
     try {
       const input: { mode: ProviderPreferences['mode']; geminiApiKey?: string; openaiApiKey?: string; anthropicApiKey?: string } = { mode: providerMode }
       if (removeProvider === 'gemini') input.geminiApiKey = ''
@@ -156,9 +158,11 @@ function SettingsPage() {
       setProviderNotice(removeProvider ? 'Cloud provider removed. Local services remain available.' : 'Provider preference saved. New requests will use this mode.')
       await refreshServices()
     } catch (error) {
+      setProviderMode(previousMode)
+      if (previousPreferences) setServices((current) => current ? { ...current, preferences: previousPreferences } : current)
       setProviderNotice(error instanceof Error ? error.message : 'Unable to save provider preferences.')
     } finally { setSavingProviders(false) }
-  }, [anthropicApiKey, geminiApiKey, openaiApiKey, providerMode, refreshServices])
+  }, [anthropicApiKey, geminiApiKey, openaiApiKey, providerMode, refreshServices, services?.preferences])
 
   const toggleServices = useCallback(async () => {
     setManagingServices(true)
