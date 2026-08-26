@@ -20,10 +20,11 @@ describe('hybrid language providers', () => {
   it('falls back to OpenAI when local translation fails', async () => {
     const fetcher = vi.fn()
       .mockResolvedValueOnce(new Response('offline', { status: 503 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [] }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ output_text: 'Hello' }), { status: 200 }))
     const result = await translateWithProviders({ text: 'Namaste', sourceLanguage: 'auto', targetLanguage: 'en' }, config, fetcher)
     expect(result.provider).toBe('openai')
-    expect(fetcher).toHaveBeenCalledTimes(2)
+    expect(fetcher).toHaveBeenCalledTimes(3)
   })
 
   it('uses the local Whisper-compatible transcription endpoint first', async () => {
@@ -37,6 +38,7 @@ describe('hybrid language providers', () => {
   it('uses Gemini as the first cloud fallback when it is configured', async () => {
     const fetcher = vi.fn()
       .mockResolvedValueOnce(new Response('offline', { status: 503 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [] }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({
         candidates: [{ content: { parts: [{ text: 'Vanakkam' }] } }],
       }), { status: 200 }))
@@ -46,12 +48,13 @@ describe('hybrid language providers', () => {
       fetcher,
     )
     expect(result).toMatchObject({ translatedText: 'Vanakkam', provider: 'gemini', model: 'gemini-test' })
-    expect(fetcher.mock.calls[1][0]).toContain('/models/gemini-test:generateContent')
+    expect(fetcher.mock.calls[2][0]).toContain('/models/gemini-test:generateContent')
   })
 
   it('falls back to Anthropic when it is the configured cloud provider', async () => {
     const fetcher = vi.fn()
       .mockResolvedValueOnce(new Response('offline', { status: 503 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [] }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({
         content: [{ type: 'text', text: 'Namaskar' }],
       }), { status: 200 }))
@@ -61,6 +64,6 @@ describe('hybrid language providers', () => {
       fetcher,
     )
     expect(result).toMatchObject({ translatedText: 'Namaskar', provider: 'anthropic', model: 'claude-test' })
-    expect(fetcher.mock.calls[1][0]).toBe('https://api.anthropic.com/v1/messages')
+    expect(fetcher.mock.calls[2][0]).toBe('https://api.anthropic.com/v1/messages')
   })
 })

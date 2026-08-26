@@ -1,4 +1,8 @@
-param([Parameter(Mandatory = $true)][string]$StudioRoot)
+param(
+  [Parameter(Mandatory = $true)][string]$StudioRoot,
+  [switch]$InstallOllama,
+  [switch]$InstallPython
+)
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -9,6 +13,9 @@ $logRoot = Join-Path $lampstandData 'logs'
 $logFile = Join-Path $logRoot 'standard-ai-install.log'
 $statusFile = Join-Path $aiRoot 'standard-ai-status.json'
 $readyFile = Join-Path $aiRoot 'standard-ai.ready'
+$installAll = -not $InstallOllama -and -not $InstallPython
+$installOllamaComponent = $installAll -or $InstallOllama
+$installPythonComponent = $installAll -or $InstallPython
 
 New-Item -ItemType Directory -Force -Path $aiRoot, $logRoot | Out-Null
 
@@ -45,73 +52,83 @@ function Install-WithWinget([string]$PackageId, [string]$Label) {
 }
 
 try {
-  if (Test-Path -LiteralPath $readyFile) {
+  if ($installAll -and (Test-Path -LiteralPath $readyFile)) {
     Set-SetupStatus 'ready' 'complete' 'Standard AI is already installed.'
     exit 0
   }
 
   Set-SetupStatus 'installing' 'starting' 'Preparing the local AI services.'
 
-  $ollama = Find-Executable 'ollama.exe' @(
-    (Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'),
-    (Join-Path $env:ProgramFiles 'Ollama\ollama.exe')
-  )
-  if (-not $ollama) {
-    Install-WithWinget 'Ollama.Ollama' 'Ollama'
+  $ollama = $null
+  if ($installOllamaComponent) {
     $ollama = Find-Executable 'ollama.exe' @(
       (Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'),
       (Join-Path $env:ProgramFiles 'Ollama\ollama.exe')
     )
-  }
-  if (-not $ollama) { throw 'Ollama was installed but ollama.exe could not be found.' }
-
-  $python = Find-Executable 'python.exe' @(
-    (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'),
-    (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python312\python.exe')
-  )
-  if (-not $python) {
-    Install-WithWinget 'Python.Python.3.11' 'Python 3.11'
-    $python = Find-Executable 'python.exe' @((Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'))
-  }
-  if (-not $python) { throw 'Python was installed but python.exe could not be found.' }
-
-  $venvRoot = Join-Path $aiRoot 'whisper\.venv'
-  $venvPython = Join-Path $venvRoot 'Scripts\python.exe'
-  if (-not (Test-Path -LiteralPath $venvPython)) {
-    Set-SetupStatus 'installing' 'local-whisper' 'Creating the private speech-to-text environment.'
-    & $python -m venv $venvRoot
-    if ($LASTEXITCODE -ne 0) { throw 'Could not create the Local Whisper environment.' }
+    if (-not $ollama) {
+      Install-WithWinget 'Ollama.Ollama' 'Ollama'
+      $ollama = Find-Executable 'ollama.exe' @(
+        (Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'),
+        (Join-Path $env:ProgramFiles 'Ollama\ollama.exe')
+      )
+    }
+    if (-not $ollama) { throw 'Ollama was installed but ollama.exe could not be found.' }
   }
 
-  Set-SetupStatus 'installing' 'local-whisper' 'Installing Local Whisper and downloading its speech model.'
-  & $venvPython -m pip install --disable-pip-version-check --upgrade pip
-  & $venvPython -m pip install --disable-pip-version-check -r (Join-Path $StudioRoot 'whisper_server\requirements.txt')
-  if ($LASTEXITCODE -ne 0) { throw 'Local Whisper package installation failed.' }
-  & $venvPython -c "from faster_whisper import WhisperModel; WhisperModel('small', device='cpu', compute_type='int8')"
-  if ($LASTEXITCODE -ne 0) { throw 'The Local Whisper model download failed.' }
+  $venvPython = $null
+  if ($installPythonComponent) {
+    $python = Find-Executable 'python.exe' @(
+      (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'),
+      (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python312\python.exe')
+    )
+    if (-not $python) {
+      Install-WithWinget 'Python.Python.3.11' 'Python 3.11'
+      $python = Find-Executable 'python.exe' @((Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'))
+    }
+    if (-not $python) { throw 'Python was installed but python.exe could not be found.' }
 
-  $ollamaReady = $false
-  try { $ollamaReady = (Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 2).StatusCode -eq 200 } catch {}
-  if (-not $ollamaReady) {
-    Start-Process -FilePath $ollama -ArgumentList @('serve') -WindowStyle Hidden | Out-Null
-    for ($attempt = 0; $attempt -lt 30; $attempt++) {
-      Start-Sleep -Seconds 1
-      try {
-        if ((Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 2).StatusCode -eq 200) { break }
-      } catch {}
+    $venvRoot = Join-Path $aiRoot 'whisper\.venv'
+    $venvPython = Join-Path $venvRoot 'Scripts\python.exe'
+    if (-not (Test-Path -LiteralPath $venvPython)) {
+      Set-SetupStatus 'installing' 'local-whisper' 'Creating the private speech-to-text environment.'
+      & $python -m venv $venvRoot
+      if ($LASTEXITCODE -ne 0) { throw 'Could not create the Local Whisper environment.' }
+    }
+
+    Set-SetupStatus 'installing' 'local-whisper' 'Installing Local Whisper and downloading its speech model.'
+    & $venvPython -m pip install --disable-pip-version-check --upgrade pip
+    & $venvPython -m pip install --disable-pip-version-check -r (Join-Path $StudioRoot 'whisper_server\requirements.txt')
+    if ($LASTEXITCODE -ne 0) { throw 'Local Whisper package installation failed.' }
+    & $venvPython -c "from faster_whisper import WhisperModel; WhisperModel('small', device='cpu', compute_type='int8')"
+    if ($LASTEXITCODE -ne 0) { throw 'The Local Whisper model download failed.' }
+  }
+
+  if ($installOllamaComponent) {
+    $ollamaReady = $false
+    try { $ollamaReady = (Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 2).StatusCode -eq 200 } catch {}
+    if (-not $ollamaReady) {
+      Start-Process -FilePath $ollama -ArgumentList @('serve') -WindowStyle Hidden | Out-Null
+      for ($attempt = 0; $attempt -lt 30; $attempt++) {
+        Start-Sleep -Seconds 1
+        try {
+          if ((Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:11434/api/version' -TimeoutSec 2).StatusCode -eq 200) { break }
+        } catch {}
+      }
+    }
+
+    foreach ($model in @('qwen3:8b')) {
+      Set-SetupStatus 'installing' 'ollama-models' "Downloading $model."
+      & $ollama pull $model
+      if ($LASTEXITCODE -ne 0) { throw "The Ollama model $model could not be downloaded." }
     }
   }
 
-  foreach ($model in @('qwen3:8b')) {
-    Set-SetupStatus 'installing' 'ollama-models' "Downloading $model."
-    & $ollama pull $model
-    if ($LASTEXITCODE -ne 0) { throw "The Ollama model $model could not be downloaded." }
-  }
-
-  $whisperReady = $false
-  try { $whisperReady = (Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/health' -TimeoutSec 2).StatusCode -eq 200 } catch {}
-  if (-not $whisperReady) {
-    Start-Process -FilePath $venvPython -ArgumentList @('-m','uvicorn','whisper_server.app:app','--host','127.0.0.1','--port','8000') -WorkingDirectory $StudioRoot -WindowStyle Hidden | Out-Null
+  if ($installPythonComponent) {
+    $whisperReady = $false
+    try { $whisperReady = (Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8000/health' -TimeoutSec 2).StatusCode -eq 200 } catch {}
+    if (-not $whisperReady) {
+      Start-Process -FilePath $venvPython -ArgumentList @('-m','uvicorn','whisper_server.app:app','--host','127.0.0.1','--port','8000') -WorkingDirectory $StudioRoot -WindowStyle Hidden | Out-Null
+    }
   }
 
   Set-Content -LiteralPath $readyFile -Value (Get-Date).ToUniversalTime().ToString('o') -Encoding UTF8

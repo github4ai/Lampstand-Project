@@ -52,9 +52,12 @@ function DocumentsPage() {
   const allowedUploadCategories = useMemo(() => [
     ...(can('school') ? ['School'] : []),
     ...(can('ministry') ? ['Ministry'] : []),
-    ...(can('chat') ? ['General'] : []),
+    ...(can('chat') ? ['General', 'Business', 'Coding', 'Creative', 'Manuals', 'Operations', 'Personal', 'Research'] : []),
   ], [can])
   const [uploadCategory, setUploadCategory] = useState(() => allowedUploadCategories[0] ?? 'General')
+  const [customCategory, setCustomCategory] = useState('')
+  const [addingCustomCategory, setAddingCustomCategory] = useState(false)
+  const effectiveCategory = addingCustomCategory ? customCategory.trim() : uploadCategory.trim()
   const [uploadCollection, setUploadCollection] = useState('')
   const [subcollections, setSubcollections] = useState<string[]>([])
   const [addingSubcollection, setAddingSubcollection] = useState(false)
@@ -108,20 +111,20 @@ function DocumentsPage() {
 
   useEffect(() => {
     let active = true
-    setUploadCollection(uploadCategory === 'School' ? 'Level C' : '')
+    setUploadCollection(effectiveCategory === 'School' ? 'Level C' : '')
     setAddingSubcollection(false)
     setUploadSubject('')
     setAddingSubject(false)
-    void getKnowledgeSubcollections(uploadCategory).then((items) => {
-      const availableItems = uploadCategory === 'School'
+    void getKnowledgeSubcollections(effectiveCategory).then((items) => {
+      const availableItems = effectiveCategory === 'School'
         ? items.filter((item) => !/^Level\s+[ABD]$/i.test(item.trim()))
         : items
-      if (active) setSubcollections([...new Set([...(recommendedSubcollections[uploadCategory] ?? []), ...availableItems])])
+      if (active) setSubcollections([...new Set([...(recommendedSubcollections[effectiveCategory] ?? []), ...availableItems])])
     }).catch(() => {
-      if (active) setSubcollections(recommendedSubcollections[uploadCategory] ?? [])
+      if (active) setSubcollections(recommendedSubcollections[effectiveCategory] ?? [])
     })
     return () => { active = false }
-  }, [uploadCategory])
+  }, [effectiveCategory])
 
   useEffect(() => {
     let active = true
@@ -131,13 +134,13 @@ function DocumentsPage() {
       setSubjects([])
       return () => { active = false }
     }
-    void getKnowledgeSubcollections(uploadCategory, uploadCollection).then((items) => {
+    void getKnowledgeSubcollections(effectiveCategory, uploadCollection).then((items) => {
       if (active) setSubjects(items)
     }).catch(() => {
       if (active) setSubjects([])
     })
     return () => { active = false }
-  }, [addingSubcollection, uploadCategory, uploadCollection])
+  }, [addingSubcollection, effectiveCategory, uploadCollection])
 
   useEffect(() => {
     let active = true
@@ -229,7 +232,7 @@ function DocumentsPage() {
   async function submitUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!canImport) { setUploadMessage('Your profile cannot import documents.'); return }
-    if (uploadFiles.length === 0 || !uploadCategory.trim()) return
+    if (uploadFiles.length === 0 || !effectiveCategory) return
     setUploading(true)
     setUploadMessage('')
     try {
@@ -241,7 +244,7 @@ function DocumentsPage() {
         const nestedFolders = relativeParts.length > 2 ? relativeParts.slice(1, -1) : []
         const destination = [...baseDestination, ...nestedFolders].join('/')
         try {
-          await uploadKnowledgeDocument(file, uploadCategory.trim(), destination)
+          await uploadKnowledgeDocument(file, effectiveCategory, destination)
           uploaded += 1
         } catch (error) {
           failures.push(`${file.name}: ${error instanceof Error ? error.message : 'Upload failed'}`)
@@ -362,10 +365,16 @@ function DocumentsPage() {
             onChange={(event) => selectUploadFiles(event.target.files)} /></label>
           <small>{uploadFiles.length > 0 ? `${uploadFiles.length} supported document${uploadFiles.length === 1 ? '' : 's'} selected` : 'HTML, HTM, EPUB, DOCX, PPTX, TXT, Markdown, PDB, or PDF'}</small>
         </div>
-        <label>Category<select value={uploadCategory} onChange={(event) => setUploadCategory(event.target.value)}>
-          {allowedUploadCategories.map((item) => <option key={item}>{item}</option>)}
+        <label>Category<select value={addingCustomCategory ? '__new__' : uploadCategory} onChange={(event) => {
+          if (event.target.value === '__new__') { setAddingCustomCategory(true); setCustomCategory('') }
+          else { setAddingCustomCategory(false); setUploadCategory(event.target.value) }
+        }}>
+          {allowedUploadCategories.map((item) => <option key={item} value={item}>{item}</option>)}
+          <option value="__new__">＋ Add custom category…</option>
         </select></label>
-        {uploadCategory === 'School' ? <div className="knowledge-fixed-field"><span>Level</span><strong>Level C</strong></div> : <label>Subcollection<select value={addingSubcollection ? '__new__' : uploadCollection} onChange={(event) => {
+        {addingCustomCategory && <label>New category name<input value={customCategory}
+          onChange={(event) => setCustomCategory(event.target.value)} placeholder="Example: Personal Notes" autoFocus /></label>}
+        {effectiveCategory === 'School' ? <div className="knowledge-fixed-field"><span>Level</span><strong>Level C</strong></div> : <label>Subcollection<select value={addingSubcollection ? '__new__' : uploadCollection} onChange={(event) => {
           if (event.target.value === '__new__') { setAddingSubcollection(true); setUploadCollection('') }
           else { setAddingSubcollection(false); setUploadCollection(event.target.value) }
         }}>
@@ -373,9 +382,9 @@ function DocumentsPage() {
           {subcollections.map((item) => <option key={item} value={item}>{item}</option>)}
           <option value="__new__">＋ Add new subcollection…</option>
         </select></label>}
-        {uploadCategory !== 'School' && addingSubcollection && <label>New subcollection name<input value={uploadCollection}
+        {effectiveCategory !== 'School' && addingSubcollection && <label>New subcollection name<input value={uploadCollection}
           onChange={(event) => setUploadCollection(event.target.value)} placeholder="Example: Sunday School" autoFocus /></label>}
-        {!addingSubcollection && uploadCollection && !isHwmrUpload && <label>{uploadCategory === 'School' ? 'Subject' : 'Folder'}<select
+        {!addingSubcollection && uploadCollection && !isHwmrUpload && <label>{effectiveCategory === 'School' ? 'Subject' : 'Folder'}<select
           value={addingSubject ? '__new__' : uploadSubject} onChange={(event) => {
             if (event.target.value === '__new__') { setAddingSubject(true); setUploadSubject('') }
             else { setAddingSubject(false); setUploadSubject(event.target.value) }
@@ -384,10 +393,10 @@ function DocumentsPage() {
           {subjects.map((item) => <option key={item} value={item}>{item}</option>)}
           <option value="__new__">＋ Add new subject…</option>
         </select></label>}
-        {addingSubject && <label>New {uploadCategory === 'School' ? 'subject' : 'folder'} name<input value={uploadSubject}
-          onChange={(event) => setUploadSubject(event.target.value)} placeholder={uploadCategory === 'School' ? 'Example: Social Studies' : 'Example: Recovery Version'} autoFocus /></label>}
-        <button type="submit" disabled={uploadFiles.length === 0 || uploading || (addingSubcollection && !uploadCollection.trim()) ||
-          (uploadCategory === 'School' && uploadCollection === 'Level C' && !uploadSubject.trim()) || (addingSubject && !uploadSubject.trim())}>
+        {addingSubject && <label>New {effectiveCategory === 'School' ? 'subject' : 'folder'} name<input value={uploadSubject}
+          onChange={(event) => setUploadSubject(event.target.value)} placeholder={effectiveCategory === 'School' ? 'Example: Social Studies' : 'Example: Recovery Version'} autoFocus /></label>}
+        <button type="submit" disabled={uploadFiles.length === 0 || uploading || (addingCustomCategory && !customCategory.trim()) || (addingSubcollection && !uploadCollection.trim()) ||
+          (effectiveCategory === 'School' && uploadCollection === 'Level C' && !uploadSubject.trim()) || (addingSubject && !uploadSubject.trim())}>
           <Upload size={15} /> {uploading ? 'Uploading...' : 'Upload document'}</button>
         {indexStatus && indexStatus.state !== 'idle' && <p className={'knowledge-index-status ' + indexStatus.state}>
           {indexStatus.state === 'running' ? `Indexing ${indexStatus.current || 'your knowledge library'} · ${indexStatus.processed || 0} of ${indexStatus.total || documents.length}` :

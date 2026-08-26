@@ -6,7 +6,7 @@ import AccessSettingsPanel from '../components/Settings/AccessSettingsPanel'
 import RemoteAccessPanel from '../components/Settings/RemoteAccessPanel'
 import AppUpdatesPanel from '../components/Settings/AppUpdatesPanel'
 import { BIBLE_VOICE_STORAGE_KEY, INDIA_VOICE_PROFILES } from '../utils/bibleVoices'
-import { collectWorkspaceBackup, parseWorkspaceBackup, restoreWorkspaceBackup as applyWorkspaceBackup, workspaceBackupSize, type WorkspaceBackup } from '../utils/workspaceBackup'
+import { collectWorkspaceBackup, parseWorkspaceBackup, resetPersonalData, restoreWorkspaceBackup as applyWorkspaceBackup, workspaceBackupSize, type WorkspaceBackup } from '../utils/workspaceBackup'
 import { canManageUsers } from '../utils/accessControl'
 import { useAccessControl } from '../hooks/useAccessControl'
 const STORAGE_KEY = 'aios-studio-settings-v1'
@@ -333,10 +333,7 @@ function SettingsPage() {
 
   function resetPersonalWorkspace() {
     if (!window.confirm('Reset all personal Lampstand data on this computer? This clears profiles, conversations, reading progress, annotations, School results, Church drafts, and preferences. Installed libraries, models, and program files are not removed. Download a backup first if you may need this data later.')) return
-    const protectedKeys = Object.keys(localStorage).filter((key) => key.startsWith('sb-') && key.endsWith('-auth-token'))
-    const protectedValues = new Map(protectedKeys.map((key) => [key, localStorage.getItem(key)]))
-    localStorage.clear()
-    protectedValues.forEach((value, key) => { if (value) localStorage.setItem(key, value) })
+    resetPersonalData(localStorage)
     setBackupNotice('Personal workspace data was reset. Reloading Lampstand Project…')
     window.setTimeout(() => window.location.reload(), 600)
   }

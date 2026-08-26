@@ -30,6 +30,7 @@ export interface AccessControlState {
 }
 
 export const ACCESS_CONTROL_STORAGE_KEY = 'lampstand-access-control-v1'
+export const REMEMBERED_PROFILE_KEY = 'lampstand-remembered-profile-id-v1'
 
 const allActions: AccessAction[] = ['view', 'create', 'edit', 'delete', 'import', 'export', 'share', 'manage']
 const allWorkspaces: WorkspaceId[] = ['chat', 'knowledge', 'agents', 'ministry', 'presentation', 'church', 'school', 'media', 'language-tools', 'documents', 'history', 'settings']
@@ -92,6 +93,11 @@ export function loadOrCreateAccessState(storage: Pick<Storage, 'getItem' | 'setI
   const existing = parseAccessControlState(storage.getItem(ACCESS_CONTROL_STORAGE_KEY))
   if (existing) {
     let changed = false
+    const rememberedId = storage.getItem(REMEMBERED_PROFILE_KEY)
+    if (rememberedId && rememberedId !== existing.activeProfileId && existing.profiles.some((p) => p.id === rememberedId)) {
+      existing.activeProfileId = rememberedId
+      changed = true
+    }
     const profiles = existing.profiles.map((profile) => {
       let permissions = migrateLegacyPermissions(profile.role, profile.permissions)
       if (permissions !== profile.permissions) changed = true
@@ -105,10 +111,12 @@ export function loadOrCreateAccessState(storage: Pick<Storage, 'getItem' | 'setI
     })
     const migrated = changed ? { ...existing, profiles } : existing
     if (changed) storage.setItem(ACCESS_CONTROL_STORAGE_KEY, JSON.stringify(migrated))
+    storage.setItem(REMEMBERED_PROFILE_KEY, migrated.activeProfileId)
     return migrated
   }
   const initial = createInitialAccessState(now)
   storage.setItem(ACCESS_CONTROL_STORAGE_KEY, JSON.stringify(initial))
+  storage.setItem(REMEMBERED_PROFILE_KEY, initial.activeProfileId)
   return initial
 }
 

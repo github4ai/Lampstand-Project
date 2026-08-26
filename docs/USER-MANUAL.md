@@ -24,6 +24,17 @@ Choose an assistant in the sidebar and start a conversation. Responses can use i
 
 When adding School material, Level C is used automatically. Select its subject so School searches and activities remain grounded in the correct textbook.
 
+#### Custom document categories
+
+When a document does not belong in School, Ministry, or General:
+
+1. Open **Documents** and choose the files to upload.
+2. In **Category**, choose **Add custom category…**.
+3. Enter a clear category name, such as *Personal Notes*, *Business*, or *Research*.
+4. Optionally add a subcollection and folder, then upload the files.
+
+Custom categories become part of the local knowledge library and can be used to keep unrelated material separate. Access to the Documents and Chat workspaces still follows the active profile's permissions.
+
 ### Ministry
 
 The Ministry dashboard contains:
@@ -59,6 +70,14 @@ Prepare Prayer Points and Announcements, select an approved WhatsApp group, and 
 - Transcribe audio with Local Whisper.
 - Translate documents while preserving supported layout and folder structure.
 
+#### Translation model fallbacks
+
+In **Hybrid** provider mode, Language Tools first tries the configured Ollama translation model. It automatically corrects the common `quen`/`qwen` model-name typo and, if that model is unavailable, can try another installed Ollama model that is suitable for text generation. Embedding-only models are excluded.
+
+If local translation does not succeed, Lampstand tries configured cloud providers in this order: **Gemini**, **OpenAI**, then **Anthropic**. Only providers with a saved API key are attempted. **Local** mode never sends translation text to a cloud provider; **Cloud** mode skips Ollama.
+
+The result identifies the provider and model used. If every available provider fails, check **Settings → AI Services**, confirm Ollama is running or add a permitted cloud-provider key, and try again.
+
 ### Media Studio
 
 Create images, speech, music, songs, instrumental audio, and video through installed providers. Large generation models are optional and can be installed or started from Settings on capable computers.
@@ -75,9 +94,11 @@ Create images, speech, music, songs, instrumental audio, and video through insta
 
 The owner controls which workspaces each verified member can use. Student profiles normally receive School and approved learning tools. Access changes sync after sign-in and may require reopening the app.
 
+Lampstand remembers the most recently selected local profile on that computer and restores it when the app opens again. This profile memory does not store a password or bypass a profile PIN. To use a different person, choose another profile from the sidebar; the newly selected profile becomes the remembered profile for the next launch.
+
 ## Backups and updates
 
-Use **Settings** to check services, create backups, install optional dependencies, and check for app updates. App updates do not remove local user data.
+Use **Settings** to check services, create backups, install optional dependencies, and check for app updates. App updates do not remove local user data unless **Reset personal data after update** is explicitly selected before installing an update.
 
 ## Common problems
 
@@ -86,4 +107,3 @@ Use **Settings** to check services, create backups, install optional dependencie
 - **Scanned PDF has no answers:** run OCR and re-index it.
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
 - **Access is not available:** sign in again with the exact invited email or ask the owner to restore access.
-

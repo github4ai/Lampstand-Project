@@ -24,9 +24,16 @@ function translationPrompt({ text, sourceLanguage, targetLanguage }) {
 }
 
 export async function translateWithOllama(request, config, fetcher = fetch) {
-  const models = [...new Set([config.ollamaTranslationModel, config.ollamaModel].filter(Boolean))]
+  const configuredModels = [...new Set([config.ollamaTranslationModel, config.ollamaModel].filter(Boolean))]
+  const normalizedModels = configuredModels.flatMap((m) => [
+    m,
+    m.replace(/^quen/i, 'qwen'),
+    m.replace(/3:8b$/i, '3:8b'),
+  ])
+  const candidateModels = [...new Set(normalizedModels)]
   const errors = []
-  for (const model of models) {
+
+  for (const model of candidateModels) {
     try {
       const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -42,6 +49,40 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
       errors.push(error instanceof Error ? error.message : String(error))
     }
   }
+
+  // Fallback: discover available models from Ollama /api/tags if candidate models failed
+  if (config.ollamaUrl) {
+    try {
+      const tagsResponse = await fetcher(`${config.ollamaUrl}/api/tags`, { signal: AbortSignal.timeout(5000) })
+      if (tagsResponse.ok) {
+        const tagsData = await tagsResponse.json()
+        const installedModels = (tagsData?.models || [])
+          .map((m) => m?.name)
+          .filter((name) => typeof name === 'string' && name && !/embed/i.test(name))
+
+        for (const fallbackModel of installedModels) {
+          if (candidateModels.includes(fallbackModel)) continue
+          try {
+            const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model: fallbackModel, stream: false, think: false, options: { temperature: 0 }, messages: [{ role: 'user', content: translationPrompt(request) }] }),
+              signal: AbortSignal.timeout(120000),
+            })
+            if (response.ok) {
+              const body = await response.json()
+              const translatedText = body?.message?.content?.trim()
+              if (translatedText) {
+                return { ...request, translatedText, provider: 'ollama', model: fallbackModel }
+              }
+            }
+          } catch (fallbackErr) {
+            errors.push(fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr))
+          }
+        }
+      }
+    } catch { /* Tag discovery is optional fallback */ }
+  }
+
   throw new Error(errors.join(' '))
 }
 

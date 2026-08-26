@@ -47,6 +47,7 @@ import {
 
 import { canAccess, createInitialAccessState, loadOrCreateAccessState, type WorkspaceId } from './utils/accessControl'
 import { isProfileUnlocked } from './utils/pinSecurity'
+import { consumePersonalDataResetAfterUpdate } from './utils/workspaceBackup'
 
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
@@ -88,6 +89,8 @@ function loadSelectedAgentId() {
 }
 
 function App() {
+  // Consume this before profiles, preferences, or page state are initialized.
+  try { consumePersonalDataResetAfterUpdate(localStorage) } catch { /* storage may be unavailable */ }
   const navigate =
     useNavigate()
   const location = useLocation()

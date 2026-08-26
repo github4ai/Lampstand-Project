@@ -1,6 +1,33 @@
 export interface WorkspaceBackup { format: 'aios-studio-workspace'; version: 2; exportedAt: string; storageEntries: number; data: Record<string, string> }
 type StorageLike = Pick<Storage, 'length' | 'key' | 'getItem' | 'setItem' | 'removeItem'>
 
+export const RESET_PERSONAL_DATA_AFTER_UPDATE_KEY = 'lampstand-reset-personal-data-after-update-v1'
+
+function storageKeys(storage: StorageLike) {
+  return Array.from({ length: storage.length }, (_, index) => storage.key(index)).filter((key): key is string => Boolean(key))
+}
+
+export function resetPersonalData(storage: StorageLike) {
+  const keys = storageKeys(storage)
+  const protectedEntries = keys
+    .filter((key) => key.startsWith('sb-') && key.endsWith('-auth-token'))
+    .map((key) => [key, storage.getItem(key)] as const)
+
+  keys.forEach((key) => storage.removeItem(key))
+  protectedEntries.forEach(([key, value]) => { if (value !== null) storage.setItem(key, value) })
+  return { removed: keys.length - protectedEntries.length, preserved: protectedEntries.length }
+}
+
+export function schedulePersonalDataResetAfterUpdate(storage: StorageLike) {
+  storage.setItem(RESET_PERSONAL_DATA_AFTER_UPDATE_KEY, 'true')
+}
+
+export function consumePersonalDataResetAfterUpdate(storage: StorageLike) {
+  if (storage.getItem(RESET_PERSONAL_DATA_AFTER_UPDATE_KEY) !== 'true') return false
+  resetPersonalData(storage)
+  return true
+}
+
 export function collectWorkspaceBackup(storage: StorageLike, now = new Date()): WorkspaceBackup {
   const data: Record<string, string> = {}
   for (let index = 0; index < storage.length; index += 1) {
@@ -22,7 +49,7 @@ export function parseWorkspaceBackup(value: unknown): WorkspaceBackup | null {
 export function restoreWorkspaceBackup(storage: StorageLike, backup: WorkspaceBackup, mode: 'merge' | 'replace') {
   let removed = 0
   if (mode === 'replace') {
-    const existing = Array.from({ length: storage.length }, (_, index) => storage.key(index)).filter((key): key is string => Boolean(key && (key.startsWith('aios') || key.startsWith('lampstand'))))
+    const existing = storageKeys(storage).filter((key) => key.startsWith('aios') || key.startsWith('lampstand'))
     existing.forEach((key) => { storage.removeItem(key); removed += 1 })
   }
   Object.entries(backup.data).forEach(([key, value]) => storage.setItem(key, value))

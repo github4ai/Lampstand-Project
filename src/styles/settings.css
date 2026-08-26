@@ -65,3 +65,9 @@
 @media (max-width: 760px) {
   .settings-library-publish-fields { grid-template-columns: 1fr; }
 }
+
+.settings-update-reset-option{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.025);cursor:pointer}
+.settings-update-reset-option input{margin-top:3px;accent-color:#38bdf8}
+.settings-update-reset-option span{display:grid;gap:3px}
+.settings-update-reset-option strong{color:var(--text);font-size:12px}
+.settings-update-reset-option small{color:var(--text-muted);font-size:11px;line-height:1.45}
