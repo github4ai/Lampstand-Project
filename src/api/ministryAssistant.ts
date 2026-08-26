@@ -15,8 +15,9 @@ export interface DirectMinistryAnswer {
 
 export async function resolveDirectLifeStudyQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
-  const search = await searchLifeStudy(question)
+  const search = await searchLifeStudy(question, signal)
   if (!search.results.length) return null
   const sections = search.results.map((result) =>
     `### ${result.book.name} — Message ${result.message.number}\n\n**${result.message.title}**\n\n${result.excerpt}`,
@@ -37,8 +38,9 @@ export async function resolveDirectLifeStudyQuestion(
 
 export async function resolveDirectHymnalQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
-  const { hymns } = await getHymnalLibrary()
+  const { hymns } = await getHymnalLibrary(signal)
   const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim()
   const stopWords = new Set(['a', 'an', 'and', 'for', 'find', 'hymn', 'hymns', 'in', 'is', 'me', 'of', 'on', 'please', 'show', 'the', 'to', 'with'])
   const words = normalized.split(' ').filter((word) => word && !stopWords.has(word))
@@ -80,8 +82,9 @@ export async function resolveDirectHymnalQuestion(
 
 export async function resolveDirectMinistryBooksQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
-  const search = await searchMinistryBooks(question)
+  const search = await searchMinistryBooks(question, signal)
   if (!search.results.length) return null
   return {
     content: `${search.results.map((result) => `### ${result.book.title}\n\n**Chapter ${result.chapter.number}: ${result.chapter.title}**\n\n${result.excerpt}`).join('\n\n---\n\n')}\n\n*Results from the locally installed Ministry Books library.*`,
@@ -99,10 +102,11 @@ export async function resolveDirectMinistryBooksQuestion(
 
 export async function resolveDirectHwmrQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
   const [search, sources] = await Promise.all([
-    searchKnowledge({ query: question, category: 'Ministry', topK: 50, includeText: true }),
-    getKnowledgeSources(),
+    searchKnowledge({ query: question, category: 'Ministry', topK: 50, includeText: true, signal }),
+    getKnowledgeSources(signal),
   ])
   const hwmrStems = sources.filter((source) => source.category === 'Ministry' && /^HWMR(?:[\\/]|$)/i.test(source.subcollection ?? ''))
     .map((source) => source.name.replace(/\.(?:pdf|html?|epub|docx|txt|md|markdown|pdb)$/i, '').toLowerCase())
@@ -131,16 +135,17 @@ function removeLocalLibraryFooter(content: string) {
 
 export async function resolveUnifiedMinistryQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
   const questionWords = new Set(['a', 'about', 'an', 'and', 'can', 'could', 'define', 'do', 'does', 'explain', 'find', 'for', 'give', 'how', 'in', 'is', 'me', 'mean', 'of', 'on', 'please', 'show', 'tell', 'the', 'to', 'what', 'where', 'which', 'who', 'why', 'with', 'would'])
   const keywords = question.toLowerCase().replace(/[^a-z0-9'\s-]/g, ' ').split(/\s+/).filter((word) => word.length > 1 && !questionWords.has(word)).join(' ')
   const libraryQuery = keywords || question
   const settled = await Promise.allSettled([
-    searchRecoveryBible(libraryQuery),
-    resolveDirectLifeStudyQuestion(libraryQuery),
-    resolveDirectMinistryBooksQuestion(libraryQuery),
-    resolveDirectHymnalQuestion(libraryQuery),
-    resolveDirectHwmrQuestion(libraryQuery),
+    searchRecoveryBible(libraryQuery, signal),
+    resolveDirectLifeStudyQuestion(libraryQuery, signal),
+    resolveDirectMinistryBooksQuestion(libraryQuery, signal),
+    resolveDirectHymnalQuestion(libraryQuery, signal),
+    resolveDirectHwmrQuestion(libraryQuery, signal),
   ])
   const sections: string[] = []
   const sources: StreamSource[] = []
@@ -183,8 +188,9 @@ export async function resolveUnifiedMinistryQuestion(
 
 export async function resolveDirectBibleQuestion(
   question: string,
+  signal?: AbortSignal,
 ): Promise<DirectMinistryAnswer | null> {
-  const { books } = await getRecoveryBibleBooks()
+  const { books } = await getRecoveryBibleBooks(signal)
   const normalized = question.replace(/[–—]/g, '-').trim()
   const orderedBooks = [...books].sort((left, right) => right.name.length - left.name.length)
 
@@ -198,7 +204,7 @@ export async function resolveDirectBibleQuestion(
     const endVerse = Number(match[3] || match[2])
     if (chapterNumber < 1 || chapterNumber > book.chapters || endVerse < startVerse) return null
 
-    const chapter = await getRecoveryBibleChapter(book.id, chapterNumber)
+    const chapter = await getRecoveryBibleChapter(book.id, chapterNumber, signal)
     const verses = chapter.verses.filter((verse) => verse.number >= startVerse && verse.number <= endVerse)
     if (!verses.length || verses[0].number !== startVerse) return null
 

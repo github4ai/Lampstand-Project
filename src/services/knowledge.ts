@@ -217,8 +217,8 @@ export interface KnowledgeSourceFile {
   tags: string[]
 }
 
-export async function getKnowledgeSources() {
-  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/sources`)
+export async function getKnowledgeSources(signal?: AbortSignal) {
+  const response = await fetch(`${AIOS_API_BASE_URL}/knowledge/sources`, { signal })
   if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
   const result = await response.json() as { sources?: KnowledgeSourceFile[] }
   return Array.isArray(result.sources) ? result.sources : []

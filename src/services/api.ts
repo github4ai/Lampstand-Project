@@ -79,6 +79,21 @@ type StreamEvent =
   | DoneEvent
   | ErrorEvent
 
+function isStreamEvent(value: unknown): value is StreamEvent {
+  if (typeof value !== 'object' || value === null || !('type' in value)) return false
+  const event = value as { type?: unknown; content?: unknown; message?: unknown; grounded?: unknown }
+  if (event.type === 'chunk') return typeof event.content === 'string'
+  if (event.type === 'error') return typeof event.message === 'string'
+  if (event.type === 'done') return typeof event.grounded === 'boolean'
+  if (event.type === 'metadata') {
+    const metadata = value as Partial<MetadataEvent>
+    return typeof metadata.agent_id === 'string' && typeof metadata.category === 'string' &&
+      typeof metadata.model === 'string' && typeof metadata.grounded === 'boolean' &&
+      typeof metadata.source_count === 'number' && Array.isArray(metadata.sources)
+  }
+  return false
+}
+
 export interface StreamCallbacks {
   onMetadata?: (metadata: StreamMetadata) => void
   onChunk: (chunk: string) => void
@@ -207,9 +222,9 @@ export async function streamAIOS(
       let event: StreamEvent
 
       try {
-        event = JSON.parse(
-          normalizedLine,
-        ) as StreamEvent
+        const parsed: unknown = JSON.parse(normalizedLine)
+        if (!isStreamEvent(parsed)) throw new Error('invalid event shape')
+        event = parsed
       } catch {
         throw new Error(
           `AIOS returned an invalid streaming event: ${normalizedLine}`,
@@ -231,9 +246,9 @@ export async function streamAIOS(
     let finalEvent: StreamEvent
 
     try {
-      finalEvent = JSON.parse(
-        finalLine,
-      ) as StreamEvent
+      const parsed: unknown = JSON.parse(finalLine)
+      if (!isStreamEvent(parsed)) throw new Error('invalid event shape')
+      finalEvent = parsed
     } catch {
       throw new Error(
         `AIOS returned an invalid final streaming event: ${finalLine}`,

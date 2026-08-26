@@ -15,4 +15,9 @@ describe('local AIOS assistants', () => {
   it('returns null for unknown assistants', () => {
     expect(getAgent('unknown')).toBeNull()
   })
+
+  it('normalizes assistant ids for API callers', () => {
+    expect(getAgent('  SCHOOL ')?.id).toBe('school')
+    expect(getAgent('MINISTRY')?.id).toBe('ministry')
+  })
 })

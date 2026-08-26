@@ -525,7 +525,7 @@ export function useChat(
         selectedAgent.id === 'ministry' &&
         (ministrySource === 'all' || ministrySource === 'bible')
       ) {
-        const directAnswer = await resolveDirectBibleQuestion(trimmedQuestion)
+        const directAnswer = await resolveDirectBibleQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
@@ -544,7 +544,7 @@ export function useChat(
       }
 
       if (selectedAgent.id === 'ministry' && ministrySource === 'all') {
-        const directAnswer = await resolveUnifiedMinistryQuestion(trimmedQuestion)
+        const directAnswer = await resolveUnifiedMinistryQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
@@ -563,7 +563,7 @@ export function useChat(
       }
 
       if (selectedAgent.id === 'ministry' && ministrySource === 'life-study') {
-        const directAnswer = await resolveDirectLifeStudyQuestion(trimmedQuestion)
+        const directAnswer = await resolveDirectLifeStudyQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
@@ -582,7 +582,7 @@ export function useChat(
       }
 
       if (selectedAgent.id === 'ministry' && ministrySource === 'hwmr') {
-        const directAnswer = await resolveDirectHwmrQuestion(trimmedQuestion)
+        const directAnswer = await resolveDirectHwmrQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
@@ -601,7 +601,7 @@ export function useChat(
       }
 
       if (selectedAgent.id === 'ministry' && ministrySource === 'hymnal') {
-        const directAnswer = await resolveDirectHymnalQuestion(trimmedQuestion)
+        const directAnswer = await resolveDirectHymnalQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
@@ -620,7 +620,7 @@ export function useChat(
       }
 
       if (selectedAgent.id === 'ministry' && ministrySource === 'ministry-books') {
-        const directAnswer = await resolveDirectMinistryBooksQuestion(trimmedQuestion)
+        const directAnswer = await resolveDirectMinistryBooksQuestion(trimmedQuestion, requestController.signal)
         if (requestController.signal.aborted) {
           markResponseStopped()
           return
