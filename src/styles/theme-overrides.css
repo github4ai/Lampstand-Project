@@ -229,6 +229,11 @@ body{overflow-x:hidden}
 
 /* The navigation uses the same theme and contrast system as the workspaces. */
 :root[data-theme="light"] .sidebar{border-right-color:var(--border);background:#dde4e4;color:var(--text)}
+:root[data-theme="light"] .sidebar{background:color-mix(in srgb,var(--primary) 20%,#dbe6e4)}
+:root[data-theme="light"] :where(.workspace-layout-header,.workspace-breadcrumbs){background:color-mix(in srgb,var(--primary) 9%,var(--panel))!important}
+:root[data-theme="light"] :where(.ministry-continue,.school-profile,.language-pronunciation,.settings-panel-title){background:color-mix(in srgb,var(--primary) 6%,var(--panel))!important}
+:root[data-theme="light"] :where(a,.bible-cross-reference,.bible-cross-reference-links button,.hwmr-bible-link){color:var(--link)!important}
+:root[data-theme="light"] :where(a:hover,.bible-cross-reference-links button:hover,.hwmr-bible-link:hover){color:var(--link-hover)!important}
 :root[data-theme="light"] .sidebar :where(.brand p,.agent-description,.workspace-navigation-link,.command-palette-trigger,.category-section label){color:var(--text-muted)}
 :root[data-theme="light"] .sidebar :where(.command-palette-trigger,.status-card,.category-section select,.sidebar-collapse-button,.sidebar-profile-switcher select){border-color:var(--border);background:var(--panel);color:var(--text)}
 :root[data-theme="light"] .sidebar .workspace-navigation-link:hover{border-color:var(--primary-border);background:var(--primary-soft);color:var(--text)}

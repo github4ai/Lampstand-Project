@@ -113,7 +113,8 @@ def clean_indented_paragraphs(value: str) -> str:
     # boundaries. Keep CWWL/CWWN year, volume, title, and chapter together.
     cleaned = re.sub(r"\b(vol\.)\s*\n+\s*(\d+)", r"\1 \2", cleaned, flags=re.I)
     cleaned = re.sub(r"\b(chs?\.)\s*\n+\s*([\d—–-]+)", r"\1 \2", cleaned, flags=re.I)
-    cleaned = re.sub(r"(Further Reading:[^\n]*)\n+(?=(?:CWW[NL]|Life-study|The |Messages?\b))", r"\1 ", cleaned, flags=re.I)
+    # Further Reading is a distinct bibliographic paragraph in the source.
+    cleaned = re.sub(r"([^\n])\s+(Further Reading\s*:)", r"\1\n\n\2 ", cleaned, flags=re.I)
     return cleaned
 
 

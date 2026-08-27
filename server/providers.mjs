@@ -14,16 +14,36 @@ async function requireOk(response, provider) {
 
 function translationPrompt({ text, sourceLanguage, targetLanguage }) {
   if (targetLanguage === 'kok') {
-    return `Translate this ${languageNames[sourceLanguage]} text into natural Konkani. Write the Konkani ONLY in Roman English/Latin letters (no Devanagari, Kannada, or other Indic script). Preserve names, references, meaning, and line breaks. Return only the translation.\n\n${text}`
+    return `Translate the complete source text into natural Konkani. Write Konkani ONLY in Roman English/Latin letters. Never use Devanagari, Kannada, or another Indic script. Translate every paragraph exactly once; never repeat a word, phrase, sentence, or paragraph merely to fill space. Preserve names, Scripture references, meaning, and paragraph breaks. Return only the translation.\n\nSOURCE (${languageNames[sourceLanguage]}):\n---\n${text}\n---\nEND SOURCE`
   }
   if (sourceLanguage !== 'auto') {
     return `You are a professional ${languageNames[sourceLanguage]} (${translationLanguageCodes[sourceLanguage]}) to ${languageNames[targetLanguage]} (${translationLanguageCodes[targetLanguage]}) translator. ` +
       `Your goal is to accurately convey the meaning and nuances of the original ${languageNames[sourceLanguage]} text while adhering to ${languageNames[targetLanguage]} grammar, vocabulary, and cultural sensitivities. ` +
-      `Preserve paragraph breaks, names, scripture references, and ministry terminology. Produce only the ${languageNames[targetLanguage]} translation, without any additional explanations or commentary. ` +
+      `Preserve paragraph breaks, names, scripture references, and ministry terminology. Translate every paragraph exactly once and do not repeat text. Produce only the ${languageNames[targetLanguage]} translation, without any additional explanations or commentary. ` +
       `Please translate the following ${languageNames[sourceLanguage]} text into ${languageNames[targetLanguage]}:\n\n${text}`
   }
   return `Translate the following text from ${languageNames[sourceLanguage]} to ${languageNames[targetLanguage]}. ` +
-    `Preserve meaning, paragraph breaks, names, and ministry terminology. Return only the translation.\n\n${text}`
+    `Preserve meaning, paragraph breaks, names, and ministry terminology. Translate every paragraph exactly once and never repeat text. Return only the translation.\n\n${text}`
+}
+
+function translationQualityError(text, request) {
+  const words = String(text || '').toLowerCase().match(/[\p{L}\p{N}']+/gu) || []
+  if (!words.length) return 'The model returned no translatable words.'
+  let repeatedRun = 1
+  for (let index = 1; index < words.length; index += 1) {
+    repeatedRun = words[index] === words[index - 1] ? repeatedRun + 1 : 1
+    if (repeatedRun >= 6) return 'The model produced a repeated-word loop.'
+  }
+  if (words.length >= 40 && new Set(words).size / words.length < 0.16) return 'The model produced excessively repetitive text.'
+  const trigrams = new Map()
+  for (let index = 0; index < words.length - 2; index += 1) {
+    const key = words.slice(index, index + 3).join(' ')
+    const count = (trigrams.get(key) || 0) + 1
+    if (count >= 6) return 'The model repeated the same phrase too many times.'
+    trigrams.set(key, count)
+  }
+  if (request.targetLanguage === 'kok' && /[\u0900-\u0d7f]/u.test(text)) return 'Konkani was not returned in Roman English letters.'
+  return ''
 }
 
 export async function translateWithOllama(request, config, fetcher = fetch) {
@@ -39,15 +59,18 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
   const requestTimeout = request.targetLanguage === 'kok' ? 60000 : 120000
   for (const model of candidateModels) {
     try {
+      const sourceWords = String(request.text || '').trim().split(/\s+/).filter(Boolean).length
       const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_ctx: 4096, num_predict: Math.min(1400, Math.max(256, String(request.text || '').length * 2)) }, messages: [{ role: 'user', content: translationPrompt(request) }] }),
+        body: JSON.stringify({ model, stream: false, think: false, keep_alive: '10m', options: { temperature: 0.1, repeat_penalty: 1.22, num_ctx: 4096, num_predict: Math.min(1100, Math.max(160, Math.ceil(sourceWords * (request.targetLanguage === 'kok' ? 3 : 2.5)))) }, messages: [{ role: 'system', content: 'You are a careful professional translator. Never generate repetitive or looping text. Stop immediately after the complete translation.' }, { role: 'user', content: translationPrompt(request) }] }),
         signal: AbortSignal.timeout(requestTimeout),
       })
       await requireOk(response, `Ollama (${model})`)
       const body = await response.json()
       const translatedText = body?.message?.content?.trim()
       if (!translatedText) throw new Error(`Ollama (${model}) returned an empty translation.`)
+      const qualityError = translationQualityError(translatedText, request)
+      if (qualityError) throw new Error(`Ollama (${model}) translation rejected: ${qualityError}`)
       return { ...request, translatedText, provider: 'ollama', model }
     } catch (error) {
       errors.push(error instanceof Error ? error.message : String(error))
@@ -75,7 +98,7 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
             if (response.ok) {
               const body = await response.json()
               const translatedText = body?.message?.content?.trim()
-              if (translatedText) {
+              if (translatedText && !translationQualityError(translatedText, request)) {
                 return { ...request, translatedText, provider: 'ollama', model: fallbackModel }
               }
             }

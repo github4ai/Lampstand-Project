@@ -16,9 +16,9 @@ describe('HWMR further-reading links', () => {
       'Further Reading: The Conclusion of the New Testament, msg. 414; Life-study of Revelation, msg. 10',
       'Further Reading: CWWN, vol. 50, “Messages for Building Up New Believers (3),” ch. 45',
     ].join('\n')
-    const resolved = parseFurtherReadingReferences(text, books).map(({ book, section, sectionKind }) => [book.id, section, sectionKind])
+    const resolved = parseFurtherReadingReferences(text, books).map(({ destination, book, lifeStudyBook, section, sectionKind }) => [book?.id || lifeStudyBook, section, sectionKind, destination])
     expect(resolved).toEqual([
-      ['elders', 5, 'chapter'], ['conclusion', 414, 'message'], ['revelation', 10, 'message'], ['cwwn', 45, 'chapter'],
+      ['elders', 5, 'chapter', 'ministry'], ['conclusion', 414, 'message', 'ministry'], ['revelation', 10, 'message', 'life-study'], ['cwwn', 45, 'chapter', 'ministry'],
     ])
   })
 })
