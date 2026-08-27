@@ -1,4 +1,4 @@
-export type SupportedLanguage = 'en' | 'zh' | 'ta' | 'hi' | 'mr' | 'te' | 'ml' | 'kn' | 'ru' | 'ko'
+export type SupportedLanguage = 'en' | 'zh' | 'ta' | 'hi' | 'mr' | 'te' | 'ml' | 'kn' | 'kok' | 'ru' | 'ko'
 export type TranslationSourceLanguage = SupportedLanguage | 'auto'
 
 export interface TranslationRequest {

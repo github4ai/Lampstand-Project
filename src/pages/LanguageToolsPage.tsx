@@ -42,12 +42,19 @@ function translatedDocumentName(filename: string, language: SupportedLanguage) {
   const dot = filename.lastIndexOf('.')
   return dot > 0 ? `${filename.slice(0, dot)}-${language}${filename.slice(dot)}` : `${filename}-${language}`
 }
-const onlineFallbackLanguages = new Set<SupportedLanguage>(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml', 'kn', 'ru', 'ko'])
+const onlineFallbackLanguages = new Set<SupportedLanguage>(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml', 'kn', 'kok', 'ru', 'ko'])
 const onlineFallbackVoices: Partial<Record<SupportedLanguage, Array<{ name: string; label: string }>>> = {
-  mr: [{ name: 'mr-IN-AarohiNeural', label: 'Aarohi (Female)' }, { name: 'mr-IN-ManoharNeural', label: 'Manohar (Male)' }],
-  te: [{ name: 'te-IN-ShrutiNeural', label: 'Shruti (Female)' }, { name: 'te-IN-MohanNeural', label: 'Mohan (Male)' }],
-  ml: [{ name: 'ml-IN-SobhanaNeural', label: 'Sobhana (Female)' }, { name: 'ml-IN-MidhunNeural', label: 'Midhun (Male)' }],
+  en: [{ name: 'en-IN-NeerjaNeural', label: 'Neerja (Female)' }, { name: 'en-IN-PrabhatNeural', label: 'Prabhat (Male)' }],
+  zh: [{ name: 'zh-CN-XiaoxiaoNeural', label: 'Xiaoxiao (Female)' }, { name: 'zh-CN-YunxiNeural', label: 'Yunxi (Male)' }],
+  hi: [{ name: 'hi-IN-SwaraNeural', label: 'Swara (Female)' }, { name: 'hi-IN-MadhurNeural', label: 'Madhur (Male)' }],
   kn: [{ name: 'kn-IN-SapnaNeural', label: 'Sapna (Female)' }, { name: 'kn-IN-GaganNeural', label: 'Gagan (Male)' }],
+  kok: [{ name: 'en-IN-NeerjaNeural', label: 'Neerja—Roman Konkani (Female)' }, { name: 'en-IN-PrabhatNeural', label: 'Prabhat—Roman Konkani (Male)' }],
+  ko: [{ name: 'ko-KR-SunHiNeural', label: 'SunHi (Female)' }, { name: 'ko-KR-InJoonNeural', label: 'InJoon (Male)' }],
+  ml: [{ name: 'ml-IN-SobhanaNeural', label: 'Sobhana (Female)' }, { name: 'ml-IN-MidhunNeural', label: 'Midhun (Male)' }],
+  mr: [{ name: 'mr-IN-AarohiNeural', label: 'Aarohi (Female)' }, { name: 'mr-IN-ManoharNeural', label: 'Manohar (Male)' }],
+  ru: [{ name: 'ru-RU-SvetlanaNeural', label: 'Svetlana (Female)' }, { name: 'ru-RU-DmitryNeural', label: 'Dmitry (Male)' }],
+  ta: [{ name: 'ta-IN-PallaviNeural', label: 'Pallavi (Female)' }, { name: 'ta-IN-ValluvarNeural', label: 'Valluvar (Male)' }],
+  te: [{ name: 'te-IN-ShrutiNeural', label: 'Shruti (Female)' }, { name: 'te-IN-MohanNeural', label: 'Mohan (Male)' }],
 }
 
 function loadHistory(): LanguageHistoryItem[] {
@@ -60,11 +67,10 @@ function loadHistory(): LanguageHistoryItem[] {
 }
 
 const languages: Array<{ code: SupportedLanguage; label: string }> = [
-  { code: 'en', label: 'English' }, { code: 'zh', label: 'Chinese' },
-  { code: 'ta', label: 'Tamil' }, { code: 'hi', label: 'Hindi' },
-  { code: 'mr', label: 'Marathi' }, { code: 'te', label: 'Telugu' },
-  { code: 'ml', label: 'Malayalam' }, { code: 'ru', label: 'Russian' },
-  { code: 'ko', label: 'Korean' }, { code: 'kn', label: 'Kannada' },
+  { code: 'zh', label: 'Chinese' }, { code: 'en', label: 'English' }, { code: 'hi', label: 'Hindi' },
+  { code: 'kn', label: 'Kannada' }, { code: 'kok', label: 'Konkani' }, { code: 'ko', label: 'Korean' },
+  { code: 'ml', label: 'Malayalam' }, { code: 'mr', label: 'Marathi' }, { code: 'ru', label: 'Russian' },
+  { code: 'ta', label: 'Tamil' }, { code: 'te', label: 'Telugu' },
 ]
 
 function languageLabel(code?: TranslationSourceLanguage) {
@@ -75,7 +81,7 @@ function languageLabel(code?: TranslationSourceLanguage) {
 
 const speechLocales: Record<SupportedLanguage, string> = {
   en: 'en-IN', zh: 'zh-CN', ta: 'ta-IN', hi: 'hi-IN', mr: 'mr-IN',
-  te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', ru: 'ru-RU', ko: 'ko-KR',
+  te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', kok: 'en-IN', ru: 'ru-RU', ko: 'ko-KR',
 }
 
 const voiceTestPhrases: Record<SupportedLanguage, string> = {
@@ -83,12 +89,15 @@ const voiceTestPhrases: Record<SupportedLanguage, string> = {
   hi: 'नमस्ते। उच्चारण की आवाज़ तैयार है।', mr: 'नमस्कार. उच्चाराचा आवाज तयार आहे.', te: 'నమస్కారం. ఉచ్చారణ స్వరం సిద్ధంగా ఉంది.',
   ml: 'നമസ്കാരം. ഉച്ചാരണ ശബ്ദം തയ്യാറാണ്.', ru: 'Здравствуйте. Голос для произношения готов.', ko: '안녕하세요. 발음 음성이 준비되었습니다.',
   kn: 'ನಮಸ್ಕಾರ. ಉಚ್ಚಾರಣೆಯ ಧ್ವನಿ ಸಿದ್ಧವಾಗಿದೆ.',
+  kok: 'Namaskar. Ucharacho avaz toyar asa.',
 }
 
 function matchingSpeechVoices(voices: SpeechSynthesisVoice[], language: SupportedLanguage) {
   const locale = speechLocales[language].toLowerCase()
   const exact = voices.filter((voice) => voice.lang.toLowerCase() === locale)
-  return exact.length ? exact : voices.filter((voice) => voice.lang.toLowerCase().startsWith(`${language.toLowerCase()}-`))
+  if (exact.length) return exact
+  if (language === 'kok') return voices.filter((voice) => voice.lang.toLowerCase().startsWith('en-'))
+  return voices.filter((voice) => voice.lang.toLowerCase().startsWith(`${language.toLowerCase()}-`))
 }
 
 function findSpeechVoice(voices: SpeechSynthesisVoice[], language: SupportedLanguage, preferredName = '') {
@@ -468,6 +477,11 @@ function LanguageToolsPage() {
       stopPronunciation(); return
     }
     const language = tool === 'translation' ? targetLanguage : audioLanguage
+    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === voicePreferences[language])
+    if (preferredOnline && onlinePronunciation) {
+      await playOnlineFallback(result, language)
+      return
+    }
     const locale = speechLocales[language]
     const utterance = new SpeechSynthesisUtterance(result)
     utterance.lang = locale
@@ -492,6 +506,8 @@ function LanguageToolsPage() {
 
   async function pronounceText(value: string, language: SupportedLanguage) {
     if (!value.trim()) return
+    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === voicePreferences[language])
+    if (preferredOnline && onlinePronunciation) { await playOnlineFallback(value, language); return }
     const voice = findSpeechVoice(window.speechSynthesis.getVoices(), language, voicePreferences[language])
     if (!voice) {
       if (onlinePronunciation && onlineFallbackLanguages.has(language)) await playOnlineFallback(value, language)
@@ -728,10 +744,12 @@ function LanguageToolsPage() {
         {(() => {
           const activeLanguage = tool === 'translation' ? targetLanguage : audioLanguage
           const available = matchingSpeechVoices(speechVoices, activeLanguage)
-          const fallbackVoices = onlinePronunciation && !available.length ? onlineFallbackVoices[activeLanguage] ?? [] : []
+          const fallbackVoices = onlinePronunciation ? onlineFallbackVoices[activeLanguage] ?? [] : []
           if (available.length < 2 && fallbackVoices.length < 2) return <span className="language-active-voice">Using the available {languages.find((item) => item.code === activeLanguage)?.label} voice</span>
-          const value = available.length ? findSpeechVoice(speechVoices, activeLanguage, voicePreferences[activeLanguage])?.name || '' : voicePreferences[activeLanguage] || fallbackVoices[0].name
-          return <label className="language-preferred-voice">Preferred {languages.find((item) => item.code === activeLanguage)?.label} voice<select value={value} onChange={(event) => choosePreferredVoice(activeLanguage, event.target.value)}>{available.length ? available.map((voice) => <option key={voice.name} value={voice.name}>{voice.name}</option>) : fallbackVoices.map((voice) => <option key={voice.name} value={voice.name}>{voice.label} · Online</option>)}</select></label>
+          const choices = [...available.map((voice) => ({ name: voice.name, label: `${voice.name} · Local` })), ...fallbackVoices.map((voice) => ({ name: voice.name, label: `${voice.label} · Online` }))].sort((left, right) => left.label.localeCompare(right.label))
+          const preferred = voicePreferences[activeLanguage]
+          const value = choices.some((item) => item.name === preferred) ? preferred! : choices[0]?.name || ''
+          return <label className="language-preferred-voice">Preferred {languages.find((item) => item.code === activeLanguage)?.label} voice<select value={value} onChange={(event) => choosePreferredVoice(activeLanguage, event.target.value)}>{choices.map((voice) => <option key={voice.name} value={voice.name}>{voice.label}</option>)}</select></label>
         })()}
         <label className="language-speech-rate">Speed<select value={speechRate} onChange={(event) => chooseSpeechRate(Number(event.target.value))}><option value={0.75}>Slow</option><option value={0.9}>Normal</option><option value={1.1}>Fast</option></select></label>
       </div><div className="language-pronunciation-options">

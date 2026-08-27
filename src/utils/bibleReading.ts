@@ -14,5 +14,6 @@ export function formatVerseReading(book: string, chapter: number, verses: Readin
     const label = group.length > 1 ? `Verses ${first.number} through ${last.number}.` : `Verse ${first.number}.`
     return `${label} ${group.map((verse) => verse.text).join(' ')}`
   })
-  return `${book}, chapter ${chapter}. ${spoken.join(' ')}`
+  const spokenBook = book.replace(/^([123])\s+/, (_, number: string) => ({ '1': 'One ', '2': 'Two ', '3': 'Three ' })[number] || '')
+  return `${spokenBook}, chapter ${chapter}. ${spoken.join(' ')}`
 }

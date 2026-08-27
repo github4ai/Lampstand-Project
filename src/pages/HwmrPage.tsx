@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getHwmrLibrary, refreshHwmrLibrary, type HwmrAudit, type HwmrBook } from '../api/hwmr'
 import { getHymnalLibrary } from '../api/hymnal'
+import { getMinistryBookChapters, getMinistryBooksLibrary, type MinistryBookSummary } from '../api/ministryBooks'
 import type { Hymn } from '../types/hymnal'
 import { lastMentionedBibleBook, linkBibleReferences } from '../utils/bibleReferences'
 import { streamAIOS } from '../services/api'
@@ -22,6 +23,57 @@ const STUDY_ARTIFACTS_KEY = 'aios-hwmr-study-artifacts-v1'
 const SAVED_STUDIES_KEY = 'aios-hwmr-saved-studies-v1'
 const READER_ZOOM_KEY = 'aios-hwmr-reader-zoom-v1'
 interface SavedStudy { id: string; bookId: string; week: number; title: string; content: string; createdAt: string; updatedAt: string }
+interface FurtherReadingLink { label: string; title: string; sectionLabel: string; section: number; sectionKind: 'chapter' | 'message'; book: MinistryBookSummary }
+
+function repairHwmrReadingText(value = '') {
+  return value
+    .replace(/\b(vol\.)\s*\n+\s*(\d+)/gi, '$1 $2')
+    .replace(/\b(chs?\.)\s*\n+\s*([\d—–-]+)/gi, '$1 $2')
+    .replace(/([“"][^”"]{3,})\s*\n+\s*([^”"]{1,80}[”"])/g, '$1 $2')
+    .replace(/(Further Reading:[^\n]*)\n+(?=(?:CWW[NL]|Life-study|The |Messages?\b))/gi, '$1 ')
+}
+
+function normalizedMinistryTitle(value: string) {
+  return value.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9']+/g, ' ').replace(/\bbook\s+0+(\d+)/g, 'book $1').replace(/^(?:a|an|the)\s+/, '').replace(/\s+the(?=\s+(?:msgs?|vol)|$)/, '').trim()
+}
+
+const chapterWords = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
+
+export function parseFurtherReadingReferences(text: string, books: MinistryBookSummary[]): FurtherReadingLink[] {
+  const repaired = repairHwmrReadingText(text)
+  const entries = [...repaired.matchAll(/Further Reading:\s*([^\n]+)/gi)].flatMap((match) => match[1].split(/\s*;\s*/)).map((entry) => entry.trim()).filter(Boolean)
+  const results: FurtherReadingLink[] = []
+  const findTitle = (title: string, message = 0) => {
+    const wanted = normalizedMinistryTitle(title)
+    const matches = books.filter((item) => { const available = normalizedMinistryTitle(item.title); return available === wanted || available.includes(wanted) || wanted.includes(available) })
+    if (!message) return matches[0]
+    return matches.find((item) => { const range = item.title.match(/msgs?\.\s*(\d+)\s*[-–—]\s*(\d+)/i); return range && message >= Number(range[1]) && message <= Number(range[2]) }) || matches[0]
+  }
+  for (const entry of entries) {
+    const collectedWithTitle = entry.match(/^(CWWL|CWWN),.*?\bvol\.\s*(\d+),\s*[“"]([^”"]+)[”"].*?\b(chs?|msgs?)\.\s*([\d—–-]+)/i)
+    const collectedWithoutTitle = entry.match(/^(CWWL|CWWN),.*?\bvol\.\s*(\d+).*?\b(chs?|msgs?)\.\s*([\d—–-]+)/i)
+    const collected = collectedWithTitle
+      ? { series: collectedWithTitle[1], volume: collectedWithTitle[2], title: collectedWithTitle[3], kind: collectedWithTitle[4], sections: collectedWithTitle[5] }
+      : collectedWithoutTitle ? { series: collectedWithoutTitle[1], volume: collectedWithoutTitle[2], title: '', kind: collectedWithoutTitle[3], sections: collectedWithoutTitle[4] } : null
+    if (collected) {
+      const section = Number(collected.sections.match(/\d+/)?.[0] || 1)
+      const author = collected.series.toUpperCase() === 'CWWL' ? 'witness lee' : 'watchman nee'
+      const volumePattern = new RegExp(`\\bvol\\s+0*${collected.volume}\\b`)
+      const book = (collected.title ? findTitle(collected.title, /msg/i.test(collected.kind) ? section : 0) : undefined)
+        || books.find((item) => { const title = normalizedMinistryTitle(item.title); return title.includes(`collected works of ${author}`) && volumePattern.test(title) })
+      if (book) results.push({ label: entry, title: collected.title || book.title, sectionLabel: collected.sections, section, sectionKind: /msg/i.test(collected.kind) ? 'message' : 'chapter', book })
+      continue
+    }
+    const general = entry.match(/^(.+?),\s*(msgs?|chs?)\.\s*([\d—–-]+)/i)
+    if (general) {
+      const section = Number(general[3].match(/\d+/)?.[0] || 1)
+      const sectionKind = /msg/i.test(general[2]) ? 'message' : 'chapter'
+      const book = findTitle(general[1], sectionKind === 'message' ? section : 0)
+      if (book) results.push({ label: entry, title: general[1], sectionLabel: general[3], section, sectionKind, book })
+    }
+  }
+  return results
+}
 
 function loadProgress(): ProgressStore {
   try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) ?? '{}') as ProgressStore } catch { return {} }
@@ -120,6 +172,7 @@ export default function HwmrPage() {
   const [newStudyArtifact, setNewStudyArtifact] = useState('')
   const [savedStudies, setSavedStudies] = useState<SavedStudy[]>(loadSavedStudies)
   const [hymnalHymns, setHymnalHymns] = useState<Hymn[]>([])
+  const [ministryBooks, setMinistryBooks] = useState<MinistryBookSummary[]>([])
   const [readerZoom, setReaderZoom] = useState(loadReaderZoom)
   const [fullPage, setFullPage] = useState(false)
   const book = books.find((item) => item.id === selectedId) ?? null
@@ -144,6 +197,10 @@ export default function HwmrPage() {
     const matches = hymnalHymns.filter((item) => item.hymnNumber?.toString().trim() === number)
     return matches.find((item) => item.catalogPrefix?.toUpperCase() === 'H') ?? matches[0] ?? null
   }, [hymnalHymns, week])
+  const furtherReadingLinks = useMemo(() => {
+    if (!portion) return []
+    return parseFurtherReadingReferences(`${portion.morningNourishment}\n${portion.todaysReading}`, ministryBooks)
+  }, [ministryBooks, portion])
   useEffect(() => { document.body.classList.toggle('reader-full-page-active', fullPage); return () => document.body.classList.remove('reader-full-page-active') }, [fullPage])
   const readerStyle = { '--hwmr-reader-zoom': readerZoom / 100 } as CSSProperties
 
@@ -176,6 +233,13 @@ export default function HwmrPage() {
     getHymnalLibrary(controller.signal).then((library) => setHymnalHymns(library.hymns)).catch(() => undefined)
     return () => controller.abort()
   }, [hymnalHymns.length, selectedId])
+
+  useEffect(() => {
+    if (!selectedId || ministryBooks.length) return
+    const controller = new AbortController()
+    getMinistryBooksLibrary(controller.signal).then((result) => setMinistryBooks(result.books ?? [])).catch(() => undefined)
+    return () => controller.abort()
+  }, [ministryBooks.length, selectedId])
 
   useEffect(() => {
     localStorage.setItem(READER_ZOOM_KEY, String(readerZoom))
@@ -239,6 +303,18 @@ export default function HwmrPage() {
     if (!schedule) return
     setWeekIndex(schedule.weekIndex)
     if (schedule.day) { setDay(schedule.day); setView('day') } else setView('hymn')
+  }
+  async function openFurtherReading(item: FurtherReadingLink) {
+    let targetChapter = item.section
+    try {
+      const result = await getMinistryBookChapters(item.book.id)
+      const word = chapterWords[item.section]
+      const heading = item.sectionKind === 'message' ? '(?:message|msg)' : 'chapter'
+      const matching = result.chapters.find((chapter) => new RegExp(`^${heading}\\s+(?:${item.section}${word ? `|${word}` : ''})\\b`, 'i').test(chapter.title.trim()))
+      if (matching) targetChapter = matching.number
+    } catch { /* Open the cited numeric section when chapter metadata is unavailable. */ }
+    const returnLocation = new URLSearchParams({ book: book?.id || '', week: String(weekIndex), day: String(day), view: 'day' })
+    navigate(`/ministry-books?book=${encodeURIComponent(item.book.id)}&chapter=${targetChapter}&from=hwmr&return=${encodeURIComponent(returnLocation.toString())}`)
   }
   function toggleComplete() {
     if (!book || !week || !portion || !bookProgress) return
@@ -369,6 +445,7 @@ export default function HwmrPage() {
   }
 
   function formattedText(text: string, className = '') {
+    text = repairHwmrReadingText(text)
     let bookContext = ''
     return <div className={`hwmr-formatted-text ${className}`}>{text.split(/\n{2,}/).filter(Boolean).map((paragraph, paragraphIndex) => {
       const segments = linkBibleReferences(paragraph, bookContext)
@@ -382,7 +459,7 @@ export default function HwmrPage() {
         if (segment.type === 'text') return <span key={segmentIndex}>{highlightedTextRange(segment.text, segmentStart, matches)}</span>
         const matchingAnnotation = matches.find(({ range }) => range.start < paragraphOffset && range.end > segmentStart)?.annotation
         return <button type="button" className={`hwmr-bible-link${matchingAnnotation ? ` hwmr-highlight ${matchingAnnotation.color}` : ''}`} title={matchingAnnotation?.note} key={segmentIndex} onClick={() => openBibleReference(segment)}>{segment.label}</button>
-      })}</p>
+      })}{/further\s+reading/i.test(paragraph) && furtherReadingLinks.length ? <span className="hwmr-further-reading-links">{furtherReadingLinks.map((item) => <button type="button" key={`${item.book.id}-${item.sectionKind}-${item.section}`} onClick={() => void openFurtherReading(item)}><BookOpenText size={15} /> {item.label}</button>)}</span> : null}</p>
     })}</div>
   }
 

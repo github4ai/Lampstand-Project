@@ -1,9 +1,9 @@
 const languageNames = {
   auto: 'automatically detected language', en: 'English', zh: 'Chinese', ta: 'Tamil',
-  hi: 'Hindi', mr: 'Marathi', te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', ru: 'Russian', ko: 'Korean',
+  hi: 'Hindi', mr: 'Marathi', te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', kok: 'Konkani written only in Roman (English/Latin) letters', ru: 'Russian', ko: 'Korean',
 }
 const translationLanguageCodes = {
-  en: 'en', zh: 'zh-CN', ta: 'ta-IN', hi: 'hi-IN', mr: 'mr-IN', te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', ru: 'ru-RU', ko: 'ko-KR',
+  en: 'en', zh: 'zh-CN', ta: 'ta-IN', hi: 'hi-IN', mr: 'mr-IN', te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', kok: 'kok-IN', ru: 'ru-RU', ko: 'ko-KR',
 }
 
 async function requireOk(response, provider) {
@@ -13,6 +13,9 @@ async function requireOk(response, provider) {
 }
 
 function translationPrompt({ text, sourceLanguage, targetLanguage }) {
+  if (targetLanguage === 'kok') {
+    return `Translate this ${languageNames[sourceLanguage]} text into natural Konkani. Write the Konkani ONLY in Roman English/Latin letters (no Devanagari, Kannada, or other Indic script). Preserve names, references, meaning, and line breaks. Return only the translation.\n\n${text}`
+  }
   if (sourceLanguage !== 'auto') {
     return `You are a professional ${languageNames[sourceLanguage]} (${translationLanguageCodes[sourceLanguage]}) to ${languageNames[targetLanguage]} (${translationLanguageCodes[targetLanguage]}) translator. ` +
       `Your goal is to accurately convey the meaning and nuances of the original ${languageNames[sourceLanguage]} text while adhering to ${languageNames[targetLanguage]} grammar, vocabulary, and cultural sensitivities. ` +
@@ -33,12 +36,13 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
   const candidateModels = [...new Set(normalizedModels)]
   const errors = []
 
+  const requestTimeout = request.targetLanguage === 'kok' ? 60000 : 120000
   for (const model of candidateModels) {
     try {
       const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, stream: false, think: false, options: { temperature: 0 }, messages: [{ role: 'user', content: translationPrompt(request) }] }),
-        signal: AbortSignal.timeout(120000),
+        body: JSON.stringify({ model, stream: false, think: false, keep_alive: '10m', options: { temperature: 0, num_ctx: 4096, num_predict: Math.min(1400, Math.max(256, String(request.text || '').length * 2)) }, messages: [{ role: 'user', content: translationPrompt(request) }] }),
+        signal: AbortSignal.timeout(requestTimeout),
       })
       await requireOk(response, `Ollama (${model})`)
       const body = await response.json()
@@ -60,13 +64,13 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
           .map((m) => m?.name)
           .filter((name) => typeof name === 'string' && name && !/embed/i.test(name))
 
-        for (const fallbackModel of installedModels) {
+        for (const fallbackModel of installedModels.slice(0, request.targetLanguage === 'kok' ? 1 : 3)) {
           if (candidateModels.includes(fallbackModel)) continue
           try {
             const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ model: fallbackModel, stream: false, think: false, options: { temperature: 0 }, messages: [{ role: 'user', content: translationPrompt(request) }] }),
-              signal: AbortSignal.timeout(120000),
+              signal: AbortSignal.timeout(requestTimeout),
             })
             if (response.ok) {
               const body = await response.json()

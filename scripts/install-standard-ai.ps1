@@ -52,11 +52,6 @@ function Install-WithWinget([string]$PackageId, [string]$Label) {
 }
 
 try {
-  if ($installAll -and (Test-Path -LiteralPath $readyFile)) {
-    Set-SetupStatus 'ready' 'complete' 'Standard AI is already installed.'
-    exit 0
-  }
-
   Set-SetupStatus 'installing' 'starting' 'Preparing the local AI services.'
 
   $ollama = $null
@@ -131,8 +126,11 @@ try {
     }
   }
 
+  $completed = @()
+  if ($installOllamaComponent) { $completed += 'local translation' }
+  if ($installPythonComponent) { $completed += 'speech transcription and document processing' }
   Set-Content -LiteralPath $readyFile -Value (Get-Date).ToUniversalTime().ToString('o') -Encoding UTF8
-  Set-SetupStatus 'ready' 'complete' 'Standard AI is installed and ready.'
+  Set-SetupStatus 'ready' 'complete' ("Installed and verified: " + ($completed -join ', ') + '.')
 } catch {
   Set-SetupStatus 'failed' 'setup' $_.Exception.Message
   exit 1

@@ -108,7 +108,13 @@ def clean_indented_paragraphs(value: str) -> str:
         current.append(line)
     if current:
         groups.append(join_wrapped(current))
-    return "\n\n".join(groups)
+    cleaned = "\n\n".join(groups)
+    # Bibliographic references are frequently wrapped at page-layout column
+    # boundaries. Keep CWWL/CWWN year, volume, title, and chapter together.
+    cleaned = re.sub(r"\b(vol\.)\s*\n+\s*(\d+)", r"\1 \2", cleaned, flags=re.I)
+    cleaned = re.sub(r"\b(chs?\.)\s*\n+\s*([\d—–-]+)", r"\1 \2", cleaned, flags=re.I)
+    cleaned = re.sub(r"(Further Reading:[^\n]*)\n+(?=(?:CWW[NL]|Life-study|The |Messages?\b))", r"\1 ", cleaned, flags=re.I)
+    return cleaned
 
 
 def parse_morning(value: str) -> tuple[list[dict], str]:

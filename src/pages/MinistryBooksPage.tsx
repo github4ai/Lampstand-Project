@@ -20,6 +20,8 @@ function MinistryBooksPage() {
   const [chapter, setChapter] = useState<MinistryBookChapter | null>(null)
   const [selectedBlocks, setSelectedBlocks] = useState<number[]>([])
   const [query, setQuery] = useState('')
+  const [alphabet, setAlphabet] = useState('ALL')
+  const [writer, setWriter] = useState('ALL')
   const [searchResults, setSearchResults] = useState<MinistryBookSearchResult[]>([])
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState('')
@@ -81,9 +83,14 @@ function MinistryBooksPage() {
 
   const filteredBooks = useMemo(() => {
     const normalized = query.trim().toLowerCase()
-    if (!normalized) return library?.books ?? []
-    return (library?.books ?? []).filter((book) => `${book.title} ${book.author}`.toLowerCase().includes(normalized))
-  }, [library, query])
+    return (library?.books ?? []).filter((book) => {
+      const first = book.title.trim().replace(/^(?:a|an|the)\s+/i, '').charAt(0).toUpperCase()
+      const alphabetMatches = alphabet === 'ALL' || (alphabet === '#' ? !/[A-Z]/.test(first) : first === alphabet)
+      const writerMatches = writer === 'ALL' || book.author === writer
+      return alphabetMatches && writerMatches && (!normalized || book.title.toLowerCase().includes(normalized))
+    }).sort((left, right) => left.title.localeCompare(right.title))
+  }, [alphabet, library, query, writer])
+  const writers = useMemo(() => [...new Set((library?.books ?? []).map((book) => book.author).filter(Boolean))].sort((left, right) => left.localeCompare(right)), [library])
   const selectedText = (chapter?.blocks ?? []).filter((block) => selectedBlocks.includes(block.id)).map((block) => block.text).join('\n\n')
   const chapterIndex = chapters.findIndex((item) => item.number === chapterNumber)
   const sectionName = (item: MinistryChapterSummary) => item.displayTitle || (item.title === 'Front Matter' || item.title === 'Content' ? 'Content' : item.title)
@@ -131,11 +138,16 @@ function MinistryBooksPage() {
     {library && !library.ready ? <section className="ministry-books-empty"><span><FolderOpen size={34} /></span><h2>Ministry Books HTML is not available yet</h2><p>{library.message}</p><div><strong>Library folder</strong><code>{library.folder}</code></div></section> : null}
     {library?.ready && !selectedBook ? <>
       <div className="ministry-books-summary"><strong>{library.books.length}</strong> ministry books · <strong>{library.files}</strong> reading sections{library.missingTitles ? <> · <span>{library.missingTitles} source-index titles reported as unavailable</span></> : null}</div>
-      <label className="ministry-books-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search titles, authors, or full text" /></label>
+      <section className="ministry-books-discovery" aria-label="Find Ministry Books">
+        <label className="ministry-books-search"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by book title or words in a book" /></label>
+        <label>Writer<select value={writer} onChange={(event) => setWriter(event.target.value)}><option value="ALL">All writers</option>{writers.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
+        <div className="ministry-books-alphabet" aria-label="Browse titles by alphabet">{['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', '#'].map((letter) => <button type="button" className={alphabet === letter ? 'active' : ''} key={letter} onClick={() => setAlphabet(letter)}>{letter === 'ALL' ? 'All' : letter}</button>)}</div>
+      </section>
       {query.trim().length >= 3 && <section className="ministry-books-text-results"><header><strong>Full-text results</strong><span>{searching ? 'Searching…' : `${searchResults.length} shown`}</span></header>{!searching && !searchResults.length ? <p>No matching passages found.</p> : searchResults.map((result) => <button type="button" key={`${result.book.id}-${result.chapter.number}-${result.block}`} onClick={() => openReading(result.book, result.chapter.number, result.block)}><strong>{result.book.title}</strong><span>{sectionName(result.chapter)}</span><p>{result.excerpt}</p></button>)}</section>}
-      <div className="ministry-books-list">{filteredBooks.map((book) => <button type="button" key={book.id} onClick={() => openReading(book)}><div><h2>{book.title}</h2><p>{book.author || 'Author not identified'}</p></div><span>{book.chapters} sections</span></button>)}</div>
+      <div className="ministry-books-list">{filteredBooks.map((book) => <button type="button" key={book.id} onClick={() => openReading(book)}><div><h2>{book.title}</h2><p>{book.author || 'Author not identified'}</p></div><span>{book.chapters} sections</span></button>)}</div>{!filteredBooks.length ? <p className="ministry-books-no-results">No book titles match these filters.</p> : null}
     </> : null}
     {selectedBook ? <div onMouseUp={annotations.captureSelection}>
+      {linkedLocation.get('from') === 'hwmr' && linkedLocation.get('return') ? <button className="ministry-book-return-link" type="button" onClick={() => navigate(`/ministry/hwmr?${linkedLocation.get('return')}`)}><ChevronLeft size={17} /> Back to the HWMR portion</button> : null}
       <div className="ministry-book-toolbar"><button type="button" onClick={() => navigate('/ministry-books')}><ChevronLeft size={17} /> Library</button><label>Section<select value={chapterNumber} onChange={(event) => openReading(selectedBook, Number(event.target.value))}>{chapters.map((item) => <option key={item.number} value={item.number}>{sectionName(item)}</option>)}</select></label><div><button type="button" onClick={() => setFullPage((value) => !value)}>{fullPage ? <Minimize2 size={16} /> : <Maximize2 size={16} />}{fullPage ? 'Exit' : 'Full page'}</button><button type="button" disabled={!selectedText} onClick={readSelection}>{speaking ? <Pause size={16} /> : <Play size={16} />} Read</button><button type="button" disabled={!selectedText} onClick={() => { window.speechSynthesis.cancel(); setSpeaking(false) }}><Square size={14} /> Stop</button><button type="button" disabled={!selectedText} onClick={copySelection}><Copy size={16} /> Copy</button></div></div>
       {!chapter ? <div className="ministry-books-loading">Loading section…</div> : <article className="ministry-book-reader"><header><span>{chapter.book.author}</span>{readerEyebrow ? <small>{readerEyebrow}</small> : null}<h2>{readerTitle}</h2></header>{visibleBlocks.map((block) => <div role="button" tabIndex={0} aria-pressed={selectedBlocks.includes(block.id)} key={block.id} data-ministry-book-block={block.id} className={`ministry-book-block ${block.type} ${block.level ? `level-${block.level}` : ''} ${selectedBlocks.includes(block.id) ? 'selected' : ''}`} onClick={() => toggleBlock(block.id)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleBlock(block.id) } }}>{renderBlock(block.text, block.id)}</div>)}</article>}
       <nav className="ministry-book-bottom-nav"><strong>{selectedBook.title} · {chapter ? sectionName(chapter.chapter) : 'Reading section'}</strong><div><button type="button" disabled={chapterIndex <= 0} onClick={() => openReading(selectedBook, chapters[chapterIndex - 1].number)}><ChevronLeft size={16} /> Previous</button><button type="button" disabled={chapterIndex < 0 || chapterIndex >= chapters.length - 1} onClick={() => openReading(selectedBook, chapters[chapterIndex + 1].number)}>Next <ChevronRight size={16} /></button></div></nav>

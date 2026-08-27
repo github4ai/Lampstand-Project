@@ -1,5 +1,6 @@
-import { Church, HeartHandshake, History, Megaphone, UsersRound } from 'lucide-react'
+import { HeartHandshake, History, Megaphone, UsersRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import BrandMark from '../components/BrandMark'
 import { loadSavedChurchGroups } from '../utils/churchGroups'
 import '../styles/church.css'
 import '../styles/church-dashboard.css'
@@ -38,7 +39,7 @@ export default function ChurchPage() {
   ].sort((a, b) => Date.parse(b.postedAt || b.savedAt) - Date.parse(a.postedAt || a.savedAt)).slice(0, 4)
 
   return <section className="church-page">
-    <header className="church-header"><span><Church size={27} /></span><div><h1>Church</h1><p>Local tools for church prayer, fellowship, care, and service.</p></div></header>
+    <header className="church-header"><span><BrandMark size={27} monochrome /></span><div><h1>Church</h1><p>Local tools for church prayer, fellowship, care, and service.</p></div></header>
     <section className="church-dashboard-summary">
       <div><span>Next prayer meeting</span><strong>{upcomingTuesday()}</strong></div>
       <div><span>Working drafts</span><strong>{Number(prayerInProgress) + Number(announcementInProgress)}</strong></div>

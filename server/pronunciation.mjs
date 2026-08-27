@@ -11,6 +11,9 @@ const voices = {
   te: ['te-IN-ShrutiNeural', 'te-IN-MohanNeural'],
   ml: ['ml-IN-SobhanaNeural', 'ml-IN-MidhunNeural'],
   kn: ['kn-IN-SapnaNeural', 'kn-IN-GaganNeural'],
+  // Konkani translations use Roman script; Indian English neural voices read
+  // that script reliably on every supported Microsoft Speech installation.
+  kok: ['en-IN-NeerjaNeural', 'en-IN-PrabhatNeural'],
   ru: ['ru-RU-SvetlanaNeural', 'ru-RU-DmitryNeural'],
   ko: ['ko-KR-SunHiNeural', 'ko-KR-InJoonNeural'],
 }

@@ -1,0 +1,235 @@
+/* Unified, low-noise workspace layout and accessible light theme. */
+html,body,#root{background:var(--bg);color:var(--text)}
+body{overflow-x:hidden}
+.workspace-panel{min-width:0;background:var(--bg)}
+.workspace-panel>*{box-sizing:border-box}
+
+/* Keep every primary workspace comfortably readable on wide and narrow screens. */
+:where(.settings-page,.history-page,.documents-page,.agents-page,.school-page,.ministry-page,.church-page,.media-studio-page,.language-tools-page,.help-page,.presentation-page,.knowledge-page){width:min(100%,1440px);margin-inline:auto;padding:clamp(18px,2.2vw,30px)}
+
+/* Reduce visual clutter without changing page structure or behaviour. */
+:where(.settings-panel,.school-card,.school-recent,.school-library,.workspace-card,.ministry-card,.language-card){border-radius:12px;box-shadow:none}
+:where(button,input,select,textarea){font:inherit}
+:where(input,select,textarea){color-scheme:dark}
+
+:root[data-theme="light"] :where(input,select,textarea){color-scheme:light}
+:root[data-theme="light"] body,
+:root[data-theme="light"] .workspace-panel,
+:root[data-theme="light"] .workspace-layout,
+:root[data-theme="light"] .workspace-layout-content{background:var(--bg);color:var(--text)}
+
+/* Many older pages used fixed white text. These rules make their primary copy readable. */
+:root[data-theme="light"] :where(h1,h2,h3,h4,h5,h6),
+:root[data-theme="light"] :where(.settings-header h1,.settings-panel-title h2,.settings-row strong,.settings-master-control strong,.settings-provider-grid strong,.school-header h1,.school-card h2,.school-recent h2,.school-library h2,.hymnal-sheet-header h2,.hymnal-shape-guide strong){color:var(--text)}
+:root[data-theme="light"] :where(p,small,.settings-panel-title p,.settings-row small){text-shadow:none}
+:root[data-theme="light"] :where(.settings-panel,.settings-provider-grid>div,.settings-user-list article,.settings-device-identity,.settings-enrollment,.settings-member-invite){background:var(--panel)}
+:root[data-theme="light"] :where(.settings-header>span,.settings-check-all,.settings-backup-actions button,.school-notice){background:color-mix(in srgb,var(--primary) 8%,var(--panel));color:var(--primary);border-color:color-mix(in srgb,var(--primary) 30%,var(--border))}
+:root[data-theme="light"] :where(.settings-panel-title,.workspace-layout-header){color:var(--primary)}
+:root[data-theme="light"] :where(.settings-add-user button,.settings-switch-profile,.settings-member-invite>button){color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--panel))}
+:root[data-theme="light"] :where(.school-profile nav button.active,.school-card form>button){color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--panel));border-color:var(--primary)}
+
+/* Reader sheets remain warm and paper-like in either theme. */
+:root[data-theme="light"] :where(.bible-sheet,.hwmr-reader,.ministry-book-reader,.life-study-reader,.school-lesson-sheet){box-shadow:0 8px 24px rgba(24,49,64,.08)}
+
+@media(max-width:760px){
+  :where(.settings-page,.history-page,.documents-page,.agents-page,.school-page,.ministry-page,.church-page,.media-studio-page,.language-tools-page,.help-page,.presentation-page,.knowledge-page){padding:16px 12px}
+}
+
+/* Complete light-theme coverage for application workspaces that predate themes. */
+:root[data-theme="light"] :where(
+  .agents-page,.documents-page,.language-tools-page,.media-studio-page,
+  .settings-page,.knowledge-dashboard,.presentation-studio,.command-palette
+){color:var(--text)}
+
+:root[data-theme="light"] :where(
+  .agent-workspace-card,.agents-state,.language-input-panel,.language-result-panel,
+  .language-history-panel,.language-provider-status>span,.language-history-list article,
+  .media-creator,.media-results,.media-provider-status span,.media-result-list article,
+  .documents-table,.documents-sidebar,.document-dialog,.document-edit-dialog,
+  .knowledge-card,.knowledge-dashboard-card,.knowledge-toolbar,.knowledge-stats-card,
+  .presentation-card,.presentation-panel,.presentation-rack,.settings-panel,
+  .command-palette
+){background:var(--panel);border-color:var(--border);box-shadow:none}
+
+:root[data-theme="light"] :where(
+  .agents-heading h1,.agents-count strong,.agent-workspace-card h2,
+  .language-result-panel h2,.language-history-panel h2,.language-file-input strong,
+  .language-history-open strong,.media-results h2,.media-empty h3,.media-provider-status strong,
+  .documents-header h1,.documents-table th,.document-dialog header strong,
+  .knowledge-header h1,.knowledge-card h2,.presentation-header h1,
+  .settings-header h1,.settings-panel-title h2,.settings-master-control strong,
+  .settings-provider-grid strong,.command-palette h2
+){color:var(--text)}
+
+:root[data-theme="light"] :where(
+  .agents-toolbar select,.language-swap,.language-input-panel select,.language-text-input textarea,
+  .language-result-content,.language-history-list article,.language-record,
+  .media-prompt textarea,.media-options select,.media-result-list article,
+  .knowledge-upload-panel input,.knowledge-upload-panel select,.knowledge-fixed-field strong,
+  .document-edit-grid input,.document-edit-grid textarea,.settings-add-user input,
+  .settings-add-user select,.settings-role-select select,.settings-device-name input,
+  .settings-member-invite input,.settings-member-invite select,.settings-member-list select,
+  .settings-cloud-key input,.settings-voice-row select
+){background:var(--panel-light);color:var(--text);border-color:var(--border)}
+
+/* Active tabs and primary actions use a dark enough accent on white. */
+:root[data-theme="light"] :where(
+  .language-tools-tabs button.active,.media-kind-tabs button.active,
+  .agent-workspace-card button,.language-run,.media-generate,
+  .knowledge-upload-panel button,.settings-provider-mode-actions .primary
+){border-color:var(--primary);background:var(--primary);color:#fff}
+
+/* Secondary buttons and links remain legible without looking like primary actions. */
+:root[data-theme="light"] :where(
+  .agents-refresh-button,.agents-toolbar-reset,.language-result-panel header button,
+  .language-history-panel button,.media-result-actions a,.media-result-actions button,
+  .media-project-picker button,.documents-header-actions button,.documents-bulk-bar button,
+  .documents-index-monitor>button,.document-edit-dialog footer button,
+  .settings-check-all,.settings-service button,.settings-services-refresh button,
+  .settings-reset-appearance,.settings-backup-actions button,.command-palette button
+){background:var(--panel-light);color:var(--text);border-color:var(--border)}
+
+:root[data-theme="light"] :where(
+  .agents-heading>span,.agent-workspace-avatar,.media-results header span,
+  .settings-header>span,.settings-panel-title,.documents-index-monitor>button,
+  .language-result-panel header button
+){color:var(--primary)}
+
+:root[data-theme="light"] :where(
+  .agent-category,.knowledge-health-counts span,.media-provider-status span,
+  .language-provider-status>span
+){background:var(--panel-light);color:var(--text-muted)}
+
+:root[data-theme="light"] :where(
+  .language-result-content,.language-history-open span,.media-result-list p,
+  .documents-table td,.knowledge-card p,.presentation-card p
+){color:var(--text)}
+
+:root[data-theme="light"] :where(
+  .document-dialog-backdrop,.media-lightbox
+){background:rgba(16,36,56,.55)}
+
+/* Settings: simplify the hierarchy and remove dark-only decorative surfaces. */
+.settings-grid{align-items:start}
+.settings-panel{background:var(--panel)}
+.settings-panel-title{padding-bottom:13px}
+.settings-row{padding:14px 0}
+:root[data-theme="light"] .settings-grid{gap:14px}
+:root[data-theme="light"] :where(.settings-provider-grid>div,.settings-cloud-provider-card,.settings-model-options label){background:var(--panel-light);color:var(--text)}
+:root[data-theme="light"] :where(.settings-success,.settings-active-user,.settings-policy-status){color:#13734f}
+:root[data-theme="light"] :where(.settings-provider-notice,.settings-backup-notice){color:var(--text);background:color-mix(in srgb,var(--primary) 7%,var(--panel))}
+
+/* Command palette follows the selected theme while retaining a clear overlay. */
+:root[data-theme="light"] .command-palette-backdrop{background:rgba(16,36,56,.36)}
+:root[data-theme="light"] :where(.command-palette input,.command-palette-search){background:var(--panel-light);color:var(--text)}
+:root[data-theme="light"] :where(.command-palette-item,.command-result){color:var(--text)}
+:root[data-theme="light"] :where(.command-palette-item:hover,.command-palette-item.active,.command-result:hover){background:color-mix(in srgb,var(--primary) 9%,var(--panel))}
+
+/* One responsive content measure for every ordinary workspace. Reader paper and
+   presentation output may size their inner content independently. */
+:root{--workspace-gutter:clamp(16px,2.2vw,30px)}
+.workspace-panel>:where(
+  .settings-page,.app-updates-page,.help-page,.history-page,.documents-page,
+  .document-detail-page,.agents-page,.school-page,.school-lesson-reader,
+  .ministry-page,.hymnal-page,.bible-page,.recovery-bible-page,.life-study-page,
+  .ministry-books-page,.hwmr-page,.church-page,.media-studio-page,
+  .language-tools-page,.presentation-workspace,.knowledge-workspace,
+  .knowledge-page,.knowledge-search-page,.knowledge-viewer-page
+){width:100%!important;max-width:none!important;margin-inline:0!important;box-sizing:border-box}
+.workspace-panel>*{width:100%;max-width:none;box-sizing:border-box}
+.workspace-layout-breadcrumbs,.workspace-layout-header,.workspace-layout-content,.workspace-layout-status{width:100%!important;max-width:none!important;margin-inline:0!important;box-sizing:border-box}
+@media(max-width:760px){:root{--workspace-gutter:14px}}
+
+/* Accent is deliberately semantic so changing it in Settings updates the open
+   page immediately, including older workspaces that originally used cyan. */
+:where(input[type="checkbox"],input[type="radio"],progress){accent-color:var(--primary)}
+:where(
+  .workspace-navigation-link.active,.school-profile nav button.active,
+  .language-tools-tabs button.active,.media-kind-tabs button.active,
+  .source-tabs button.active,.queue-item.active,.settings-accent-choice button.active
+){border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--primary)!important;box-shadow:inset 3px 0 var(--primary)!important}
+:where(
+  .settings-header>span,.agents-heading>span,.agent-workspace-avatar,
+  .school-header-icon,.presentation-icon,.workspace-layout-icon,
+  .knowledge-header-icon,.language-tools-header>span,.media-studio-header>span
+){border-color:var(--primary-border)!important;background:var(--primary-soft)!important;color:var(--primary)!important}
+:where(
+  .primary-action,.language-run,.media-generate,.school-card form>button,
+  .settings-provider-mode-actions .primary
+){border-color:var(--primary)!important;background:var(--primary)!important;color:var(--primary-contrast)!important}
+:where(
+  .settings-check-all,.settings-switch-profile,.settings-add-user button,
+  .settings-member-invite>button,.agent-workspace-card button
+){border-color:var(--primary-border)!important;background:var(--primary-soft)!important;color:var(--primary)!important}
+
+/* Complete light surfaces. This final layer intentionally normalizes legacy
+   dark-only page CSS after each lazy-loaded workspace stylesheet. */
+:root[data-theme="light"] :where(
+  .app-content,.workspace-panel,.workspace-layout,.workspace-layout-content,
+  .settings-page,.help-page,.history-page,.documents-page,.document-detail-page,
+  .agents-page,.school-page,.ministry-page,.hymnal-page,.bible-page,.recovery-bible-page,
+  .life-study-page,.ministry-books-page,.hwmr-page,.church-page,
+  .media-studio-page,.language-tools-page,.presentation-workspace,
+  .knowledge-workspace,.knowledge-page,.knowledge-search-page,.knowledge-viewer-page
+){background:var(--bg)!important;color:var(--text)!important}
+:root[data-theme="light"] :where(
+  .workspace-breadcrumbs,.workspace-layout-header,.workspace-layout-status,
+  .agents-toolbar label,.agent-workspace-card,.agents-state,
+  .documents-toolbar,.documents-table,.documents-sidebar,.document-card,
+  .knowledge-card,.knowledge-dashboard-card,.knowledge-toolbar,.knowledge-stats-card,
+  .language-provider-status>span,.language-input-panel,.language-result-panel,
+  .language-history-panel,.language-history-list article,.language-pronunciation,
+  .media-provider-status span,.media-creator,.media-results,.media-result-list article,
+  .panel-card,.presentation-builder,.presentation-console,.presentation-queue,
+  .presentation-rack,.rack-module,.settings-panel,.settings-custom-roles,
+  .settings-custom-role-list article,.school-profile,.school-stat,.school-action-card,
+  .school-card,.school-recent,.school-library,.church-card,.church-tool-card,
+  .ministry-card,.ministry-continue,.hymnal-toolbar,.bible-toolbar
+){background:var(--panel)!important;color:var(--text)!important;border-color:var(--border)!important;box-shadow:none!important}
+:root[data-theme="light"] :where(
+  button,input,select,textarea,.agents-toolbar select,.source-tabs button,
+  .present-controls>button,.meeting-timer button,.danger-quiet,.queue-item,
+  .current-item,.verse-picker,.verse-picker label,.live-channel,.rack-control,
+  .language-result-content,.language-history-open,.document-dialog,
+  .document-edit-dialog,.settings-master-control button
+){border-color:var(--border)!important;background:var(--panel-light)!important;color:var(--text)!important}
+:root[data-theme="light"] :where(
+  .workspace-breadcrumbs a,.workspace-layout-icon,.presentation-icon,
+  .settings-panel-title,.agent-active-label,.current-item small,
+  .current-item span,.queue-actions>span:hover
+){color:var(--primary)!important}
+:root[data-theme="light"] :where(
+  .workspace-layout-title h1,.agents-heading h1,.agent-workspace-card h2,
+  .documents-header h1,.knowledge-header h1,.presentation-header h1,
+  .settings-header h1,.settings-panel-title h2,.school-header h1,
+  .church-page h1,.ministry-page h1,.media-studio-page h1,
+  .language-tools-page h1,.help-page h1,.history-page h1
+){color:var(--text)!important}
+:root[data-theme="light"] :where(
+  .workspace-layout-title p,.presentation-header p,.section-heading p,
+  .agent-workspace-card p,.queue-copy small,.current-item p,.empty-console,
+  .speaker-notes,.speaker-notes small
+){color:var(--text-muted)!important}
+:root[data-theme="light"] :where(.primary-action,.language-run,.media-generate,.school-card form>button){background:var(--primary)!important;border-color:var(--primary)!important;color:#fff!important}
+:root[data-theme="light"] :where(.source-tabs button.active,.queue-item.active,.workspace-navigation-link.active){background:color-mix(in srgb,var(--primary) 12%,var(--panel))!important;border-color:var(--primary)!important;color:var(--text)!important}
+:root[data-theme="light"] .workspace-breadcrumbs{background:var(--panel)!important}
+:root[data-theme="light"] .settings-page :where(h1,h2,h3,h4,strong){color:var(--text)!important}
+:root[data-theme="light"] :where(.bible-page-header,.bible-toolbar,.bible-concordance,.bible-notes-panel,.bible-bottom-navigation,.bible-book-matter){background:var(--panel)!important;color:var(--text)!important;border-color:var(--border)!important}
+:root[data-theme="light"] :where(.bible-toolbar button,.bible-toolbar select,.bible-reference-search,.bible-concordance input,.bible-concordance button,.bible-section-tabs button){background:var(--panel-light)!important;color:var(--text)!important;border-color:var(--border)!important}
+:root[data-theme="light"] :where(.bible-section-tabs button.active,.bible-note-marker.active){background:var(--primary-soft)!important;color:var(--primary)!important;border-color:var(--primary)!important}
+
+/* Shared type scale and control sizing across every workspace. */
+.workspace-panel{font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;line-height:1.5}
+.workspace-panel :where(button,input,select,textarea){font-family:inherit!important;font-size:13px!important;line-height:1.35}
+.workspace-panel :where(small){font-size:12px!important;line-height:1.45}
+.workspace-panel :where(h1){font-size:clamp(26px,2vw,32px)!important;line-height:1.2}
+.workspace-panel :where(h2){line-height:1.3}
+.workspace-panel :where(p){line-height:1.55}
+.workspace-panel :where(.settings-panel,.agent-workspace-card,.school-card,.school-recent,.school-library,.church-section-card,.church-recent-activity,.panel-card){font-size:14px}
+
+/* The navigation uses the same theme and contrast system as the workspaces. */
+:root[data-theme="light"] .sidebar{border-right-color:var(--border);background:#dde4e4;color:var(--text)}
+:root[data-theme="light"] .sidebar :where(.brand p,.agent-description,.workspace-navigation-link,.command-palette-trigger,.category-section label){color:var(--text-muted)}
+:root[data-theme="light"] .sidebar :where(.command-palette-trigger,.status-card,.category-section select,.sidebar-collapse-button,.sidebar-profile-switcher select){border-color:var(--border);background:var(--panel);color:var(--text)}
+:root[data-theme="light"] .sidebar .workspace-navigation-link:hover{border-color:var(--primary-border);background:var(--primary-soft);color:var(--text)}
+:root[data-theme="light"] .sidebar .workspace-navigation-link.active{border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--primary)!important;box-shadow:inset 3px 0 var(--primary)!important}

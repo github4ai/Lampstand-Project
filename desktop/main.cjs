@@ -113,14 +113,23 @@ function publishUpdateState(changes = {}) {
 }
 
 function configureUpdater() {
-  autoUpdater.autoDownload = false
+  autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = true
   autoUpdater.allowPrerelease = false
   autoUpdater.on('checking-for-update', () => publishUpdateState({ status: 'checking', message: 'Checking GitHub Releases…', percent: 0 }))
-  autoUpdater.on('update-available', (info) => publishUpdateState({ status: 'available', availableVersion: info.version, message: `Lampstand Project ${info.version} is available.` }))
+  autoUpdater.on('update-available', (info) => publishUpdateState({ status: 'downloading', availableVersion: info.version, percent: 0, message: `Lampstand Project ${info.version} is available and is downloading…` }))
   autoUpdater.on('update-not-available', () => publishUpdateState({ status: 'current', availableVersion: null, message: 'Lampstand Project is up to date.', percent: 0 }))
   autoUpdater.on('download-progress', (progress) => publishUpdateState({ status: 'downloading', percent: Math.round(progress.percent), message: `Downloading update… ${Math.round(progress.percent)}%` }))
-  autoUpdater.on('update-downloaded', (info) => publishUpdateState({ status: 'ready', availableVersion: info.version, percent: 100, message: 'Update downloaded. Restart Lampstand Project to install it.' }))
+  autoUpdater.on('update-downloaded', async (info) => {
+    publishUpdateState({ status: 'ready', availableVersion: info.version, percent: 100, message: 'Update downloaded. Restart Lampstand Project to install it.' })
+    const response = await dialog.showMessageBox(mainWindow, {
+      type: 'info', title: 'Lampstand Project update ready',
+      message: `Version ${info.version} is ready to install.`,
+      detail: 'Restart now to complete the update. Personal reading progress, annotations, comments, profiles, and settings will be preserved.',
+      buttons: ['Restart and install', 'Later'], defaultId: 0, cancelId: 1, noLink: true,
+    })
+    if (response.response === 0) setImmediate(() => autoUpdater.quitAndInstall(false, true))
+  })
   autoUpdater.on('error', (error) => publishUpdateState({ status: 'error', message: error instanceof Error ? error.message : String(error) }))
   ipcMain.handle('lampstand:update-state', () => updateState)
   ipcMain.handle('lampstand:check-update', async () => {
@@ -286,7 +295,10 @@ function createWindow(root) {
   window.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' } })
   window.loadURL(`http://127.0.0.1:${webPort}`)
   mainWindow = window
-  window.webContents.once('did-finish-load', () => publishUpdateState())
+  window.webContents.once('did-finish-load', () => {
+    publishUpdateState()
+    if (app.isPackaged) setTimeout(() => autoUpdater.checkForUpdates().catch((error) => publishUpdateState({ status: 'error', message: error instanceof Error ? error.message : String(error) })), 5000)
+  })
 }
 
 app.whenReady().then(async () => {

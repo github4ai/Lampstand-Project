@@ -16,6 +16,7 @@ export interface LocalUserProfile {
   name: string
   role: UserRole
   roleLabel?: string
+  customRoleId?: string
   avatar?: string
   pinHash?: string
   permissions: WorkspacePermission[]
@@ -24,10 +25,20 @@ export interface LocalUserProfile {
   suspended?: boolean
 }
 
+export interface CustomRoleDefinition {
+  id: string
+  name: string
+  baseRole: Exclude<UserRole, 'owner'>
+  permissions: WorkspacePermission[]
+  createdAt: string
+  updatedAt: string
+}
+
 export interface AccessControlState {
   version: 1
   activeProfileId: string
   profiles: LocalUserProfile[]
+  customRoles?: CustomRoleDefinition[]
 }
 
 export const ACCESS_CONTROL_STORAGE_KEY = 'lampstand-access-control-v1'
@@ -75,7 +86,7 @@ export function createInitialAccessState(now = new Date()): AccessControlState {
     createdAt: timestamp,
     updatedAt: timestamp,
   }
-  return { version: 1, activeProfileId: owner.id, profiles: [owner] }
+  return { version: 1, activeProfileId: owner.id, profiles: [owner], customRoles: [] }
 }
 
 export function parseAccessControlState(value: string | null): AccessControlState | null {
@@ -110,7 +121,8 @@ export function loadOrCreateAccessState(storage: Pick<Storage, 'getItem' | 'setI
       })
       return { ...profile, permissions }
     })
-    const migrated = changed ? { ...existing, profiles } : existing
+    if (!Array.isArray(existing.customRoles)) changed = true
+    const migrated = changed ? { ...existing, profiles, customRoles: existing.customRoles ?? [] } : existing
     if (changed) storage.setItem(ACCESS_CONTROL_STORAGE_KEY, JSON.stringify(migrated))
     storage.setItem(REMEMBERED_PROFILE_KEY, migrated.activeProfileId)
     return migrated

@@ -12,7 +12,6 @@ import {
   BookOpen,
   LibraryBig,
   Clock3,
-  Church,
   Command,
   Copy,
   Database,
@@ -539,7 +538,7 @@ function Sidebar({
         </NavLink>}
 
         {canAccess(activeProfile, 'church') && <NavLink to="/church" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Church size={17} /><span>Church</span>
+          <BrandMark size={18} monochrome /><span>Church</span>
         </NavLink>}
 
         {canAccess(activeProfile, 'media') && <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>

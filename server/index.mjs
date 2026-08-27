@@ -19,7 +19,7 @@ import { answerSchoolQuestion, searchLocalKnowledge } from './knowledge-search.m
 import { loadProviderPreferences, publicProviderPreferences, saveProviderPreferences } from './provider-preferences.mjs'
 import { searchWeb, webSearchPrompt } from './web-search.mjs'
 
-const supportedLanguages = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml', 'kn', 'ru', 'ko'])
+const supportedLanguages = new Set(['en', 'zh', 'ta', 'hi', 'mr', 'te', 'ml', 'kn', 'kok', 'ru', 'ko'])
 const languageAliases = new Map([
   ['automatic', 'auto'], ['detect automatically', 'auto'], ['english', 'en'], ['chinese', 'zh'],
   ['tamil', 'ta'], ['hindi', 'hi'], ['marathi', 'mr'], ['telugu', 'te'], ['telegu', 'te'],

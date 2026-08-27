@@ -9,6 +9,18 @@ describe('Lampstand local access control', () => {
     expect(state.activeProfileId).toBe('owner')
     expect(state.profiles[0]).toMatchObject({ name: 'Owner', role: 'owner' })
     expect(storage.setItem).toHaveBeenCalledWith(ACCESS_CONTROL_STORAGE_KEY, expect.any(String))
+    expect(state.customRoles).toEqual([])
+  })
+
+  it('preserves owner-created custom role templates and existing user overrides', () => {
+    const owner = createInitialAccessState().profiles[0]
+    const template = { id: 'teacher', name: 'Teacher', baseRole: 'adult' as const, permissions: defaultPermissions('adult').filter((permission) => permission.workspace !== 'media'), createdAt: owner.createdAt, updatedAt: owner.updatedAt }
+    const teacher = { ...owner, id: 'teacher-user', name: 'Teacher User', role: 'adult' as const, roleLabel: 'Teacher', customRoleId: template.id, permissions: [...template.permissions, { workspace: 'school' as const, actions: ['view' as const] }] }
+    const values = new Map([[ACCESS_CONTROL_STORAGE_KEY, JSON.stringify({ version: 1, activeProfileId: owner.id, profiles: [owner, teacher], customRoles: [template] })]])
+    const storage = { getItem: vi.fn((key: string) => values.get(key) ?? null), setItem: vi.fn((key: string, value: string) => values.set(key, value)) }
+    const state = loadOrCreateAccessState(storage as unknown as Storage)
+    expect(state.customRoles?.[0]).toMatchObject({ name: 'Teacher', baseRole: 'adult' })
+    expect(state.profiles[1].permissions.some((permission) => permission.workspace === 'school')).toBe(true)
   })
 
   it('gives the Owner complete access', () => {

@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   ACCESS_CONTROL_STORAGE_KEY,
   type AccessControlState,
+  type CustomRoleDefinition,
   type LocalUserProfile,
   type UserRole,
   type WorkspaceId,
@@ -38,9 +39,14 @@ export default function AccessSettingsPanel() {
   const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState<UserRole>('adult')
   const [newRoleLabel, setNewRoleLabel] = useState('')
+  const [newCustomRoleId, setNewCustomRoleId] = useState('')
+  const [customRoleName, setCustomRoleName] = useState('')
+  const [customRoleBase, setCustomRoleBase] = useState<Exclude<UserRole, 'owner'>>('adult')
+  const [customRolePermissions, setCustomRolePermissions] = useState(() => defaultPermissions('adult'))
   const [notice, setNotice] = useState('')
   const activeProfile = useMemo(() => state.profiles.find((profile) => profile.id === state.activeProfileId) ?? state.profiles[0], [state])
   const canManage = activeProfile?.role === 'owner'
+  const customRoles = state.customRoles ?? []
 
   function commit(update: (current: AccessControlState) => AccessControlState, message: string) {
     setState((current) => {
@@ -54,14 +60,60 @@ export default function AccessSettingsPanel() {
   function addProfile() {
     const name = newName.trim()
     if (!name || newRole === 'owner') return
+    const customRole = customRoles.find((role) => role.id === newCustomRoleId)
     const timestamp = new Date().toISOString()
     const profile: LocalUserProfile = {
-      id: crypto.randomUUID(), name, role: newRole, roleLabel: newRoleLabel.trim() || undefined,
-      permissions: defaultPermissions(newRole), createdAt: timestamp, updatedAt: timestamp,
+      id: crypto.randomUUID(), name, role: customRole?.baseRole ?? newRole,
+      roleLabel: customRole?.name ?? (newRoleLabel.trim() || undefined),
+      customRoleId: customRole?.id,
+      permissions: customRole ? structuredClone(customRole.permissions) : defaultPermissions(newRole), createdAt: timestamp, updatedAt: timestamp,
     }
     commit((current) => ({ ...current, profiles: [...current.profiles, profile] }), `${name} was added.`)
     setNewName('')
     setNewRoleLabel('')
+    setNewCustomRoleId('')
+  }
+
+  function createCustomRole() {
+    const name = customRoleName.trim()
+    if (!name) return
+    const timestamp = new Date().toISOString()
+    const role: CustomRoleDefinition = {
+      id: crypto.randomUUID(), name, baseRole: customRoleBase,
+      permissions: structuredClone(customRolePermissions), createdAt: timestamp, updatedAt: timestamp,
+    }
+    commit((current) => ({ ...current, customRoles: [...(current.customRoles ?? []), role] }), `${name} role was created.`)
+    setCustomRoleName('')
+  }
+
+  function toggleCustomRoleWorkspace(workspace: WorkspaceId) {
+    setCustomRolePermissions((current) => current.some((permission) => permission.workspace === workspace)
+      ? current.filter((permission) => permission.workspace !== workspace)
+      : [...current, defaultPermissions(customRoleBase).find((permission) => permission.workspace === workspace) ?? { workspace, actions: ['view'] }])
+  }
+
+  function updateCustomRole(roleId: string, changes: Partial<CustomRoleDefinition>) {
+    commit((current) => ({ ...current, customRoles: (current.customRoles ?? []).map((role) => role.id === roleId
+      ? { ...role, ...changes, updatedAt: new Date().toISOString() }
+      : role) }), 'Custom role saved. Existing user overrides were preserved.')
+  }
+
+  function toggleSavedRoleWorkspace(role: CustomRoleDefinition, workspace: WorkspaceId) {
+    const permissions = role.permissions.some((permission) => permission.workspace === workspace)
+      ? role.permissions.filter((permission) => permission.workspace !== workspace)
+      : [...role.permissions, defaultPermissions(role.baseRole).find((permission) => permission.workspace === workspace) ?? { workspace, actions: ['view'] as const }]
+    updateCustomRole(role.id, { permissions })
+  }
+
+  function applyRoleToAssignedUsers(role: CustomRoleDefinition) {
+    commit((current) => ({ ...current, profiles: current.profiles.map((profile) => profile.customRoleId === role.id
+      ? { ...profile, role: role.baseRole, roleLabel: role.name, permissions: structuredClone(role.permissions), updatedAt: new Date().toISOString() }
+      : profile) }), `${role.name} permissions were applied to assigned users.`)
+  }
+
+  function removeCustomRole(role: CustomRoleDefinition) {
+    if (!window.confirm(`Delete the ${role.name} role template? Assigned users will keep their present access.`)) return
+    commit((current) => ({ ...current, customRoles: (current.customRoles ?? []).filter((item) => item.id !== role.id), profiles: current.profiles.map((profile) => profile.customRoleId === role.id ? { ...profile, customRoleId: undefined } : profile) }), `${role.name} role template was deleted.`)
   }
 
   function updateProfile(profileId: string, changes: Partial<LocalUserProfile>) {
@@ -75,7 +127,13 @@ export default function AccessSettingsPanel() {
 
   function changeRole(profile: LocalUserProfile, role: UserRole) {
     if (profile.role === 'owner' || role === 'owner') return
-    updateProfile(profile.id, { role, permissions: defaultPermissions(role) })
+    updateProfile(profile.id, { role, roleLabel: undefined, customRoleId: undefined, permissions: defaultPermissions(role) })
+  }
+
+  function assignCustomRole(profile: LocalUserProfile, roleId: string) {
+    const role = customRoles.find((item) => item.id === roleId)
+    if (!role) return
+    updateProfile(profile.id, { role: role.baseRole, roleLabel: role.name, customRoleId: role.id, permissions: structuredClone(role.permissions) })
   }
 
   function toggleWorkspace(profile: LocalUserProfile, workspace: WorkspaceId) {
@@ -126,10 +184,25 @@ export default function AccessSettingsPanel() {
       <div className="settings-panel-title"><UserRoundCog size={19} /><div><h2>Users &amp; Access</h2><p>Create local family profiles and choose which workspaces each person may use.</p></div></div>
       <div className="settings-active-user"><ShieldCheck size={18} /><span><strong>Currently using Lampstand as {activeProfile.name}</strong><small>{activeProfile.roleLabel || roles.find((role) => role.id === activeProfile.role)?.label} profile · permissions are stored locally on this computer.</small></span></div>
 
+      {canManage && <div className="settings-custom-roles">
+        <div className="settings-subsection-title"><h3>Custom role templates</h3><p>Create roles such as Teacher, Presenter, Volunteer, or Senior Student, then choose the workspaces they can use.</p></div>
+        <div className="settings-role-builder">
+          <label><span>Role name</span><input value={customRoleName} onChange={(event) => setCustomRoleName(event.target.value)} placeholder="For example, Teacher" maxLength={40} /></label>
+          <label><span>Start with</span><select value={customRoleBase} onChange={(event) => { const baseRole = event.target.value as Exclude<UserRole, 'owner'>; setCustomRoleBase(baseRole); setCustomRolePermissions(defaultPermissions(baseRole)) }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
+          <fieldset><legend>Default workspace access</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={customRolePermissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleCustomRoleWorkspace(workspace.id)} />{workspace.label}</label>)}</div></fieldset>
+          <button type="button" onClick={createCustomRole} disabled={!customRoleName.trim()}><Plus size={15} /> Create role</button>
+        </div>
+        {customRoles.length > 0 && <div className="settings-custom-role-list">{customRoles.map((role) => <article key={role.id}>
+          <header><label><span>Role name</span><input value={role.name} onChange={(event) => updateCustomRole(role.id, { name: event.target.value.trimStart() })} maxLength={40} /></label><small>Based on {roles.find((item) => item.id === role.baseRole)?.label}</small></header>
+          <fieldset><legend>Default workspace access</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={role.permissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleSavedRoleWorkspace(role, workspace.id)} />{workspace.label}</label>)}</div></fieldset>
+          <div className="settings-custom-role-actions"><button type="button" onClick={() => applyRoleToAssignedUsers(role)}>Apply to assigned users</button><button className="remove" type="button" onClick={() => removeCustomRole(role)}><Trash2 size={14} /> Delete template</button></div>
+        </article>)}</div>}
+      </div>}
+
       {canManage && <div className="settings-add-user">
         <label><span>Name</span><input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Family member name" /></label>
-        <label><span>Role</span><select value={newRole} onChange={(event) => setNewRole(event.target.value as UserRole)}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
-        <label><span>Custom role title</span><input value={newRoleLabel} onChange={(event) => setNewRoleLabel(event.target.value)} placeholder="Optional, e.g. Teacher" maxLength={40} /></label>
+        <label><span>Role</span><select value={newCustomRoleId ? `custom:${newCustomRoleId}` : `base:${newRole}`} onChange={(event) => { const [kind, value] = event.target.value.split(':'); if (kind === 'custom') setNewCustomRoleId(value); else { setNewCustomRoleId(''); setNewRole(value as UserRole) } }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={`base:${role.id}`}>{role.label}</option>)}{customRoles.length > 0 && <optgroup label="Custom roles">{customRoles.map((role) => <option key={role.id} value={`custom:${role.id}`}>{role.name}</option>)}</optgroup>}</select></label>
+        <label><span>Individual title</span><input value={newRoleLabel} onChange={(event) => setNewRoleLabel(event.target.value)} placeholder="Optional" maxLength={40} disabled={Boolean(newCustomRoleId)} /></label>
         <button type="button" onClick={addProfile} disabled={!newName.trim()}><Plus size={15} /> Add user</button>
       </div>}
 
@@ -137,8 +210,8 @@ export default function AccessSettingsPanel() {
         {state.profiles.map((profile) => <article className={profile.id === state.activeProfileId ? 'active' : ''} key={profile.id}>
           <header><div className="settings-user-avatar">{profile.name.slice(0, 1).toUpperCase()}</div><div><strong>{profile.name}</strong><small>{profile.roleLabel || roles.find((role) => role.id === profile.role)?.label}{profile.suspended ? ' · Suspended' : ''}</small></div>{profile.id === state.activeProfileId && <span className="settings-current-badge"><Check size={12} /> Current</span>}</header>
           {canManage && profile.role !== 'owner' && <>
-            <label className="settings-role-select"><span>Role</span><select value={profile.role} onChange={(event) => changeRole(profile, event.target.value as UserRole)}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
-            <label className="settings-role-select"><span>Custom role title</span><input value={profile.roleLabel || ''} onChange={(event) => updateProfile(profile.id, { roleLabel: event.target.value.trimStart() || undefined })} placeholder="Optional, e.g. Teacher" maxLength={40} /></label>
+            <label className="settings-role-select"><span>Role</span><select value={profile.customRoleId ? `custom:${profile.customRoleId}` : `base:${profile.role}`} onChange={(event) => { const [kind, value] = event.target.value.split(':'); if (kind === 'custom') assignCustomRole(profile, value); else changeRole(profile, value as UserRole) }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={`base:${role.id}`}>{role.label}</option>)}{customRoles.length > 0 && <optgroup label="Custom roles">{customRoles.map((role) => <option key={role.id} value={`custom:${role.id}`}>{role.name}</option>)}</optgroup>}</select></label>
+            <label className="settings-role-select"><span>Individual title</span><input value={profile.roleLabel || ''} onChange={(event) => updateProfile(profile.id, { roleLabel: event.target.value.trimStart() || undefined, customRoleId: undefined })} placeholder="Optional" maxLength={40} /></label>
             <fieldset><legend>Allowed workspaces</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={profile.permissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleWorkspace(profile, workspace.id)} />{workspace.label}</label>)}</div></fieldset>
             <div className="settings-user-actions"><label><input type="checkbox" checked={profile.suspended === true} onChange={(event) => updateProfile(profile.id, { suspended: event.target.checked })} /> Suspend access</label><button type="button" onClick={() => removeProfile(profile)}><Trash2 size={14} /> Remove</button></div>
           </>}

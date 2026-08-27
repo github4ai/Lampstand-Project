@@ -24,16 +24,16 @@ Function LampstandOptionalComponentsPage
 
   ${NSD_CreateCheckbox} 0 66u 100% 14u "Install Ollama and the recommended local translation model"
   Pop $LampstandOllamaCheckbox
-  ${NSD_SetState} $LampstandOllamaCheckbox ${BST_UNCHECKED}
+  ${NSD_SetState} $LampstandOllamaCheckbox ${BST_CHECKED}
 
-  ${NSD_CreateLabel} 18u 82u 94% 20u "For private local chat and translation. The model download uses several gigabytes."
+  ${NSD_CreateLabel} 18u 82u 94% 20u "Recommended for private local chat and translation. The model download uses several gigabytes."
   Pop $0
 
   ${NSD_CreateCheckbox} 0 110u 100% 14u "Install Python dependencies and Local Whisper"
   Pop $LampstandPythonCheckbox
-  ${NSD_SetState} $LampstandPythonCheckbox ${BST_UNCHECKED}
+  ${NSD_SetState} $LampstandPythonCheckbox ${BST_CHECKED}
 
-  ${NSD_CreateLabel} 18u 126u 94% 20u "For private audio transcription and document-processing features."
+  ${NSD_CreateLabel} 18u 126u 94% 20u "Recommended for pronunciation, private audio transcription, and document-processing features."
   Pop $0
 
   nsDialogs::Show

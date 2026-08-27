@@ -1,4 +1,4 @@
-import { Activity, Check, CheckCircle2, Clipboard, Cloud, Download, KeyRound, Power, RefreshCw, RotateCcw, Server, Settings, SlidersHorizontal, Trash2, Upload, Volume2, Wrench } from 'lucide-react'
+import { Activity, Check, CheckCircle2, Clipboard, Cloud, Download, KeyRound, Palette, Power, RefreshCw, RotateCcw, Server, Settings, Trash2, Upload, Volume2, Wrench } from 'lucide-react'
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { getAiServicesStatus, repairAiServices, saveProviderPreferences, startAiServices, unloadAiModels, type AiServiceStatus, type ProviderPreferences } from '../api/services'
 import { AIOS_API_BASE_URL } from '../config/api'
@@ -11,13 +11,15 @@ import { canManageUsers } from '../utils/accessControl'
 import { useAccessControl } from '../hooks/useAccessControl'
 const STORAGE_KEY = 'aios-studio-settings-v1'
 
-interface Preferences { compactUi: boolean; reducedMotion: boolean; highContrast: boolean }
+type ThemePreference = 'system' | 'light' | 'dark'
+type AccentPreference = 'cyan' | 'blue' | 'teal' | 'purple' | 'gold' | 'green' | 'burgundy'
+interface Preferences { compactUi: boolean; reducedMotion: boolean; highContrast: boolean; theme: ThemePreference; accent: AccentPreference }
 
 function loadPreferences(): Preferences {
   try {
-    return { compactUi: false, reducedMotion: false, highContrast: false, ...JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') }
+    return { compactUi: false, reducedMotion: false, highContrast: false, theme: 'system', accent: 'cyan', ...JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') }
   } catch {
-    return { compactUi: false, reducedMotion: false, highContrast: false }
+    return { compactUi: false, reducedMotion: false, highContrast: false, theme: 'system', accent: 'cyan' }
   }
 }
 
@@ -242,6 +244,8 @@ function SettingsPage() {
     document.documentElement.classList.toggle('compact-ui', preferences.compactUi)
     document.documentElement.classList.toggle('reduced-motion', preferences.reducedMotion)
     document.documentElement.classList.toggle('high-contrast', preferences.highContrast)
+    document.documentElement.dataset.theme = preferences.theme
+    document.documentElement.dataset.accent = preferences.accent
   }, [preferences])
   useEffect(() => {
     if (!('speechSynthesis' in window)) return
@@ -259,6 +263,16 @@ function SettingsPage() {
 
   function toggle(key: keyof Preferences) {
     setPreferences((current) => ({ ...current, [key]: !current[key] }))
+  }
+
+  function selectTheme(theme: ThemePreference) {
+    document.documentElement.dataset.theme = theme
+    setPreferences((current) => ({ ...current, theme }))
+  }
+
+  function selectAccent(accent: AccentPreference) {
+    document.documentElement.dataset.accent = accent
+    setPreferences((current) => ({ ...current, accent }))
   }
 
   async function copyDiagnostics() {
@@ -487,7 +501,9 @@ function SettingsPage() {
         </section>}
 
         <section className="settings-panel settings-appearance-panel">
-          <div className="settings-panel-title"><SlidersHorizontal size={19} /><div><h2>Appearance</h2><p>Preferences are saved in this browser.</p></div></div>
+          <div className="settings-panel-title"><Palette size={19} /><div><h2>Appearance</h2><p>Choose a comfortable theme. Your selection is remembered on this device.</p></div></div>
+          <label className="settings-appearance-choice"><span><strong>Colour mode</strong><small>Use the device setting automatically, or keep the app light or dark.</small></span><select value={preferences.theme} onChange={(event) => selectTheme(event.target.value as ThemePreference)}><option value="system">Use device setting</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+          <div className="settings-accent-choice"><span><strong>Accent colour</strong><small>The selected colour is applied immediately throughout every workspace.</small></span><div>{(['cyan', 'blue', 'teal', 'purple', 'gold', 'green', 'burgundy'] as AccentPreference[]).map((accent) => <button key={accent} type="button" className={preferences.accent === accent ? 'active' : ''} data-accent-option={accent} onClick={() => selectAccent(accent)}><i />{accent[0].toUpperCase() + accent.slice(1)}</button>)}</div></div>
           <label className="settings-row"><span><strong>Compact interface</strong><small>Reduce navigation and workspace spacing.</small></span>
             <input type="checkbox" checked={preferences.compactUi} onChange={() => toggle('compactUi')} /></label>
           <label className="settings-row"><span><strong>Reduce motion</strong><small>Disable non-essential transitions and animations.</small></span>
@@ -495,8 +511,8 @@ function SettingsPage() {
           <label className="settings-row"><span><strong>High contrast</strong><small>Increase text, border, and keyboard-focus visibility.</small></span>
             <input type="checkbox" checked={preferences.highContrast} onChange={() => toggle('highContrast')} /></label>
           <button className="settings-reset-appearance" type="button"
-            disabled={!preferences.compactUi && !preferences.reducedMotion && !preferences.highContrast}
-            onClick={() => setPreferences({ compactUi: false, reducedMotion: false, highContrast: false })}>
+            disabled={!preferences.compactUi && !preferences.reducedMotion && !preferences.highContrast && preferences.theme === 'system' && preferences.accent === 'cyan'}
+            onClick={() => setPreferences({ compactUi: false, reducedMotion: false, highContrast: false, theme: 'system', accent: 'cyan' })}>
             <RotateCcw size={14} /> Reset appearance
           </button>
         </section>

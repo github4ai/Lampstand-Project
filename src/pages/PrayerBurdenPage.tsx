@@ -32,7 +32,7 @@ type SavedPrayerBurden = {
 const storageKey = 'aios-church-prayer-burdens-v1'
 const workingStorageKey = 'aios-church-prayer-burden-working-v1'
 
-type PrayerWorkingDraft = { meetingDate?: string; targetGroup?: string; received?: string; additional?: string; instructions?: string; draft?: string; editingRecordId?: string; scheduledAt?: string }
+type PrayerWorkingDraft = { meetingDate?: string; targetGroup?: string; received?: string; additional?: string; instructions?: string; corrections?: string; draft?: string; editingRecordId?: string; scheduledAt?: string }
 
 function loadWorkingDraft(): PrayerWorkingDraft {
   try { return JSON.parse(localStorage.getItem(workingStorageKey) || '{}') } catch { return {} }
@@ -83,7 +83,7 @@ function formatPrayerPointsMessage(value: string) {
     const main = line.match(/^(\d+)[.)]\s*(.+)$/)
     if (main) { formatted.push('', `${main[1]}. ${main[2]}`); return }
     const sub = line.match(/^(?:[-•]|[a-z][.)])\s*(.+)$/i)
-    if (sub) { formatted.push(`- ${sub[1]}`); return }
+    if (sub) { formatted.push(`• ${sub[1]}`); return }
     formatted.push(line)
   })
   return formatted.join('\n').replace(/\n{3,}/g, '\n\n').trim()
@@ -108,6 +108,7 @@ export default function PrayerBurdenPage() {
   const [received, setReceived] = useState(workingDraft.received || '')
   const [additional, setAdditional] = useState(workingDraft.additional || '')
   const [instructions, setInstructions] = useState(workingDraft.instructions || '')
+  const [corrections, setCorrections] = useState(workingDraft.corrections || '')
   const [draft, setDraft] = useState(workingDraft.draft || '')
   const [editingRecordId, setEditingRecordId] = useState(workingDraft.editingRecordId || '')
   const [history, setHistory] = useState<SavedPrayerBurden[]>(loadHistory)
@@ -121,10 +122,10 @@ export default function PrayerBurdenPage() {
   )
 
   useEffect(() => {
-    localStorage.setItem(workingStorageKey, JSON.stringify({ meetingDate, targetGroup, received, additional, instructions, draft, editingRecordId, scheduledAt }))
-  }, [meetingDate, targetGroup, received, additional, instructions, draft, editingRecordId, scheduledAt])
+    localStorage.setItem(workingStorageKey, JSON.stringify({ meetingDate, targetGroup, received, additional, instructions, corrections, draft, editingRecordId, scheduledAt }))
+  }, [meetingDate, targetGroup, received, additional, instructions, corrections, draft, editingRecordId, scheduledAt])
 
-  async function createDraft() {
+  async function createDraft(regenerate = false) {
     if (!can('church', 'create')) { setNotice('Your profile cannot create prayer points.'); return }
     const receivedPrayerPoints = extractPrayerPoints(received)
     const addedPrayerPoints = extractPrayerPoints(additional)
@@ -147,11 +148,13 @@ ${addedPrayerPoints.map((item, index) => `${index + 1}. ${item}`).join('\n') || 
 Additional drafting instructions from me:
 ${instructions.trim() || 'None'}
 
-Improve clarity and respectful wording while preserving every supplied main matter as a numbered prayer point. Under every numbered point write exactly three substantial, specific subpoints, and begin every subpoint with "- ". Do not add new main prayer points, names, events, diagnoses, promises, or facts. The title must be exactly "Prayer Points". Do not include a date, time, emoji, icon, greeting, decorative symbol, or closing. Leave one blank line between numbered groups. Produce only the final WhatsApp-ready message.`)
+${regenerate ? `Current draft to improve (retain its accurate details):\n${draft.trim() || 'None'}\n\nCorrections or changes requested by me:\n${corrections.trim() || 'Improve clarity and specificity while preserving the facts.'}` : ''}
+
+Improve clarity and respectful wording while preserving every supplied main matter as a numbered prayer point. Under every numbered point write exactly three distinct, substantial, specific prayer subpoints, and begin every subpoint with the round bullet "• Pray". Cover the Lord's spiritual speaking or gain, the people involved, and relevant practical coordination only when supported by the supplied facts. Do not add new main prayer points, names, events, dates, quantities, diagnoses, promises, or facts. The title must be exactly "Prayer Points". Do not include a date, time, emoji, icon, greeting, decorative symbol, or closing. Leave one blank line between numbered groups. Produce only the final WhatsApp-ready message.`)
       if (!response.text?.trim()) throw new Error('Empty response')
-      setDraft(formatPrayerPointsMessage(response.text)); setNotice(`Draft created with ${response.model}. Please verify every detail before sharing.`)
+      setDraft(formatPrayerPointsMessage(response.text)); setNotice(`Draft ${regenerate ? 'regenerated' : 'created'} with ${response.model}. Please verify every detail before sharing.`)
     } catch {
-      const numbered = prayerPoints.map((point, index) => `${index + 1}. ${point}\n\n- Pray specifically concerning this matter and for the Lord's sovereign arrangement.\n- Pray for the Lord's timely leading, strengthening, supply, and blessing in every practical detail.\n- Pray for the saints to stand together in one accord and cooperate faithfully with this burden.`).join('\n\n')
+      const numbered = prayerPoints.map((point, index) => `${index + 1}. ${point}\n\n• Pray specifically concerning this matter and for the Lord's sovereign arrangement.\n• Pray for the Lord's timely leading, strengthening, supply, and blessing in every practical detail.\n• Pray for the saints to stand together in one accord and cooperate faithfully with this burden.`).join('\n\n')
       setDraft(`Prayer Points\n\n${numbered}`)
       setNotice('A local draft was created. Please review it before sharing.')
     } finally { setIsGenerating(false) }
@@ -209,7 +212,7 @@ Improve clarity and respectful wording while preserving every supplied main matt
   function startNew() {
     if ((received || additional || draft) && !window.confirm('Start new prayer points? Unsaved working text will be cleared.')) return
     const date = nextTuesday()
-    setMeetingDate(date); setReceived(''); setAdditional(''); setDraft(''); setEditingRecordId(''); setScheduledAt(''); setNotice('New prayer points started.')
+    setMeetingDate(date); setReceived(''); setAdditional(''); setInstructions(''); setCorrections(''); setDraft(''); setEditingRecordId(''); setScheduledAt(''); setNotice('New prayer points started.')
     localStorage.setItem(workingStorageKey, JSON.stringify({ meetingDate: date, targetGroup, received: '', additional: '', draft: '', editingRecordId: '' }))
   }
 
@@ -244,12 +247,17 @@ Improve clarity and respectful wording while preserving every supplied main matt
           <span>Add tone, emphasis, order, or other directions for this draft.</span>
           <textarea rows={4} value={instructions} onChange={(event) => setInstructions(event.target.value)} placeholder="For example: keep the wording concise and place the gospel burden first." />
         </label>
-        <div className="prayer-generation-actions"><button className="prayer-primary-button" type="button" onClick={createDraft} disabled={isGenerating}><Sparkles size={17} /> {isGenerating ? 'Creating draft…' : 'Create WhatsApp draft'}</button></div>
+        <div className="prayer-generation-actions"><button className="prayer-primary-button" type="button" onClick={() => void createDraft(false)} disabled={isGenerating}><Sparkles size={17} /> {isGenerating ? 'Creating draft…' : 'Create WhatsApp draft'}</button></div>
       </section>
 
       <section className="prayer-panel prayer-preview-panel">
         <div className="prayer-panel-title"><div><h2>Review before posting</h2><p>Edit anything before you share it.</p></div><span className="review-badge"><Check size={14} /> Approval required</span></div>
         <textarea className="prayer-draft" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Your formatted prayer points will appear here." />
+        <label className="prayer-field prayer-corrections">Corrections or changes for regeneration
+          <span>Describe what to correct, expand, shorten, reorder, or emphasize. The edited draft above is also used.</span>
+          <textarea rows={4} value={corrections} onInput={(event) => setCorrections(event.currentTarget.value)} placeholder="For example: keep point 2, correct the location, and make the practical subpoint more specific." aria-label="Corrections or changes for regeneration" />
+        </label>
+        <button className="prayer-primary-button" type="button" onClick={() => void createDraft(true)} disabled={isGenerating || !draft.trim()}><Sparkles size={17} /> {isGenerating ? 'Regenerating…' : 'Regenerate improved draft'}</button>
         <label className="prayer-field prayer-schedule-field">Posting reminder (optional)<input type="datetime-local" value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} /></label>
         <div className="prayer-actions">
           <button type="button" onClick={saveDraft} disabled={!draft.trim()}><Save size={16} /> {editingRecordId ? 'Update' : 'Save'}</button>

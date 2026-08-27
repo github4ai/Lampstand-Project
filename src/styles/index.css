@@ -27,7 +27,8 @@
 @import "./knowledge-search/viewer.css";
 @import "./knowledge-viewer/context-chunk.css";
 @import "./ministry.css";
-:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #38bdf8!important;outline-offset:2px!important}
+@import "./theme-overrides.css";
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--primary)!important;outline-offset:2px!important}
 :where(button,input,select,textarea):disabled{cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 .access-denied-page{display:grid;max-width:560px;place-items:center;gap:10px;margin:12vh auto;padding:38px;border:1px solid rgba(248,113,113,.3);border-radius:16px;background:rgba(248,113,113,.05);color:#fca5a5;text-align:center}.access-denied-page h1,.access-denied-page p{margin:0}.access-denied-page h1{color:var(--text);font-size:24px}.access-denied-page p{max-width:460px;color:var(--text-muted);font-size:13px;line-height:1.65}

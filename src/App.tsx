@@ -109,7 +109,7 @@ function App() {
     try {
       const stored = JSON.parse(
         localStorage.getItem('aios-studio-settings-v1') ?? '{}',
-      ) as { compactUi?: boolean; reducedMotion?: boolean }
+      ) as { compactUi?: boolean; reducedMotion?: boolean; highContrast?: boolean; theme?: string; accent?: string }
 
       document.documentElement.classList.toggle(
         'compact-ui',
@@ -119,6 +119,9 @@ function App() {
         'reduced-motion',
         stored.reducedMotion === true,
       )
+      document.documentElement.classList.toggle('high-contrast', stored.highContrast === true)
+      document.documentElement.dataset.theme = stored.theme ?? 'system'
+      document.documentElement.dataset.accent = stored.accent ?? 'cyan'
     } catch {
       localStorage.removeItem('aios-studio-settings-v1')
     }
