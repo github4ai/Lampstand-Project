@@ -59,7 +59,7 @@ export function loadConfig(env = process.env) {
     openaiTranscriptionModel: env.OPENAI_TRANSCRIPTION_MODEL?.trim() || 'gpt-4o-mini-transcribe',
     geminiUrl: cleanUrl(env.GEMINI_BASE_URL, 'https://generativelanguage.googleapis.com/v1beta'),
     geminiApiKey: env.GEMINI_API_KEY?.trim() || '',
-    geminiTextModel: env.GEMINI_TEXT_MODEL?.trim() || 'gemini-2.5-flash',
+    geminiTextModel: env.GEMINI_TEXT_MODEL?.trim() || 'gemini-3.6-flash',
     anthropicUrl: cleanUrl(env.ANTHROPIC_BASE_URL, 'https://api.anthropic.com/v1'),
     anthropicApiKey: env.ANTHROPIC_API_KEY?.trim() || '',
     anthropicTextModel: env.ANTHROPIC_TEXT_MODEL?.trim() || 'claude-3-5-haiku-latest',

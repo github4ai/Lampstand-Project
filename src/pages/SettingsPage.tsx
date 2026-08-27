@@ -40,7 +40,7 @@ function SettingsPage() {
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [anthropicApiKey, setAnthropicApiKey] = useState('')
   const [tavilyApiKey, setTavilyApiKey] = useState('')
-  const [geminiTextModel, setGeminiTextModel] = useState('gemini-2.5-flash')
+  const [geminiTextModel, setGeminiTextModel] = useState('gemini-3.6-flash')
   const [openaiTextModel, setOpenaiTextModel] = useState('gpt-4.1-mini')
   const [anthropicTextModel, setAnthropicTextModel] = useState('claude-3-5-haiku-latest')
   const [savingProviders, setSavingProviders] = useState(false)
@@ -487,7 +487,7 @@ function SettingsPage() {
               </div>
             </div>
             <div className="settings-cloud-providers settings-model-options">
-              <label className="settings-cloud-provider-card"><span><strong>Gemini model</strong><small>Choose any model enabled for your Gemini API key.</small></span><input value={geminiTextModel} onChange={(event) => setGeminiTextModel(event.target.value)} placeholder="gemini-2.5-flash" /></label>
+              <label className="settings-cloud-provider-card"><span><strong>Gemini model</strong><small>Choose any model enabled for your Gemini API key.</small></span><input value={geminiTextModel} onChange={(event) => setGeminiTextModel(event.target.value)} placeholder="gemini-3.6-flash" /></label>
               <label className="settings-cloud-provider-card"><span><strong>OpenAI model</strong><small>Choose any model enabled for your OpenAI API project.</small></span><input value={openaiTextModel} onChange={(event) => setOpenaiTextModel(event.target.value)} placeholder="gpt-4.1-mini" /></label>
               <label className="settings-cloud-provider-card"><span><strong>Claude model</strong><small>Choose any model enabled for your Anthropic API key.</small></span><input value={anthropicTextModel} onChange={(event) => setAnthropicTextModel(event.target.value)} placeholder="claude-3-5-haiku-latest" /></label>
             </div>

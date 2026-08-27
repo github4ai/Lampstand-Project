@@ -13,6 +13,8 @@ const LANGUAGE_VOICE_PREFERENCES_KEY = 'aios-studio-language-voice-preferences-v
 const LANGUAGE_VOICE_RATE_KEY = 'aios-studio-language-voice-rate-v1'
 const LANGUAGE_AUTO_PRONOUNCE_KEY = 'aios-studio-language-auto-pronounce-v1'
 const LANGUAGE_ONLINE_PRONUNCIATION_KEY = 'aios-studio-online-pronunciation-v1'
+const KONKANI_PRONUNCIATION_STYLE_KEY = 'aios-studio-konkani-pronunciation-style-v1'
+type KonkaniPronunciationStyle = 'devanagari-marathi' | 'devanagari-hindi' | 'goan-roman'
 const LANGUAGE_DRAFT_KEY = 'aios-studio-language-draft-v1'
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024
 const MAX_DOCUMENT_BYTES = 50 * 1024 * 1024
@@ -48,7 +50,7 @@ const onlineFallbackVoices: Partial<Record<SupportedLanguage, Array<{ name: stri
   zh: [{ name: 'zh-CN-XiaoxiaoNeural', label: 'Xiaoxiao (Female)' }, { name: 'zh-CN-YunxiNeural', label: 'Yunxi (Male)' }],
   hi: [{ name: 'hi-IN-SwaraNeural', label: 'Swara (Female)' }, { name: 'hi-IN-MadhurNeural', label: 'Madhur (Male)' }],
   kn: [{ name: 'kn-IN-SapnaNeural', label: 'Sapna (Female)' }, { name: 'kn-IN-GaganNeural', label: 'Gagan (Male)' }],
-  kok: [{ name: 'en-IN-NeerjaNeural', label: 'Neerja—Roman Konkani (Female)' }, { name: 'en-IN-PrabhatNeural', label: 'Prabhat—Roman Konkani (Male)' }],
+  kok: [{ name: 'mr-IN-AarohiNeural', label: 'Aarohi—Devanagari Marathi (Female)' }, { name: 'mr-IN-ManoharNeural', label: 'Manohar—Devanagari Marathi (Male)' }, { name: 'hi-IN-SwaraNeural', label: 'Swara—Devanagari Hindi (Female)' }, { name: 'hi-IN-MadhurNeural', label: 'Madhur—Devanagari Hindi (Male)' }, { name: 'en-IN-NeerjaNeural', label: 'Neerja—Goan Roman (Female)' }, { name: 'en-IN-PrabhatNeural', label: 'Prabhat—Goan Roman (Male)' }],
   ko: [{ name: 'ko-KR-SunHiNeural', label: 'SunHi (Female)' }, { name: 'ko-KR-InJoonNeural', label: 'InJoon (Male)' }],
   ml: [{ name: 'ml-IN-SobhanaNeural', label: 'Sobhana (Female)' }, { name: 'ml-IN-MidhunNeural', label: 'Midhun (Male)' }],
   mr: [{ name: 'mr-IN-AarohiNeural', label: 'Aarohi (Female)' }, { name: 'mr-IN-ManoharNeural', label: 'Manohar (Male)' }],
@@ -81,7 +83,7 @@ function languageLabel(code?: TranslationSourceLanguage) {
 
 const speechLocales: Record<SupportedLanguage, string> = {
   en: 'en-IN', zh: 'zh-CN', ta: 'ta-IN', hi: 'hi-IN', mr: 'mr-IN',
-  te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', kok: 'en-IN', ru: 'ru-RU', ko: 'ko-KR',
+  te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', kok: 'mr-IN', ru: 'ru-RU', ko: 'ko-KR',
 }
 
 const voiceTestPhrases: Record<SupportedLanguage, string> = {
@@ -89,14 +91,14 @@ const voiceTestPhrases: Record<SupportedLanguage, string> = {
   hi: 'नमस्ते। उच्चारण की आवाज़ तैयार है।', mr: 'नमस्कार. उच्चाराचा आवाज तयार आहे.', te: 'నమస్కారం. ఉచ్చారణ స్వరం సిద్ధంగా ఉంది.',
   ml: 'നമസ്കാരം. ഉച്ചാരണ ശബ്ദം തയ്യാറാണ്.', ru: 'Здравствуйте. Голос для произношения готов.', ko: '안녕하세요. 발음 음성이 준비되었습니다.',
   kn: 'ನಮಸ್ಕಾರ. ಉಚ್ಚಾರಣೆಯ ಧ್ವನಿ ಸಿದ್ಧವಾಗಿದೆ.',
-  kok: 'Namaskar. Ucharacho avaz toyar asa.',
+  kok: 'नमस्कार. उच्चाराचो आवाज तयार आसा.',
 }
 
 function matchingSpeechVoices(voices: SpeechSynthesisVoice[], language: SupportedLanguage) {
   const locale = speechLocales[language].toLowerCase()
   const exact = voices.filter((voice) => voice.lang.toLowerCase() === locale)
   if (exact.length) return exact
-  if (language === 'kok') return voices.filter((voice) => voice.lang.toLowerCase().startsWith('en-'))
+  if (language === 'kok') return voices.filter((voice) => /^(mr|hi)-/i.test(voice.lang))
   return voices.filter((voice) => voice.lang.toLowerCase().startsWith(`${language.toLowerCase()}-`))
 }
 
@@ -163,6 +165,7 @@ function LanguageToolsPage() {
   const [speechRate, setSpeechRate] = useState(() => Number(localStorage.getItem(LANGUAGE_VOICE_RATE_KEY)) || 0.9)
   const [autoPronounce, setAutoPronounce] = useState(() => localStorage.getItem(LANGUAGE_AUTO_PRONOUNCE_KEY) === 'true')
   const [onlinePronunciation, setOnlinePronunciation] = useState(() => localStorage.getItem(LANGUAGE_ONLINE_PRONUNCIATION_KEY) !== 'false')
+  const [konkaniPronunciationStyle, setKonkaniPronunciationStyle] = useState<KonkaniPronunciationStyle>(() => (localStorage.getItem(KONKANI_PRONUNCIATION_STYLE_KEY) as KonkaniPronunciationStyle) || 'devanagari-marathi')
   const [selectedResultText, setSelectedResultText] = useState('')
   const [downloadingPronunciation, setDownloadingPronunciation] = useState(false)
   const [downloadingHistoryId, setDownloadingHistoryId] = useState('')
@@ -384,7 +387,8 @@ function LanguageToolsPage() {
     if (!onlinePronunciation || !onlineFallbackLanguages.has(language)) return
     setDownloadingPronunciation(true); setError('')
     try {
-      const response = await createPronunciation(result, language, speechRate, voicePreferences[language])
+      const payload = await pronunciationPayload(result, language)
+      const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
       const url = URL.createObjectURL(response.audio)
       const link = document.createElement('a')
       link.href = url
@@ -408,7 +412,8 @@ function LanguageToolsPage() {
     if (!language || !item.result.trim() || downloadingHistoryId) return
     setDownloadingHistoryId(item.id); setError('')
     try {
-      const response = await createPronunciation(item.result, language, speechRate, voicePreferences[language])
+      const payload = await pronunciationPayload(item.result, language)
+      const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
       const url = URL.createObjectURL(response.audio)
       const link = document.createElement('a')
       link.href = url
@@ -450,10 +455,36 @@ function LanguageToolsPage() {
     setSpeaking(false)
   }
 
+  function effectivePronunciationVoice(language: SupportedLanguage) {
+    if (language !== 'kok') return voicePreferences[language]
+    if (konkaniPronunciationStyle === 'goan-roman') return /^en-IN-/.test(voicePreferences.kok || '') ? voicePreferences.kok : 'en-IN-NeerjaNeural'
+    if (konkaniPronunciationStyle === 'devanagari-hindi') return /^hi-IN-/.test(voicePreferences.kok || '') ? voicePreferences.kok : 'hi-IN-SwaraNeural'
+    return /^mr-IN-/.test(voicePreferences.kok || '') ? voicePreferences.kok : 'mr-IN-AarohiNeural'
+  }
+
+  async function pronunciationPayload(value: string, language: SupportedLanguage) {
+    if (language !== 'kok' || konkaniPronunciationStyle !== 'goan-roman') return { text: value, voice: effectivePronunciationVoice(language) }
+    const romanized = await transliterateText(value, 'kok')
+    const speechText = romanized.normalize('NFD').replace(/\p{M}/gu, '').replace(/[’‘]/g, "'")
+    return { text: speechText, voice: effectivePronunciationVoice(language) }
+  }
+
+  function chooseKonkaniPronunciationStyle(style: KonkaniPronunciationStyle) {
+    setKonkaniPronunciationStyle(style)
+    localStorage.setItem(KONKANI_PRONUNCIATION_STYLE_KEY, style)
+    const voice = style === 'goan-roman' ? 'en-IN-NeerjaNeural' : style === 'devanagari-hindi' ? 'hi-IN-SwaraNeural' : 'mr-IN-AarohiNeural'
+    const next = { ...voicePreferences, kok: voice }
+    setVoicePreferences(next)
+    localStorage.setItem(LANGUAGE_VOICE_PREFERENCES_KEY, JSON.stringify(next))
+    stopPronunciation()
+    setVoiceRefreshNotice(style === 'goan-roman' ? 'Konkani will be converted to Goan Roman spelling for speech only.' : `Konkani will use ${style === 'devanagari-hindi' ? 'Hindi' : 'Marathi'} Devanagari pronunciation.`)
+  }
+
   async function playOnlineFallback(value: string, language: SupportedLanguage) {
     setError(''); setSpeaking(true)
     try {
-      const response = await createPronunciation(value, language, speechRate, voicePreferences[language])
+      const payload = await pronunciationPayload(value, language)
+      const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
       const url = URL.createObjectURL(response.audio)
       fallbackAudioUrlRef.current = url
       const audio = new Audio(url)
@@ -477,15 +508,17 @@ function LanguageToolsPage() {
       stopPronunciation(); return
     }
     const language = tool === 'translation' ? targetLanguage : audioLanguage
-    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === voicePreferences[language])
+    const preferredVoice = effectivePronunciationVoice(language)
+    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice)
     if (preferredOnline && onlinePronunciation) {
       await playOnlineFallback(result, language)
       return
     }
-    const locale = speechLocales[language]
-    const utterance = new SpeechSynthesisUtterance(result)
+    const payload = await pronunciationPayload(result, language)
+    const locale = language === 'kok' && konkaniPronunciationStyle === 'goan-roman' ? 'en-IN' : speechLocales[language]
+    const utterance = new SpeechSynthesisUtterance(payload.text)
     utterance.lang = locale
-    const matchingVoice = findSpeechVoice(window.speechSynthesis.getVoices(), language, voicePreferences[language])
+    const matchingVoice = window.speechSynthesis.getVoices().find((voice) => voice.name === payload.voice) || findSpeechVoice(window.speechSynthesis.getVoices(), language, payload.voice)
     if (!matchingVoice) {
       const languageName = languages.find((item) => item.code === language)?.label || language
       if (onlinePronunciation && onlineFallbackLanguages.has(language)) {
@@ -506,16 +539,18 @@ function LanguageToolsPage() {
 
   async function pronounceText(value: string, language: SupportedLanguage) {
     if (!value.trim()) return
-    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === voicePreferences[language])
+    const preferredVoice = effectivePronunciationVoice(language)
+    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice)
     if (preferredOnline && onlinePronunciation) { await playOnlineFallback(value, language); return }
-    const voice = findSpeechVoice(window.speechSynthesis.getVoices(), language, voicePreferences[language])
+    const payload = await pronunciationPayload(value, language)
+    const voice = window.speechSynthesis.getVoices().find((item) => item.name === payload.voice) || findSpeechVoice(window.speechSynthesis.getVoices(), language, payload.voice)
     if (!voice) {
       if (onlinePronunciation && onlineFallbackLanguages.has(language)) await playOnlineFallback(value, language)
       return
     }
     window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(value)
-    utterance.lang = speechLocales[language]
+    const utterance = new SpeechSynthesisUtterance(payload.text)
+    utterance.lang = language === 'kok' && konkaniPronunciationStyle === 'goan-roman' ? 'en-IN' : speechLocales[language]
     utterance.voice = voice
     utterance.rate = speechRate
     utterance.onend = () => setSpeaking(false)
@@ -747,10 +782,11 @@ function LanguageToolsPage() {
           const fallbackVoices = onlinePronunciation ? onlineFallbackVoices[activeLanguage] ?? [] : []
           if (available.length < 2 && fallbackVoices.length < 2) return <span className="language-active-voice">Using the available {languages.find((item) => item.code === activeLanguage)?.label} voice</span>
           const choices = [...available.map((voice) => ({ name: voice.name, label: `${voice.name} · Local` })), ...fallbackVoices.map((voice) => ({ name: voice.name, label: `${voice.label} · Online` }))].sort((left, right) => left.label.localeCompare(right.label))
-          const preferred = voicePreferences[activeLanguage]
+          const preferred = effectivePronunciationVoice(activeLanguage)
           const value = choices.some((item) => item.name === preferred) ? preferred! : choices[0]?.name || ''
           return <label className="language-preferred-voice">Preferred {languages.find((item) => item.code === activeLanguage)?.label} voice<select value={value} onChange={(event) => choosePreferredVoice(activeLanguage, event.target.value)}>{choices.map((voice) => <option key={voice.name} value={voice.name}>{voice.label}</option>)}</select></label>
         })()}
+        {(tool === 'translation' ? targetLanguage : audioLanguage) === 'kok' && <label className="language-pronunciation-style">Konkani pronunciation style<select value={konkaniPronunciationStyle} onChange={(event) => chooseKonkaniPronunciationStyle(event.target.value as KonkaniPronunciationStyle)}><option value="devanagari-marathi">Devanagari · Marathi voice</option><option value="devanagari-hindi">Devanagari · Hindi voice</option><option value="goan-roman">Goan Roman · Indian English voice</option></select></label>}
         <label className="language-speech-rate">Speed<select value={speechRate} onChange={(event) => chooseSpeechRate(Number(event.target.value))}><option value={0.75}>Slow</option><option value={0.9}>Normal</option><option value={1.1}>Fast</option></select></label>
       </div><div className="language-pronunciation-options">
         <label className="language-auto-pronounce"><input type="checkbox" checked={onlinePronunciation} onChange={(event) => toggleOnlinePronunciation(event.target.checked)} /> Online fallback for missing voices</label>

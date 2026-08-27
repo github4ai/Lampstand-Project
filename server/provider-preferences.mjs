@@ -12,7 +12,10 @@ export function loadProviderPreferences(config) {
     if (typeof saved.anthropicApiKey === 'string') config.anthropicApiKey = saved.anthropicApiKey.trim()
     if (typeof saved.tavilyApiKey === 'string') config.tavilyApiKey = saved.tavilyApiKey.trim()
     if (typeof saved.openaiTextModel === 'string' && saved.openaiTextModel.trim()) config.openaiTextModel = saved.openaiTextModel.trim()
-    if (typeof saved.geminiTextModel === 'string' && saved.geminiTextModel.trim()) config.geminiTextModel = saved.geminiTextModel.trim()
+    if (typeof saved.geminiTextModel === 'string' && saved.geminiTextModel.trim()) {
+      const savedGeminiModel = saved.geminiTextModel.trim()
+      config.geminiTextModel = savedGeminiModel === 'gemini-2.5-flash' ? 'gemini-3.6-flash' : savedGeminiModel
+    }
     if (typeof saved.anthropicTextModel === 'string' && saved.anthropicTextModel.trim()) config.anthropicTextModel = saved.anthropicTextModel.trim()
   } catch { /* First run or an unreadable optional preferences file. */ }
   return publicProviderPreferences(config)

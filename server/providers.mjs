@@ -1,6 +1,6 @@
 const languageNames = {
   auto: 'automatically detected language', en: 'English', zh: 'Chinese', ta: 'Tamil',
-  hi: 'Hindi', mr: 'Marathi', te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', kok: 'Konkani written only in Roman (English/Latin) letters', ru: 'Russian', ko: 'Korean',
+  hi: 'Hindi', mr: 'Marathi', te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', kok: 'Konkani in its standard Devanagari script', ru: 'Russian', ko: 'Korean',
 }
 const translationLanguageCodes = {
   en: 'en', zh: 'zh-CN', ta: 'ta-IN', hi: 'hi-IN', mr: 'mr-IN', te: 'te-IN', ml: 'ml-IN', kn: 'kn-IN', kok: 'kok-IN', ru: 'ru-RU', ko: 'ko-KR',
@@ -14,7 +14,7 @@ async function requireOk(response, provider) {
 
 function translationPrompt({ text, sourceLanguage, targetLanguage }) {
   if (targetLanguage === 'kok') {
-    return `Translate the complete source text into natural Konkani. Write Konkani ONLY in Roman English/Latin letters. Never use Devanagari, Kannada, or another Indic script. Translate every paragraph exactly once; never repeat a word, phrase, sentence, or paragraph merely to fill space. Preserve names, Scripture references, meaning, and paragraph breaks. Return only the translation.\n\nSOURCE (${languageNames[sourceLanguage]}):\n---\n${text}\n---\nEND SOURCE`
+    return `Translate the complete source text into natural Konkani using the standard Devanagari script. Do not transliterate it into Roman English letters. Translate every paragraph exactly once; never repeat a word, phrase, sentence, or paragraph merely to fill space. Preserve names, Scripture references, meaning, and paragraph breaks. Return only the translation.\n\nSOURCE (${languageNames[sourceLanguage]}):\n---\n${text}\n---\nEND SOURCE`
   }
   if (sourceLanguage !== 'auto') {
     return `You are a professional ${languageNames[sourceLanguage]} (${translationLanguageCodes[sourceLanguage]}) to ${languageNames[targetLanguage]} (${translationLanguageCodes[targetLanguage]}) translator. ` +
@@ -42,8 +42,41 @@ function translationQualityError(text, request) {
     if (count >= 6) return 'The model repeated the same phrase too many times.'
     trigrams.set(key, count)
   }
-  if (request.targetLanguage === 'kok' && /[\u0900-\u0d7f]/u.test(text)) return 'Konkani was not returned in Roman English letters.'
+  if (request.targetLanguage === 'kok' && !/[\u0900-\u097f]/u.test(text)) return 'Konkani was not returned in its standard Devanagari script.'
+  const sourceWords = String(request.text || '').match(/[\p{L}\p{N}']+/gu) || []
+  if (sourceWords.length >= 80 && words.length < Math.max(20, sourceWords.length * 0.22)) {
+    return 'The model returned only part of the source text.'
+  }
   return ''
+}
+
+function translationChunks(text, maximumLength = 1800) {
+  const paragraphs = String(text || '').replace(/\r\n/g, '\n').split(/\n{2,}/)
+  const chunks = []
+  for (const paragraph of paragraphs) {
+    const value = paragraph.trim()
+    if (!value) continue
+    if (value.length <= maximumLength) {
+      const previous = chunks.at(-1)
+      if (previous && previous.length + value.length + 2 <= maximumLength) chunks[chunks.length - 1] = `${previous}\n\n${value}`
+      else chunks.push(value)
+      continue
+    }
+    const sentences = value.match(/[^.!?।]+[.!?।]+|[^.!?।]+$/gu) || [value]
+    let current = ''
+    for (const sentence of sentences) {
+      if (current && current.length + sentence.length > maximumLength) {
+        chunks.push(current.trim())
+        current = ''
+      }
+      if (sentence.length > maximumLength) {
+        if (current.trim()) chunks.push(current.trim())
+        for (let offset = 0; offset < sentence.length; offset += maximumLength) chunks.push(sentence.slice(offset, offset + maximumLength).trim())
+      } else current += sentence
+    }
+    if (current.trim()) chunks.push(current.trim())
+  }
+  return chunks.length ? chunks : [String(text || '')]
 }
 
 export async function translateWithOllama(request, config, fetcher = fetch) {
@@ -56,13 +89,13 @@ export async function translateWithOllama(request, config, fetcher = fetch) {
   const candidateModels = [...new Set(normalizedModels)]
   const errors = []
 
-  const requestTimeout = request.targetLanguage === 'kok' ? 60000 : 120000
+  const requestTimeout = 180000
   for (const model of candidateModels) {
     try {
       const sourceWords = String(request.text || '').trim().split(/\s+/).filter(Boolean).length
       const response = await fetcher(`${config.ollamaUrl}/api/chat`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, stream: false, think: false, keep_alive: '10m', options: { temperature: 0.1, repeat_penalty: 1.22, num_ctx: 4096, num_predict: Math.min(1100, Math.max(160, Math.ceil(sourceWords * (request.targetLanguage === 'kok' ? 3 : 2.5)))) }, messages: [{ role: 'system', content: 'You are a careful professional translator. Never generate repetitive or looping text. Stop immediately after the complete translation.' }, { role: 'user', content: translationPrompt(request) }] }),
+        body: JSON.stringify({ model, stream: false, think: false, keep_alive: '10m', options: { temperature: 0.1, repeat_penalty: 1.18, num_ctx: 8192, num_predict: Math.min(2048, Math.max(320, Math.ceil(sourceWords * (request.targetLanguage === 'kok' ? 4 : 3)))) }, messages: [{ role: 'system', content: 'You are a careful professional translator. Translate every part of the supplied source exactly once. Never omit, summarize, explain, or loop. Stop only after the complete translation.' }, { role: 'user', content: translationPrompt(request) }] }),
         signal: AbortSignal.timeout(requestTimeout),
       })
       await requireOk(response, `Ollama (${model})`)
@@ -136,10 +169,11 @@ function cloudProviderOrder(config) {
   ].filter(Boolean)
 }
 
-function providerOrder(config) {
+function providerOrder(config, request) {
   if (config.providerMode === 'local') return ['local']
   const cloud = cloudProviderOrder(config)
   if (config.providerMode === 'cloud' || config.providerMode === 'openai') return cloud
+  if (request?.targetLanguage === 'kok' && cloud.length) return [...cloud, 'local']
   return ['local', ...cloud]
 }
 
@@ -186,9 +220,9 @@ async function generateWithAnthropic(prompt, config, fetcher) {
   return { text, provider: 'anthropic', model: config.anthropicTextModel }
 }
 
-export async function translateWithProviders(request, config, fetcher = fetch) {
+async function translateSingleWithProviders(request, config, fetcher = fetch) {
   const errors = []
-  for (const provider of providerOrder(config)) {
+  for (const provider of providerOrder(config, request)) {
     try {
       if (provider === 'local') return await translateWithOllama(request, config, fetcher)
       if (provider === 'openai') return await translateWithOpenAI(request, config, fetcher)
@@ -201,6 +235,21 @@ export async function translateWithProviders(request, config, fetcher = fetch) {
     }
   }
   throw new Error(`No translation provider succeeded. ${errors.join(' ')}`)
+}
+
+export async function translateWithProviders(request, config, fetcher = fetch) {
+  const chunks = translationChunks(request.text)
+  if (chunks.length === 1) return translateSingleWithProviders(request, config, fetcher)
+  const translated = []
+  let provider = ''
+  let model = ''
+  for (let index = 0; index < chunks.length; index += 1) {
+    const result = await translateSingleWithProviders({ ...request, text: chunks[index] }, config, fetcher)
+    translated.push(result.translatedText)
+    provider ||= result.provider
+    model ||= result.model || ''
+  }
+  return { ...request, translatedText: translated.join('\n\n'), provider, ...(model ? { model } : {}) }
 }
 
 export async function generateTextWithProviders(prompt, config, fetcher = fetch) {

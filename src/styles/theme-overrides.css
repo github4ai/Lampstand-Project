@@ -216,6 +216,14 @@ body{overflow-x:hidden}
 :root[data-theme="light"] .settings-page :where(h1,h2,h3,h4,strong){color:var(--text)!important}
 :root[data-theme="light"] :where(.bible-page-header,.bible-toolbar,.bible-concordance,.bible-notes-panel,.bible-bottom-navigation,.bible-book-matter){background:var(--panel)!important;color:var(--text)!important;border-color:var(--border)!important}
 :root[data-theme="light"] :where(.bible-toolbar button,.bible-toolbar select,.bible-reference-search,.bible-concordance input,.bible-concordance button,.bible-section-tabs button){background:var(--panel-light)!important;color:var(--text)!important;border-color:var(--border)!important}
+:root[data-theme="light"] .bible-cross-reference-links button{min-height:0!important;padding:0!important;border:0!important;background:transparent!important;color:var(--link)!important;box-shadow:none!important}
+:root[data-theme="light"] .bible-cross-reference-links button:hover{background:transparent!important;color:var(--link-hover)!important}
+.workspace-panel .bible-cross-reference-links button{
+  min-height:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;color:var(--link)!important;
+  text-decoration:underline;text-underline-offset:3px;
+}
+.workspace-panel .bible-cross-reference-links button:hover{background:transparent!important;color:var(--link-hover)!important}
 :root[data-theme="light"] :where(.bible-section-tabs button.active,.bible-note-marker.active){background:var(--primary-soft)!important;color:var(--primary)!important;border-color:var(--primary)!important}
 
 /* Shared type scale and control sizing across every workspace. */
@@ -238,3 +246,111 @@ body{overflow-x:hidden}
 :root[data-theme="light"] .sidebar :where(.command-palette-trigger,.status-card,.category-section select,.sidebar-collapse-button,.sidebar-profile-switcher select){border-color:var(--border);background:var(--panel);color:var(--text)}
 :root[data-theme="light"] .sidebar .workspace-navigation-link:hover{border-color:var(--primary-border);background:var(--primary-soft);color:var(--text)}
 :root[data-theme="light"] .sidebar .workspace-navigation-link.active{border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--primary)!important;box-shadow:inset 3px 0 var(--primary)!important}
+
+/* Studio shell: one calm, structured visual language for every workspace and
+   every theme. Reader paper and projector output intentionally remain exempt. */
+.app-shell{background:var(--bg);color:var(--text)}
+.sidebar{
+  width:var(--sidebar-width);
+  min-width:var(--sidebar-width);
+  padding:14px 12px;
+  border-right:1px solid var(--border);
+  background:var(--surface-muted);
+}
+.sidebar :where(.workspace-navigation-link,.command-palette-trigger,.new-conversation-button,.sidebar-sign-out){
+  min-height:38px;
+  border-radius:var(--radius-sm);
+}
+.sidebar .workspace-navigation-link{margin-block:2px;padding:8px 11px;border:1px solid transparent}
+.sidebar .workspace-navigation-link.active{box-shadow:none!important}
+.workspace-panel{background:var(--bg);overflow-x:hidden}
+.workspace-panel>:where(
+  .settings-page,.app-updates-page,.help-page,.history-page,.documents-page,
+  .document-detail-page,.agents-page,.school-page,.ministry-page,.hymnal-page,
+  .bible-page,.recovery-bible-page,.life-study-page,.ministry-books-page,.hwmr-page,
+  .church-page,.media-studio-page,.language-tools-page,.presentation-workspace,
+  .knowledge-workspace,.knowledge-page,.knowledge-search-page,.knowledge-viewer-page
+){padding:clamp(18px,2vw,30px)!important}
+.workspace-breadcrumbs,.workspace-layout-breadcrumbs{
+  min-height:42px;
+  padding:10px clamp(18px,2vw,30px)!important;
+  border-bottom:1px solid var(--border)!important;
+  background:var(--panel)!important;
+}
+:where(.workspace-layout-header,.settings-header,.agents-heading,.documents-header,
+  .knowledge-header,.presentation-header,.school-header,.language-tools-header,
+  .media-studio-header){
+  padding:16px 0 20px!important;
+  border:0!important;
+  background:transparent!important;
+}
+:where(.workspace-layout-icon,.settings-header>span,.agents-heading>span,
+  .documents-header>span,.knowledge-header-icon,.presentation-icon,
+  .school-header-icon,.language-tools-header>span,.media-studio-header>span){
+  width:44px!important;height:44px!important;border-radius:12px!important;
+  border:1px solid var(--primary-border)!important;
+  background:var(--primary-soft)!important;color:var(--primary)!important;
+}
+:where(.settings-panel,.agent-workspace-card,.school-card,.school-recent,.school-library,
+  .school-profile,.school-stat,.church-card,.church-tool-card,.church-section-card,
+  .ministry-card,.ministry-continue,.hymnal-toolbar,.bible-toolbar,.panel-card,
+  .presentation-builder,.presentation-console,.presentation-queue,.presentation-rack,
+  .rack-module,.knowledge-card,.knowledge-dashboard-card,.knowledge-toolbar,
+  .documents-toolbar,.documents-table,.documents-sidebar,.document-card,
+  .language-provider-status>span,.language-input-panel,.language-result-panel,
+  .language-history-panel,.language-pronunciation,.media-provider-status span,
+  .media-creator,.media-results,.help-card,.history-card){
+  border:1px solid var(--border)!important;
+  border-radius:var(--radius-md)!important;
+  background:var(--panel)!important;
+  color:var(--text)!important;
+  box-shadow:0 1px 2px rgba(17,24,39,.025),var(--shadow)!important;
+}
+.workspace-panel :where(button,input,select,textarea){border-radius:var(--radius-sm)!important}
+.workspace-panel :where(input,select){min-height:40px}
+.workspace-panel :where(textarea){padding:12px 14px}
+.workspace-panel button{min-height:36px;padding-inline:13px}
+.workspace-panel :where(button,input,select,textarea):focus-visible{
+  outline:3px solid color-mix(in srgb,var(--primary) 22%,transparent)!important;
+  outline-offset:1px;border-color:var(--primary)!important;
+}
+:where(.primary-action,.language-run,.media-generate,.settings-provider-mode-actions .primary){
+  border-color:var(--primary)!important;background:var(--primary)!important;
+  color:var(--primary-contrast)!important;box-shadow:0 5px 14px color-mix(in srgb,var(--primary) 22%,transparent)!important;
+}
+:where(.primary-action,.language-run,.media-generate):hover{transform:translateY(-1px)}
+
+:root[data-theme="light"] .sidebar{background:#f8f9fc!important}
+:root[data-theme="light"] :where(.workspace-breadcrumbs,.workspace-layout-breadcrumbs){background:rgba(255,255,255,.82)!important;backdrop-filter:blur(12px)}
+:root[data-theme="light"] :where(.workspace-layout-header,.settings-header,.agents-heading,
+  .documents-header,.knowledge-header,.presentation-header,.school-header,
+  .language-tools-header,.media-studio-header){background:transparent!important}
+:root[data-theme="light"] .workspace-panel>:where(
+  .settings-page,.app-updates-page,.help-page,.history-page,.documents-page,
+  .agents-page,.school-page,.ministry-page,.church-page,.media-studio-page,
+  .language-tools-page,.presentation-workspace,.knowledge-workspace
+){background:linear-gradient(145deg,#f8f9fd 0%,#f3f5fa 58%,color-mix(in srgb,var(--primary) 4%,#f4f6fb) 100%)!important}
+:root[data-theme="light"] .sidebar .workspace-navigation-link:hover{background:#fff!important;box-shadow:0 5px 18px rgba(38,46,78,.06)}
+:root[data-theme="light"] .sidebar .workspace-navigation-link.active{background:var(--primary-soft)!important;color:var(--primary)!important;border-color:color-mix(in srgb,var(--primary) 18%,transparent)!important}
+:root[data-theme="light"] :where(.panel-card,.settings-panel,.agent-workspace-card,
+  .school-card,.ministry-card,.church-card,.language-input-panel,.language-result-panel){box-shadow:0 8px 26px rgba(38,46,78,.055)!important}
+
+:root[data-theme="dark"]{--surface-raised:#142137;--surface-muted:#0d1727;--radius:14px}
+:root[data-theme="dark"]{--bg:#0b1020;--panel:#151e31;--panel-light:#1b2740;--border:#2a3854;--text:#f3f6ff;--text-muted:#a8b2c8;--shadow:0 14px 34px rgba(0,0,0,.22)}
+:root[data-theme="dark"] .sidebar{background:linear-gradient(180deg,#10182a 0%,#0d1525 100%)}
+:root[data-theme="dark"] .workspace-panel>:where(
+  .settings-page,.app-updates-page,.help-page,.history-page,.documents-page,
+  .agents-page,.school-page,.ministry-page,.church-page,.media-studio-page,
+  .language-tools-page,.presentation-workspace,.knowledge-workspace
+){background:radial-gradient(circle at 80% 0,color-mix(in srgb,var(--primary) 8%,transparent),transparent 35%),var(--bg)!important}
+:root[data-theme="dark"] .sidebar .workspace-navigation-link.active{background:color-mix(in srgb,var(--primary) 15%,#111b2e)!important;border-color:color-mix(in srgb,var(--primary) 38%,transparent)!important;color:var(--primary)!important}
+:root[data-theme="dark"] :where(.workspace-breadcrumbs,.workspace-layout-breadcrumbs){background:rgba(17,28,46,.88)!important;backdrop-filter:blur(12px)}
+:root[data-theme="dark"] :where(.settings-panel,.agent-workspace-card,.school-card,
+  .ministry-card,.church-card,.language-input-panel,.language-result-panel){box-shadow:0 10px 28px rgba(0,0,0,.16)!important}
+
+@media(max-width:900px){
+  :root{--sidebar-width:220px}
+  .workspace-panel>:where(.settings-page,.help-page,.history-page,.documents-page,
+    .agents-page,.school-page,.ministry-page,.church-page,.media-studio-page,
+    .language-tools-page,.presentation-workspace,.knowledge-workspace){padding:16px!important}
+}

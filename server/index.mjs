@@ -528,7 +528,10 @@ export function createAiosServer() {
         const body = await readJson(request)
         const language = normalizeLanguageCode(body?.language)
         if (!body?.text?.trim() || !supportedLanguages.has(language)) return send(response, 400, { detail: 'Text and a supported language are required.' }, origin)
-        const result = await generateTextWithProviders(`Write the following ${language} text phonetically using English (Latin) letters so an English reader can pronounce it. Preserve paragraph and line breaks. Do not translate its meaning and return only the romanized pronunciation.\n\n${body.text.trim()}`, config)
+        const prompt = language === 'kok'
+          ? `Transliterate the following Devanagari Konkani into familiar Goan Roman Konkani spelling for clear reading by an Indian English text-to-speech voice. Use plain Latin letters without accent marks or diacritics. Preserve every word, paragraph, name, and Scripture reference; do not translate, summarize, explain, or omit anything. Prefer established Goan spellings such as mhaka, tumkam, mhaka zai, ani, and asa where appropriate. Return only the complete Roman Konkani text.\n\n${body.text.trim()}`
+          : `Write the following ${language} text phonetically using English (Latin) letters so an English reader can pronounce it. Preserve paragraph and line breaks. Do not translate its meaning and return only the romanized pronunciation.\n\n${body.text.trim()}`
+        const result = await generateTextWithProviders(prompt, config)
         return send(response, 200, { transliteration: result.text, provider: result.provider, model: result.model }, origin)
       }
 
