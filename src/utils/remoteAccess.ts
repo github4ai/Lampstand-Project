@@ -5,6 +5,8 @@ export const DEVICE_NAME_KEY = 'lampstand-device-name-v1'
 export const REMOTE_POLICY_KEY = 'lampstand-remote-policy-v1'
 export const ENROLLMENT_KEY = 'lampstand-device-enrollment-v1'
 export const CLOUD_SESSION_KEY = 'lampstand-cloud-session-v1'
+export const SIGNED_IN_USER_ID_KEY = 'lampstand-signed-in-user-id-v1'
+export const SIGNED_IN_EMAIL_KEY = 'lampstand-signed-in-email-v1'
 
 export interface CloudSession {
   accessToken: string
@@ -157,6 +159,8 @@ export function loadCloudSession(storage: Pick<Storage, 'getItem'> = localStorag
 
 export function saveCloudSession(session: CloudSession, storage: Pick<Storage, 'setItem'> = localStorage) {
   storage.setItem(CLOUD_SESSION_KEY, JSON.stringify(session))
+  storage.setItem(SIGNED_IN_USER_ID_KEY, session.user.id)
+  if (session.user.email) storage.setItem(SIGNED_IN_EMAIL_KEY, session.user.email)
 }
 
 export function clearCloudSession(storage: Pick<Storage, 'removeItem'> = localStorage) {

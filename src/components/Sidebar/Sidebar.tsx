@@ -351,7 +351,7 @@ function Sidebar({
       markProfileUnlocked(profile.id)
     }
     localStorage.setItem(ACCESS_CONTROL_STORAGE_KEY, JSON.stringify({ ...accessState, activeProfileId: profileId }))
-    window.location.assign(canAccess(profile, 'chat') ? '/' : canAccess(profile, 'school') ? '/school' : canAccess(profile, 'ministry') ? '/ministry' : '/language-tools')
+    window.location.assign(canAccess(profile, 'chat') ? '/chat' : canAccess(profile, 'school') ? '/school' : canAccess(profile, 'ministry') ? '/ministry' : '/language-tools')
   }
 
   async function signOut() {
@@ -481,7 +481,7 @@ function Sidebar({
         aria-label="Lampstand workspace"
       >
         {canAccess(activeProfile, 'chat') && <NavLink
-          to="/"
+          to="/chat"
           end
           className={({
             isActive,

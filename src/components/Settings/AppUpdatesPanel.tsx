@@ -4,7 +4,6 @@ import type { LampstandLibraryUpdateState, LampstandUpdateState } from '../../ty
 import { cloudConfiguration, publicLibraryObjectUrl } from '../../utils/remoteAccess'
 import LibraryPublisherPanel from './LibraryPublisherPanel'
 import { getKnowledgeIndexStatus, startKnowledgeIndex, type KnowledgeIndexStatus } from '../../services/knowledge'
-import { schedulePersonalDataResetAfterUpdate } from '../../utils/workspaceBackup'
 
 const browserState: LampstandUpdateState = {
   status: 'development', currentVersion: 'Browser', availableVersion: null, percent: 0,
@@ -22,7 +21,6 @@ export default function AppUpdatesPanel({
 }: AppUpdatesPanelProps) {
   const [state, setState] = useState<LampstandUpdateState>(browserState)
   const [busy, setBusy] = useState(false)
-  const [resetPersonalDataAfterUpdate, setResetPersonalDataAfterUpdate] = useState(false)
   const updates = window.lampstandDesktop?.updates
   const libraries = window.lampstandDesktop?.libraries
   const [libraryState, setLibraryState] = useState<LampstandLibraryUpdateState>({ status: 'idle', installedVersion: null, availableVersion: null, percent: 0, message: 'Ready to check library updates.', manifestUrl: '' })
@@ -86,7 +84,6 @@ export default function AppUpdatesPanel({
       if (action === 'check') setState(await updates.check())
       else if (action === 'download') setState(await updates.download())
       else {
-        if (resetPersonalDataAfterUpdate) schedulePersonalDataResetAfterUpdate(localStorage)
         await updates.install()
       }
     } finally { setBusy(false) }
@@ -114,13 +111,7 @@ export default function AppUpdatesPanel({
       {state.status === 'current' && <span><CheckCircle2 size={14} /> Up to date</span>}
       {updates && state.status !== 'development' && <button type="button" disabled={busy || state.status === 'downloading'} onClick={() => void reinstallCurrentVersion()}><RotateCcw size={14} /> Reinstall this version</button>}
     </div>
-    <label className="settings-update-reset-option">
-      <input type="checkbox" checked={resetPersonalDataAfterUpdate} onChange={(event) => setResetPersonalDataAfterUpdate(event.target.checked)} />
-      <span><strong>Reset personal data after update</strong><small>Clears profiles, conversations, reading progress, annotations, results, drafts, and preferences when the updated app starts. Your signed-in session, installed libraries, and models are retained.</small></span>
-    </label>
-    <p className="settings-update-note">{resetPersonalDataAfterUpdate && state.status === 'ready'
-      ? 'The selected reset will run once when the updated app starts.'
-      : 'App updates replace program files only. Your profiles, reading progress, annotations, conversations, and other personal data remain in the Lampstand data folder.'}</p>
+    <p className="settings-update-note">App updates and reinstalls replace program files only. Your profiles, sign-in identity, reading progress, annotations, conversations, and other personal data remain in the Lampstand data folder.</p>
 
     <div className="settings-library-update">
       <div className="settings-panel-title"><Download size={18} /><div><h3>Library updates</h3><p>Update authorized School, Ministry, Church, and other library content without reinstalling the app.</p></div></div>

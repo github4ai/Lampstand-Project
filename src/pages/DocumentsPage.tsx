@@ -1,7 +1,7 @@
 import { CheckSquare, Edit3, Eye, FileText, LoaderCircle, Plus, RefreshCw, RotateCcw, Search, ShieldCheck, Trash2, Upload, X } from 'lucide-react'
 import { useAccessControl } from '../hooks/useAccessControl'
 import { type FormEvent, type InputHTMLAttributes, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useKnowledge } from '../hooks/useKnowledge'
 import { formatCount, formatFileSize, formatKnowledgeDate, getKnowledgeIndexStatus, getKnowledgePreviewUrl, getKnowledgeSources, getKnowledgeSubcollections, inspectKnowledgeHealth, startKnowledgeIndex, trashKnowledgeSource, updateKnowledgeSource, uploadKnowledgeDocument } from '../services/knowledge'
 import { refreshHwmrLibrary } from '../api/hwmr'
@@ -13,7 +13,7 @@ type DocumentSort = 'updated' | 'name' | 'chunks'
 const documentPreferencesKey = 'aios-document-preferences'
 const supportedUploadPattern = /\.(?:html?|epub|docx|pptx|txt|md|markdown|pdb|pdf)$/i
 const recommendedSubcollections: Record<string, string[]> = {
-  Ministry: ['HWMR', 'Ministry Books', 'Life-Study', 'Recovery Bible', 'Hymnal'],
+  Ministry: ['HWMR', 'Books', 'Life-Study', 'Recovery Bible', 'Hymns'],
   School: ['Level C'],
 }
 
@@ -340,10 +340,11 @@ function DocumentsPage() {
       <header className="documents-header">
         <div className="documents-heading">
           <span><FileText size={24} /></span>
-          <div><h1>Documents</h1><p>Browse the files available in your local Knowledge Library.</p></div>
+          <div><h1>Documents</h1><p>Manage source files, indexing, and searchable knowledge in one place.</p></div>
         </div>
         <div className="documents-header-actions">
-          {canImport && <button type="button" onClick={() => setShowUpload((value) => !value)}><Plus size={16} /> Add knowledge</button>}
+          <Link className="documents-knowledge-link" to="/knowledge">Open Knowledge</Link>
+          {canImport && <button type="button" className="documents-add-knowledge" onClick={() => setShowUpload((value) => !value)}><Plus size={16} /> {showUpload ? 'Close Add Knowledge' : 'Add Knowledge'}</button>}
           {canManageLibrary && <button type="button" onClick={() => void runIndexing()} disabled={indexStatus?.state === 'running'}>
             {indexStatus?.state === 'running' ? <LoaderCircle size={16} className="spin" /> : <RefreshCw size={16} />}
             {indexStatus?.state === 'running' ? 'Indexing...' : 'Index knowledge'}

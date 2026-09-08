@@ -47,7 +47,6 @@ import {
 
 import { canAccess, createInitialAccessState, loadOrCreateAccessState, type WorkspaceId } from './utils/accessControl'
 import { isProfileUnlocked } from './utils/pinSecurity'
-import { consumePersonalDataResetAfterUpdate } from './utils/workspaceBackup'
 
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
@@ -89,8 +88,6 @@ function loadSelectedAgentId() {
 }
 
 function App() {
-  // Consume this before profiles, preferences, or page state are initialized.
-  try { consumePersonalDataResetAfterUpdate(localStorage) } catch { /* storage may be unavailable */ }
   const navigate =
     useNavigate()
   const location = useLocation()
@@ -358,7 +355,7 @@ function App() {
   function handleNewConversation() {
     startNewChat()
 
-    navigate('/')
+    navigate('/chat')
 
     addToast({
       title:
@@ -404,7 +401,7 @@ function App() {
     const agent = availableAgents.find((item) => item.id === agentId)
     if (!agent || isLoading) return
     handleSelectAgent(agentId)
-    navigate('/')
+    navigate('/chat')
   }
 
   function handleImportConversation(value: unknown): boolean {
@@ -458,7 +455,7 @@ function App() {
       setSelectedAgentId(conversation.agentId)
     }
 
-    navigate('/')
+    navigate('/chat')
   }
 
   const chatPage = (
@@ -604,8 +601,9 @@ function App() {
         <Routes>
         <Route
           path="/"
-          element={protect('chat', chatPage)}
+          element={canAccess(activeProfile, 'ministry') ? <Navigate to="/ministry" replace /> : protect('chat', chatPage)}
         />
+        <Route path="/chat" element={protect('chat', chatPage)} />
 
         <Route path="/settings" element={<main className="workspace-panel"><SettingsPage /></main>} />
         <Route path="/updates" element={<main className="workspace-panel"><AppUpdatesPage /></main>} />

@@ -6,10 +6,10 @@ import '../styles/ministry-layout.css'
 
 const sections = [
   { id: 'hwmr', title: 'HWMR', description: 'Read uploaded Holy Word for Morning Revival documents.', path: '/ministry/hwmr', Icon: NotebookText },
-  { id: 'hymnal', title: 'Hymnal', description: 'Browse hymns, lyrics, chords, piano sheets, and available tunes.', path: '/hymnal', Icon: Music2 },
+  { id: 'hymnal', title: 'Hymns', description: 'Browse the complete local hymn collection, lyrics, chords, piano sheets, and tunes.', path: '/hymnal', Icon: Music2 },
   { id: 'recovery-bible', title: 'Recovery Bible', description: 'Bible text, outlines, authorized footnotes, and cross-references.', path: '/recovery-bible', Icon: BookOpenText },
   { id: 'life-study', title: 'Life-Study', description: 'Read locally stored Life-Study messages by Bible book.', path: '/life-study', Icon: BookMarked },
-  { id: 'ministry-books', title: 'Ministry Books', description: 'Browse authorized ministry books by Watchman Nee and Witness Lee.', path: '/ministry-books', Icon: BookCopy },
+  { id: 'ministry-books', title: 'Books', description: 'Browse all existing local ministry books by Watchman Nee and Witness Lee.', path: '/ministry-books', Icon: BookCopy },
 ] as const
 
 const ministryProgressKeys = [
@@ -97,8 +97,8 @@ export default function MinistryPage() {
         {dashboard.activeHwmr ? <Link to={`/ministry/hwmr?book=${encodeURIComponent(dashboard.activeHwmr[0])}&week=${dashboard.activeHwmr[1].startWeekIndex ?? 0}&view=day`}><NotebookText size={20} /><span><strong>Continue HWMR</strong><small>{dashboard.activeHwmr[1].completed?.length ?? 0} portions completed</small></span></Link> : <Link to="/ministry/hwmr"><NotebookText size={20} /><span><strong>Start HWMR</strong><small>Choose a reading plan</small></span></Link>}
         {dashboard.bibleBook ? <Link to="/recovery-bible"><BookOpenText size={20} /><span><strong>Continue Recovery Bible</strong><small>Book {dashboard.bibleBook} · Chapter {dashboard.bibleChapter}</small></span></Link> : <Link to="/recovery-bible"><BookOpenText size={20} /><span><strong>Open Recovery Bible</strong><small>Start reading</small></span></Link>}
         {dashboard.lifeStudyBook ? <Link to={`/life-study?book=${encodeURIComponent(dashboard.lifeStudyBook)}&message=${dashboard.lifeStudyMessage}`}><BookMarked size={20} /><span><strong>Continue Life-Study</strong><small>{dashboard.lifeStudyBook.replaceAll('-', ' ')} · Message {dashboard.lifeStudyMessage}</small></span></Link> : <Link to="/life-study"><BookMarked size={20} /><span><strong>Open Life-Study</strong><small>Choose a message</small></span></Link>}
-        {dashboard.ministryBook ? <Link to={`/ministry-books?book=${encodeURIComponent(dashboard.ministryBook)}&chapter=${dashboard.ministryBookSection}`}><BookCopy size={20} /><span><strong>Continue Ministry Books</strong><small>Reading section {dashboard.ministryBookSection}</small></span></Link> : <Link to="/ministry-books"><BookCopy size={20} /><span><strong>Open Ministry Books</strong><small>Browse 509 local books</small></span></Link>}
-        {dashboard.recentHymns[0] ? <Link to={`/hymnal?hymn=${encodeURIComponent(dashboard.recentHymns[0])}`}><Music2 size={20} /><span><strong>Recent hymn</strong><small>{dashboard.recentHymns.length} recently viewed · {dashboard.favoriteHymns.length} favorites</small></span></Link> : <Link to="/hymnal"><Music2 size={20} /><span><strong>Open Hymnal</strong><small>Browse the local hymnal</small></span></Link>}
+        {dashboard.ministryBook ? <Link to={`/ministry-books?book=${encodeURIComponent(dashboard.ministryBook)}&chapter=${dashboard.ministryBookSection}`}><BookCopy size={20} /><span><strong>Continue Books</strong><small>Reading section {dashboard.ministryBookSection}</small></span></Link> : <Link to="/ministry-books"><BookCopy size={20} /><span><strong>Open Books</strong><small>Browse all local books</small></span></Link>}
+        {dashboard.recentHymns[0] ? <Link to={`/hymnal?hymn=${encodeURIComponent(dashboard.recentHymns[0])}`}><Music2 size={20} /><span><strong>Recent hymn</strong><small>{dashboard.recentHymns.length} recently viewed · {dashboard.favoriteHymns.length} favorites</small></span></Link> : <Link to="/hymnal"><Music2 size={20} /><span><strong>Open Hymns</strong><small>Browse the complete local hymn collection</small></span></Link>}
       </div>
       <div className="ministry-progress-summary"><span><Highlighter size={15} /><strong>{dashboard.annotations}</strong> HWMR highlights and annotations</span><span><BookMarked size={15} /><strong>{dashboard.studies}</strong> saved weekly studies</span><span><Music2 size={15} /><strong>{dashboard.favoriteHymns.length}</strong> favorite hymns</span></div>
     </section>

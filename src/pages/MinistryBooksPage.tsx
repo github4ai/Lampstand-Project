@@ -33,10 +33,11 @@ function MinistryBooksPage() {
 
   useEffect(() => {
     const controller = new AbortController()
+    const linkedBookId = new URLSearchParams(location.search).get('book')
     getMinistryBooksLibrary(controller.signal).then((loaded) => {
       setLibrary(loaded)
-      const linkedBook = loaded.books.find((book) => book.id === linkedLocation.get('book'))
-      if (linkedBook) setSelectedBook(linkedBook)
+      const linkedBook = loaded.books.find((book) => book.id === linkedBookId)
+      setSelectedBook(linkedBook ?? null)
     }).catch((reason: unknown) => { if (!isAbort(reason)) setError(reason instanceof Error ? reason.message : 'Unable to inspect the Ministry Books library.') })
     return () => controller.abort()
   }, [location.search])
@@ -124,15 +125,16 @@ function MinistryBooksPage() {
       const target = numberedSections[Number(contentsMatch[1]) - 1]
       if (target) return <button type="button" className="ministry-book-section-link" onClick={(event) => { event.stopPropagation(); openReading(selectedBook!, target.number) }}><strong>{contentsMatch[1]}.</strong> {contentsMatch[2]}</button>
     }
-    return linkBibleReferences(text).map((segment, index) => segment.type === 'text' ? <span key={index}>{annotations.highlight(segment.text)}</span> : <button type="button" className="ministry-book-bible-link" key={index} onClick={(event) => {
+    return linkBibleReferences(text).map((segment, index) => segment.type === 'text' ? <span key={index}>{annotations.highlight(segment.text)}</span> : <a href="#" className="ministry-book-bible-link" key={index} onClick={(event) => {
       event.stopPropagation()
+      event.preventDefault()
       const returnParams = new URLSearchParams({ book: selectedBook?.id || '', chapter: String(chapterNumber), block: String(blockId) })
       navigate(`/recovery-bible?book=${encodeURIComponent(segment.bookSlug)}&chapter=${segment.chapter}&verse=${segment.verse}&verseEnd=${segment.verseEnd}&from=ministry-books&return=${encodeURIComponent(returnParams.toString())}`)
-    }}>{segment.label}</button>)
+    }}>{segment.label}</a>)
   }
 
   return <section className={`ministry-books-page${fullPage ? ' reader-full-page' : ''}`}>
-    <header className="ministry-books-header"><span><BookCopy size={25} /></span><div><h1>Ministry Books</h1><p>Read locally stored ministry books by Watchman Nee and Witness Lee.</p></div></header>
+    <header className="ministry-books-header"><span><BookCopy size={25} /></span><div><h1>Books</h1><p>Read locally stored ministry books by Watchman Nee and Witness Lee.</p></div></header>
     {error ? <div className="ministry-books-error">{error}</div> : null}
     {!library && !error ? <div className="ministry-books-loading">Inspecting the local library…</div> : null}
     {library && !library.ready ? <section className="ministry-books-empty"><span><FolderOpen size={34} /></span><h2>Ministry Books HTML is not available yet</h2><p>{library.message}</p><div><strong>Library folder</strong><code>{library.folder}</code></div></section> : null}
@@ -148,7 +150,7 @@ function MinistryBooksPage() {
     </> : null}
     {selectedBook ? <div onMouseUp={annotations.captureSelection}>
       {linkedLocation.get('from') === 'hwmr' && linkedLocation.get('return') ? <button className="ministry-book-return-link" type="button" onClick={() => navigate(`/ministry/hwmr?${linkedLocation.get('return')}`)}><ChevronLeft size={17} /> Back to the HWMR portion</button> : null}
-      <div className="ministry-book-toolbar"><button type="button" onClick={() => navigate('/ministry-books')}><ChevronLeft size={17} /> Library</button><label>Section<select value={chapterNumber} onChange={(event) => openReading(selectedBook, Number(event.target.value))}>{chapters.map((item) => <option key={item.number} value={item.number}>{sectionName(item)}</option>)}</select></label><div><button type="button" onClick={() => setFullPage((value) => !value)}>{fullPage ? <Minimize2 size={16} /> : <Maximize2 size={16} />}{fullPage ? 'Exit' : 'Full page'}</button><button type="button" disabled={!selectedText} onClick={readSelection}>{speaking ? <Pause size={16} /> : <Play size={16} />} Read</button><button type="button" disabled={!selectedText} onClick={() => { window.speechSynthesis.cancel(); setSpeaking(false) }}><Square size={14} /> Stop</button><button type="button" disabled={!selectedText} onClick={copySelection}><Copy size={16} /> Copy</button></div></div>
+      <div className="ministry-book-toolbar"><button type="button" onClick={() => navigate('/ministry-books')}><ChevronLeft size={17} /> Books</button><label>Section<select value={chapterNumber} onChange={(event) => openReading(selectedBook, Number(event.target.value))}>{chapters.map((item) => <option key={item.number} value={item.number}>{sectionName(item)}</option>)}</select></label><div><button type="button" onClick={() => setFullPage((value) => !value)}>{fullPage ? <Minimize2 size={16} /> : <Maximize2 size={16} />}{fullPage ? 'Exit' : 'Full page'}</button><button type="button" disabled={!selectedText} onClick={readSelection}>{speaking ? <Pause size={16} /> : <Play size={16} />} Read</button><button type="button" disabled={!selectedText} onClick={() => { window.speechSynthesis.cancel(); setSpeaking(false) }}><Square size={14} /> Stop</button><button type="button" disabled={!selectedText} onClick={copySelection}><Copy size={16} /> Copy</button></div></div>
       {!chapter ? <div className="ministry-books-loading">Loading section…</div> : <article className="ministry-book-reader"><header><span>{chapter.book.author}</span>{readerEyebrow ? <small>{readerEyebrow}</small> : null}<h2>{readerTitle}</h2></header>{visibleBlocks.map((block) => <div role="button" tabIndex={0} aria-pressed={selectedBlocks.includes(block.id)} key={block.id} data-ministry-book-block={block.id} className={`ministry-book-block ${block.type} ${block.level ? `level-${block.level}` : ''} ${selectedBlocks.includes(block.id) ? 'selected' : ''}`} onClick={() => toggleBlock(block.id)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleBlock(block.id) } }}>{renderBlock(block.text, block.id)}</div>)}</article>}
       <nav className="ministry-book-bottom-nav"><strong>{selectedBook.title} · {chapter ? sectionName(chapter.chapter) : 'Reading section'}</strong><div><button type="button" disabled={chapterIndex <= 0} onClick={() => openReading(selectedBook, chapters[chapterIndex - 1].number)}><ChevronLeft size={16} /> Previous</button><button type="button" disabled={chapterIndex < 0 || chapterIndex >= chapters.length - 1} onClick={() => openReading(selectedBook, chapters[chapterIndex + 1].number)}>Next <ChevronRight size={16} /></button></div></nav>
       {annotations.popup}

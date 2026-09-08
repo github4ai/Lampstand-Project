@@ -1,7 +1,7 @@
 import { KeyRound, LogIn, ShieldCheck } from 'lucide-react'
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react'
 import { ACCESS_CONTROL_STORAGE_KEY, defaultPermissions, migrateLegacyPermissions, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
-import { claimFirstRemoteOwner, clearCloudSession, cloudConfiguration, ensureFreshCloudSession, getOwnedRemoteFamily, loadCloudSession, loadSignedInMembership, saveCloudSession, signInOwner, signUpOwner, type CloudSession } from '../../utils/remoteAccess'
+import { claimFirstRemoteOwner, clearCloudSession, cloudConfiguration, ensureFreshCloudSession, getOwnedRemoteFamily, loadCloudSession, loadSignedInMembership, saveCloudSession, signInOwner, signUpOwner, SIGNED_IN_EMAIL_KEY, type CloudSession } from '../../utils/remoteAccess'
 import { FIRST_RUN_KEY } from '../Onboarding/FirstRunWizard'
 
 type GateState = 'checking' | 'signed-out' | 'ready' | 'denied'
@@ -16,7 +16,7 @@ export default function CloudAccessGate({ children }: { children: ReactNode }) {
   const cloud = cloudConfiguration()
   const [session, setSession] = useState<CloudSession | null>(() => loadCloudSession())
   const [state, setState] = useState<GateState>(() => session ? 'checking' : 'signed-out')
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => localStorage.getItem(SIGNED_IN_EMAIL_KEY) || '')
   const [password, setPassword] = useState('')
   const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)

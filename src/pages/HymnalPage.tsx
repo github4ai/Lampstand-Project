@@ -346,7 +346,7 @@ function HymnalPage() {
 
   return (
     <WorkspaceLayout
-      title="Ministry Hymnal"
+      title="Hymnal"
       subtitle="Public-domain hymns with searchable lyrics and guitar-ready chord sheets."
       icon={<BookOpen size={25} />}
       toolbar={<div className="hymnal-toolbar">

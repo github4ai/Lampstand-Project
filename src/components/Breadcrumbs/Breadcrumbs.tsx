@@ -5,7 +5,7 @@ const LABELS: Record<string, string> = {
   agents: 'Agents', church: 'Church', documents: 'Documents', help: 'Help & Guides',
   history: 'History', hymnal: 'Hymnal', knowledge: 'Knowledge', 'language-tools': 'Language Tools',
   'life-study': 'Life-Study', media: 'Media Studio', ministry: 'Ministry',
-  'ministry-books': 'Ministry Books', 'prayer-points': 'Prayer Points',
+  'ministry-books': 'Books', 'prayer-points': 'Prayer Points',
   'posting-history': 'Posting History', 'recovery-bible': 'Recovery Bible', presentation: 'Presentation',
   school: 'School', settings: 'Settings', updates: 'App Updates', view: 'Viewer', search: 'Search', hwmr: 'HWMR',
 }
