@@ -64,6 +64,26 @@ describe('getChunkContext', () => {
     )
   })
 
+  it('requests a radius of 1 when no radius is given', async () => {
+    const payload = { chunks: [], radius: 1 }
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify(payload), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      getChunkContext('Ministry', 'Test', 12),
+    ).resolves.toEqual(payload)
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:9656/knowledge/Ministry/Test/viewer/12/context?radius=1',
+      expect.objectContaining({ method: 'GET' }),
+    )
+  })
+
   it('forwards an abort signal', async () => {
     const controller = new AbortController()
     const fetchMock = vi.fn().mockResolvedValue(

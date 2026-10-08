@@ -1,0 +1,1 @@
+var e=`aios-bible-voice`,t=[[`en-IN`,`English (India)`],[`hi-IN`,`Hindi (India)`],[`mr-IN`,`Marathi (India)`],[`ta-IN`,`Tamil (India)`],[`te-IN`,`Telugu (India)`],[`ml-IN`,`Malayalam (India)`]];export{t as n,e as t};

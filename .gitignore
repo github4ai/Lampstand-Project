@@ -1,36 +1,12 @@
-# Logs
-logs
+# .gitignore
+node_modules/
+package-lock.json
+.env
+.gitignore
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-.venv-whisper/
+*.config
+*.tmp
 __pycache__/
-*.py[cod]
-dist
-dist-ssr
-release/
-release-*/
-*.sqlite
-*.sqlite-shm
-*.sqlite-wal
-tmp/electron-*/
-.pnpm-store/
-build-assets/*.png
-data/hymnal-library.json
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+*.swp
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+coverage/
