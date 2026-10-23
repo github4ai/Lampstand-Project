@@ -291,7 +291,7 @@ function RecoveryBiblePage() {
   }
 
   const presentationVerses = selectedVerses().length ? selectedVerses() : chapter?.verses ?? []
-  const presentationHtml = presentationVerses.map((verse) => `<p><strong>${shortBibleBookName(chapter?.book.name ?? '')} ${chapter?.chapter ?? ''}:${verse.number}</strong>&nbsp;&nbsp;${presentationHighlights ? annotations.highlightHtml(verse.text) : verse.text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</p>`).join('')
+  const presentationHtml = presentationVerses.map((verse) => `<p><strong>${chapter?.book.name ?? ''} ${chapter?.chapter ?? ''}:${verse.number}</strong>&nbsp;&nbsp;${presentationHighlights ? annotations.highlightHtml(verse.text) : verse.text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</p>`).join('')
 
   return (
     <section className={`bible-page${readingMode ? ' reading-mode' : ''}${activeSection !== 'chapter' ? ' show-book-matter' : ''}`}>

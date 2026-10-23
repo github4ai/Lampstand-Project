@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { readPresentationPrefs, resolvePresentationSettings, writePresentationPrefs } from './PresentOnDisplay'
+import { FADE_SPEEDS, readPresentationPrefs, resolvePresentationSettings, writePresentationPrefs } from './PresentOnDisplay'
 
-const prefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade' } as const
+const prefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal' } as const
 
 beforeEach(() => {
   const store = new Map<string, string>()
@@ -21,7 +21,7 @@ describe('resolvePresentationSettings', () => {
 
   it('applies the saved preference when a page presents without it', () => {
     expect(resolvePresentationSettings({ title: 'Song', html: '' }, { ...prefs, theme: 'dark', fontScale: 1.45 }))
-      .toEqual({ showTitle: true, fontScale: 1.45, theme: 'dark', transition: 'fade' })
+      .toEqual({ showTitle: true, fontScale: 1.45, theme: 'dark', transition: 'fade', transitionSpeed: 'normal' })
   })
 
   it('keeps a hidden title that the payload switched on', () => {
@@ -40,8 +40,9 @@ describe('resolvePresentationSettings', () => {
 })
 
 describe('saved preferences', () => {
-  it('starts from the defaults, including fade on', () => {
-    expect(readPresentationPrefs()).toEqual({ showTitle: true, fontScale: 1, theme: 'light', transition: 'fade' })
+  it('starts from the defaults, including a 300 millisecond fade', () => {
+    expect(readPresentationPrefs()).toEqual({ showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal' })
+    expect(FADE_SPEEDS.normal).toBe(.3)
   })
 
   it('survives a corrupt stored value', () => {
@@ -51,7 +52,7 @@ describe('saved preferences', () => {
 
   it('round-trips a partial patch without dropping the rest', () => {
     writePresentationPrefs({ theme: 'dark' })
-    expect(writePresentationPrefs({ fontScale: 3 })).toEqual({ showTitle: true, fontScale: 2, theme: 'dark', transition: 'fade' })
+    expect(writePresentationPrefs({ fontScale: 3 })).toEqual({ showTitle: true, fontScale: 2, theme: 'dark', transition: 'fade', transitionSpeed: 'normal' })
   })
 
   it('keeps a stored text size when only another field is patched', () => {

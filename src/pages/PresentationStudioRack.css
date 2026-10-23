@@ -11,8 +11,8 @@
 }
 
 .presentation-icon {
-  width: 58px;
-  height: 58px;
+  width: 40px;
+  height: 40px;
   border: 1px solid #2385a9;
   border-radius: 12px;
   background: linear-gradient(145deg, #16344a, #0b1e30);
@@ -56,8 +56,8 @@
 .rack-label {
   display: flex;
   align-items: center;
-  margin: -20px -20px 18px;
-  padding: 8px 13px;
+  margin: -14px -14px 11px;
+  padding: 6px 12px;
   border-bottom: 1px solid #35526a;
   background: linear-gradient(180deg, #233a4e, #172b3d);
   color: #dbe9f3;
@@ -105,11 +105,37 @@
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
+.presentation-builder .bible-button-picker {
+  min-width: 0;
+}
+
+/* Every book is reachable at a glance, so the strip wraps instead of scrolling. */
+.presentation-builder .bible-book-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 4px;
+  padding: 0;
+  overflow-x: visible;
+  scrollbar-width: none;
+}
+
+.presentation-builder .bible-book-buttons button {
+  flex: none;
+  width: 100%;
+  min-height: 26px;
+  padding: 0;
+}
+
+.presentation-builder .bible-chapter-buttons button {
+  min-height: 30px;
+  padding: 0 7px;
+}
+
 .program-status {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .status-channel {
@@ -142,8 +168,8 @@
 .live-controls {
   display: grid;
   grid-template-columns: 1fr 1.35fr 1fr .8fr;
-  gap: 8px;
-  margin: 10px 0;
+  gap: 7px;
+  margin: 8px 0;
 }
 
 .live-controls button {
@@ -151,7 +177,7 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 40px;
+  min-height: 34px;
 }
 
 .live-controls .take-live {
@@ -165,14 +191,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 18px;
-  margin-bottom: 12px;
-  padding: 10px 12px;
+  gap: 8px 14px;
+  margin-bottom: 9px;
+  padding: 8px 10px;
   border: 1px solid #314c61;
   border-radius: 9px;
   background: #101f30;
 }
-
 .output-options label { display: inline-flex; align-items: center; gap: 7px; font-size: .78rem; }
 .output-options select { min-height: 32px; margin-left: 4px; }
 .shortcut-hint { margin-left: auto; color: #8099ad; font-size: .7rem; }

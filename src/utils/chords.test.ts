@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractChords, semitonesBetween, stripChords, transposeChord, transposeChordLine } from './chords'
+import { extractChords, semitonesBetween, splitChordTokens, stripChords, transposeChord, transposeChordLine } from './chords'
 
 describe('hymnal chord transposition', () => {
   it('transposes simple, minor, seventh, and slash chords', () => {
@@ -56,5 +56,25 @@ describe('parenthetical chord markers', () => {
   it('collects chords from both marker styles without duplicates', () => {
     expect(extractChords(['[C]A (Dm)B', '(G)C [Em]D', '(G)again'], 0))
       .toEqual(['C', 'Dm', 'G', 'Em'])
+  })
+})
+
+describe('chord token splitting', () => {
+  it('splits a line into chord and lyric tokens in order', () => {
+    expect(splitChordTokens('[C]Sing (G7)out')).toEqual([
+      { type: 'chord', value: 'C' },
+      { type: 'lyric', value: 'Sing ' },
+      { type: 'chord', value: 'G7' },
+      { type: 'lyric', value: 'out' },
+    ])
+  })
+
+  it('returns the whole line as lyric when there is no chord', () => {
+    expect(splitChordTokens('Sing aloud')).toEqual([{ type: 'lyric', value: 'Sing aloud' }])
+    expect(splitChordTokens('(Ref) Sing')).toEqual([{ type: 'lyric', value: '(Ref) Sing' }])
+  })
+
+  it('returns nothing for an empty line', () => {
+    expect(splitChordTokens('')).toEqual([])
   })
 })
