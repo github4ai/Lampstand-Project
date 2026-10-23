@@ -142,7 +142,8 @@ export default function PresentationPage() {
     if (!selectedHymn) return
     const catalog = [selectedHymn.catalogPrefix, selectedHymn.hymnNumber].filter(Boolean).join(' ')
     const html = hymnSlideHtml(selectedHymn.sections, { mode: hymnalMode, columns: hymnalColumns, chorus: hymnalChorus, semitones: hymnalTranspose })
-    addItem({ kind: 'hymnal', title: selectedHymn.title, subtitle: [catalog, selectedHymn.author].filter(Boolean).join(' · '), html, notes: '' })
+    // The number leads the title because it is how the congregation finds the hymn.
+    addItem({ kind: 'hymnal', title: catalog ? `${catalog} — ${selectedHymn.title}` : selectedHymn.title, subtitle: selectedHymn.author, html, notes: '' })
   }
   function addHwmr() {
     if (!selectedHwmr || !selectedWeek) return
