@@ -149,7 +149,7 @@ function configureUpdater() {
     if (!app.isPackaged) return false
     const version = app.getVersion()
     const installer = `Lampstand-Project-Setup-${version}.exe`
-    await shell.openExternal(`https://github.com/github4ai/Lampstand-Studio-Releases/releases/download/v${version}/${installer}`)
+    await shell.openExternal(`https://github.com/github4ai/Lampstand-Project/releases/download/v${version}/${installer}`)
     return true
   })
 }
