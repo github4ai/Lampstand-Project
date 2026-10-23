@@ -27,7 +27,8 @@ export function readPresentationPrefs(): PresentationPrefs {
 }
 
 export function writePresentationPrefs(patch: Partial<PresentationPrefs>): PresentationPrefs {
-  const next = { ...readPresentationPrefs(), ...patch, fontScale: clampFontScale(patch.fontScale ?? readPresentationPrefs().fontScale) }
+  const next = { ...readPresentationPrefs(), ...patch }
+  next.fontScale = clampFontScale(next.fontScale)
   window.localStorage.setItem(PRESENTATION_PREFS_KEY, JSON.stringify(next))
   return next
 }

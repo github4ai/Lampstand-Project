@@ -54,6 +54,11 @@ describe('saved preferences', () => {
     expect(writePresentationPrefs({ fontScale: 3 })).toEqual({ showTitle: true, fontScale: 2, theme: 'dark', transition: 'fade' })
   })
 
+  it('keeps a stored text size when only another field is patched', () => {
+    writePresentationPrefs({ fontScale: 1.45 })
+    expect(writePresentationPrefs({ theme: 'dark' }).fontScale).toBe(1.45)
+  })
+
   it('honours transition none once stored', () => {
     writePresentationPrefs({ transition: 'none', showTitle: false })
     expect(readPresentationPrefs()).toMatchObject({ transition: 'none', showTitle: false })
