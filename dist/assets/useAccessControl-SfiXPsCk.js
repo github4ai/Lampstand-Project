@@ -1,1 +1,0 @@
-import{a as e,n as t}from"./jsx-runtime-B-hcVAMW.js";import{At as n,Mt as r,Pt as i}from"./index-BR740aUH.js";var a=e(t(),1);function o(){return(0,a.useMemo)(()=>{let e;try{e=i(localStorage)}catch{e=r()}let t=e.profiles.find(t=>t.id===e.activeProfileId)??e.profiles[0];return{state:e,profile:t,can:(e,r=`view`)=>n(t,e,r)}},[])}export{o as t};

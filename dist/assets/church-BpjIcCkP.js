@@ -1,1 +1,0 @@
-import{Lt as e}from"./index-BR740aUH.js";async function t(t){let n=await fetch(`${e}/church/generate`,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify({prompt:t})});if(!n.ok){let e=await n.json().catch(()=>({}));throw Error(e?.detail||`Church generation failed with status ${n.status}.`)}return n.json()}export{t};

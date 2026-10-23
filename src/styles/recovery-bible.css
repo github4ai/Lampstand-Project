@@ -9,6 +9,7 @@
 .bible-toolbar select { padding: 0 12px; }
 .bible-nav-button { display: grid; place-items: center; width: 42px; cursor: pointer; }
 .bible-nav-button:disabled { opacity: .4; cursor: default; }
+.bible-button-picker{display:grid;gap:6px;min-width:min(500px,48vw)}.bible-book-buttons,.bible-chapter-buttons{display:flex;gap:4px;overflow-x:auto;padding:2px;scrollbar-width:thin}.bible-book-buttons button,.bible-chapter-buttons button{flex:0 0 auto;min-height:34px;padding:0 8px;border:1px solid var(--border);border-radius:7px;background:var(--panel-light);color:var(--text-muted);font:700 11px/1 Inter,'Segoe UI',sans-serif;cursor:pointer}.bible-chapter-buttons button{min-width:34px}.bible-book-buttons button:hover,.bible-chapter-buttons button:hover{border-color:var(--primary);color:var(--text)}.bible-book-buttons button.active,.bible-chapter-buttons button.active{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 18%,var(--panel-light));color:var(--primary)}
 .bible-reference-search { display: flex; align-items: center; height: 40px; min-width: 220px; padding-left: 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel-light); }
 .bible-reference-search svg { flex: 0 0 auto; color: var(--text-muted); }
 .bible-reference-search input { width: 100%; min-width: 0; padding: 0 8px; border: 0; outline: 0; background: transparent; color: var(--text); }

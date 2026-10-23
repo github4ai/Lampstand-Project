@@ -49,6 +49,8 @@ export default function PresentationPage() {
   const [liveId, setLiveId] = useState<string | null>(null)
   const [showTitle, setShowTitle] = useState(true)
   const [fontScale, setFontScale] = useState(1)
+  const [projectionTheme, setProjectionTheme] = useState<'light' | 'dark'>('light')
+  const [liveTransition, setLiveTransition] = useState<'none' | 'fade'>('fade')
   const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(queue)) }, [queue])
@@ -75,7 +77,7 @@ export default function PresentationPage() {
   async function takeLive(index = current) {
     const item = queue[index]
     if (!item) return
-    const opened = await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html: item.html, showTitle, fontScale })
+    const opened = await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html: item.html, showTitle, fontScale, theme: projectionTheme, transition: liveTransition })
     if (opened) { setLiveId(item.id); setMessage(`Live: ${item.title}`) }
   }
   async function stepLive(direction: -1 | 1) {
@@ -163,9 +165,9 @@ export default function PresentationPage() {
             <div className={`status-channel live-channel ${liveItem ? 'on-air' : ''}`}><small>{liveItem ? 'LIVE' : 'AUDIENCE'}</small><strong>{liveItem?.title ?? 'Blank output'}</strong><span>{liveItem ? `${liveIndex + 1} of ${queue.length}` : 'Projector is blank'}</span></div>
           </div>
           <div className="current-item"><span>{current + 1} / {queue.length}</span><small>{active.kind.replace('-', ' ')}</small><h3>{active.title}</h3><p>{active.subtitle}</p></div>
-          <div className="present-controls"><button disabled={current === 0} onClick={() => { setCurrent((value) => value - 1); setNotes(queue[current - 1]?.notes ?? '') }}><ArrowLeft size={16}/> Previous preview</button><PresentOnDisplay title={active.title} subtitle={active.subtitle} html={active.html} showTitle={showTitle} fontScale={fontScale} onPresented={() => setLiveId(active.id)}/><button disabled={current === queue.length - 1} onClick={() => { setCurrent((value) => value + 1); setNotes(queue[current + 1]?.notes ?? '') }}>Next preview <ArrowRight size={16}/></button></div>
+          <div className="present-controls"><button disabled={current === 0} onClick={() => { setCurrent((value) => value - 1); setNotes(queue[current - 1]?.notes ?? '') }}><ArrowLeft size={16}/> Previous preview</button><PresentOnDisplay title={active.title} subtitle={active.subtitle} html={active.html} showTitle={showTitle} fontScale={fontScale} theme={projectionTheme} transition={liveTransition} onPresented={() => setLiveId(active.id)}/><button disabled={current === queue.length - 1} onClick={() => { setCurrent((value) => value + 1); setNotes(queue[current + 1]?.notes ?? '') }}>Next preview <ArrowRight size={16}/></button></div>
           <div className="live-controls"><button disabled={liveIndex <= 0} onClick={() => void stepLive(-1)}><SkipBack size={16}/> Previous live</button><button className="take-live" onClick={() => void takeLive()}><Radio size={16}/> Take preview live</button><button disabled={liveIndex < 0 || liveIndex >= queue.length - 1} onClick={() => void stepLive(1)}>Next live <SkipForward size={16}/></button><button onClick={() => void blankOutput()}><EyeOff size={16}/> Blank</button></div>
-          <div className="output-options"><label><input type="checkbox" checked={showTitle} onChange={(event) => setShowTitle(event.target.checked)}/>{showTitle ? <Eye size={15}/> : <EyeOff size={15}/>} Show title on audience screen</label><label>Audience text size<select value={fontScale} onChange={(event) => setFontScale(Number(event.target.value))}><option value={0.9}>Small</option><option value={1}>Normal</option><option value={1.15}>Large</option><option value={1.3}>Extra large</option></select></label><span className="shortcut-hint">Ctrl+Enter: take live · B: blank · ←/→: preview</span></div>
+          <div className="output-options"><label><input type="checkbox" checked={showTitle} onChange={(event) => setShowTitle(event.target.checked)}/>{showTitle ? <Eye size={15}/> : <EyeOff size={15}/>} Show title on audience screen</label><label>Audience text size<select value={fontScale} onChange={(event) => setFontScale(Number(event.target.value))}><option value={0.9}>Small</option><option value={1}>Normal</option><option value={1.15}>Large</option><option value={1.3}>Extra large</option><option value={1.45}>Very large</option><option value={1.6}>Huge</option><option value={1.8}>Extra huge</option><option value={2}>Maximum</option></select></label><label>Projection theme<select value={projectionTheme} onChange={(event) => setProjectionTheme(event.target.value as 'light' | 'dark')}><option value="light">Light</option><option value="dark">Dark</option></select></label><label>Live transition<select value={liveTransition} onChange={(event) => setLiveTransition(event.target.value as 'none' | 'fade')}><option value="fade">Fade</option><option value="none">None</option></select></label><span className="shortcut-hint">Ctrl+Enter: take live · B: blank · ←/→: preview</span></div>
           <div className="presentation-preview"><div><header><span>{active.subtitle}</span><h2>{active.title}</h2></header><article dangerouslySetInnerHTML={{ __html: active.html }}/></div></div><label className="speaker-notes">Presenter notes <small>Private — never shown to the audience</small><textarea rows={4} value={notes || active.notes} onChange={(e) => updateActiveNotes(e.target.value)} placeholder="Talking points, timing, or reminders…"/></label>
         </> : <div className="empty-console"><MonitorUp size={42}/><h3>Your presentation is empty</h3><p>Add Recovery Bible verses, hymns, HWMR portions, ministry-book sections, or custom text.</p></div>}
       </section>

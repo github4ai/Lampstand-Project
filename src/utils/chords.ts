@@ -3,6 +3,8 @@ export const CHROMATIC_KEYS = [
   'F#', 'G', 'G#', 'A', 'A#', 'B',
 ] as const
 
+const PARENTHETICAL_CHORD = /\(([A-G](?:#|b)?(?:maj7|maj|min|m|sus[24]?|dim|aug|add\d+|\d+|[+°ø])*(?:\/[A-G](?:#|b)?)?)\)/g
+
 const FLATS: Record<string, string> = {
   Db: 'C#', Eb: 'D#', Gb: 'F#', Ab: 'G#', Bb: 'A#',
 }
@@ -32,17 +34,21 @@ export function transposeChord(chord: string, semitones: number): string {
 }
 
 export function transposeChordLine(line: string, semitones: number): string {
-  return line.replace(/\[([^\]]+)\]/g, (_, chord: string) =>
-    '[' + transposeChord(chord, semitones) + ']')
+  return line
+    .replace(/\[([^\]]+)\]/g, (_, chord: string) => '[' + transposeChord(chord, semitones) + ']')
+    .replace(PARENTHETICAL_CHORD, (_, chord: string) => '(' + transposeChord(chord, semitones) + ')')
 }
 
 export function stripChords(line: string): string {
-  return line.replace(/\[[^\]]+\]/g, '')
+  // Some imported hymn files use (C) rather than [C]. Only remove a
+  // parenthetical marker when it begins with a valid chord root, so normal
+  // lyric asides such as "(repeat)" remain visible.
+  return line.replace(/\[[^\]]+\]/g, '').replace(PARENTHETICAL_CHORD, '')
 }
 
 export function extractChords(lines: string[], semitones: number): string[] {
   const chords = lines.flatMap((line) =>
-    [...transposeChordLine(line, semitones).matchAll(/\[([^\]]+)\]/g)]
-      .map((match) => match[1]))
+    [...transposeChordLine(line, semitones).matchAll(/\[([^\]]+)\]|\(([A-G](?:#|b)?(?:maj7|maj|min|m|sus[24]?|dim|aug|add\d+|\d+|[+°ø])*(?:\/[A-G](?:#|b)?)?)\)/g)]
+      .map((match) => match[1] ?? match[2]))
   return [...new Set(chords)]
 }

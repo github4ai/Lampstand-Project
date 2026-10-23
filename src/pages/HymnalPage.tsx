@@ -251,9 +251,9 @@ function HymnalPage() {
     const chords: Array<{ position: number; value: string }> = []
     let lyric = ''
     let cursor = 0
-    for (const match of transposed.matchAll(/\[([^\]]+)\]/g)) {
+    for (const match of transposed.matchAll(/\[([^\]]+)\]|\(([A-G](?:#|b)?(?:maj7|maj|min|m|sus[24]?|dim|aug|add\d+|\d+|[+°ø])*(?:\/[A-G](?:#|b)?)?)\)/g)) {
       lyric += transposed.slice(cursor, match.index)
-      chords.push({ position: lyric.length, value: match[1] })
+      chords.push({ position: lyric.length, value: match[1] ?? match[2] })
       cursor = (match.index ?? 0) + match[0].length
     }
     lyric += transposed.slice(cursor)
@@ -493,7 +493,7 @@ function HymnalPage() {
             <div className="hymnal-view-switcher" aria-label="Hymn view">
               {(['lyrics', 'chords', 'piano', 'guitar'] as const).map((option) => (
                 <button className={view === option ? 'active' : ''} type="button"
-                  onClick={() => setView(option)} key={option}>{option}</button>
+                  onClick={() => setView(option)} key={option}>{option === 'lyrics' ? 'Text only' : option === 'chords' ? 'With chords' : option}</button>
               ))}
             </div>
             <label>Sounding key<select value={targetKey} onChange={(event) => setTargetKey(event.target.value)}>
@@ -549,7 +549,7 @@ function HymnalPage() {
             {selected.sections.map((section) => (
               <section key={section.label}>
                 <h3>{section.label}</h3>
-                {section.lines.map((line, index) => <p className={view !== 'lyrics' && !/\[[^\]]+\]/.test(line) ? 'no-chords' : undefined} key={index}>{renderLine(line)}</p>)}
+                {section.lines.map((line, index) => <p className={view !== 'lyrics' && !/\[[^\]]+\]|\(([A-G](?:#|b)?(?:maj7|maj|min|m|sus[24]?|dim|aug|add\d+|\d+|[+°ø])*(?:\/[A-G](?:#|b)?)?)\)/.test(line) ? 'no-chords' : undefined} key={index}>{renderLine(line)}</p>)}
               </section>
             ))}
           </div>}

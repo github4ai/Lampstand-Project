@@ -1,1 +1,0 @@
-import{Lt as e}from"./index-BR740aUH.js";async function t(t){let n=await fetch(`${e}/hwmr/library`,{signal:t});if(!n.ok)throw Error(`Unable to load the HWMR library.`);return n.json()}async function n(){let t=await fetch(`${e}/hwmr/refresh`,{method:`POST`});if(!t.ok)throw Error(`The PDF was uploaded, but the HWMR reader could not be refreshed.`);return t.json()}export{n,t};
