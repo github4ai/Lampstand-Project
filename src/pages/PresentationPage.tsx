@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Clock3, Copy, Download, Eye, EyeOff, FileText, MonitorUp, Music2, Plus, Radio, RotateCcw, SkipBack, SkipForward, Trash2, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import PresentOnDisplay, { presentOnSavedDisplay } from '../components/PresentOnDisplay'
+import PresentOnDisplay, { presentOnSavedDisplay, readPresentationPrefs, writePresentationPrefs } from '../components/PresentOnDisplay'
 import { getHwmrLibrary, type HwmrBook } from '../api/hwmr'
 import { getMinistryBookChapter, getMinistryBookChapters, getMinistryBooksLibrary, type MinistryBookSummary, type MinistryChapterSummary } from '../api/ministryBooks'
 import { getRecoveryBibleBooks, getRecoveryBibleChapter, type BibleBook, type BibleVerse } from '../api/recoveryBible'
@@ -47,13 +47,15 @@ export default function PresentationPage() {
   const [timerRunning, setTimerRunning] = useState(false)
   const [message, setMessage] = useState('')
   const [liveId, setLiveId] = useState<string | null>(null)
-  const [showTitle, setShowTitle] = useState(true)
-  const [fontScale, setFontScale] = useState(1)
-  const [projectionTheme, setProjectionTheme] = useState<'light' | 'dark'>('light')
-  const [liveTransition, setLiveTransition] = useState<'none' | 'fade'>('fade')
+  const [savedPresentationPrefs] = useState(readPresentationPrefs)
+  const [showTitle, setShowTitle] = useState(savedPresentationPrefs.showTitle)
+  const [fontScale, setFontScale] = useState(savedPresentationPrefs.fontScale)
+  const [projectionTheme, setProjectionTheme] = useState(savedPresentationPrefs.theme)
+  const [liveTransition, setLiveTransition] = useState(savedPresentationPrefs.transition)
   const importRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(queue)) }, [queue])
+  useEffect(() => { writePresentationPrefs({ showTitle, fontScale, theme: projectionTheme, transition: liveTransition }) }, [showTitle, fontScale, projectionTheme, liveTransition])
   useEffect(() => { if (current >= queue.length) setCurrent(Math.max(0, queue.length - 1)) }, [current, queue.length])
   useEffect(() => { void Promise.all([getRecoveryBibleBooks(), getHymnalLibrary(), getHwmrLibrary(), getMinistryBooksLibrary()]).then(([bible, hymnal, hwmr, ministry]) => { setBooks(bible.books); setBookId(bible.books[0]?.id ?? ''); setHymns(hymnal.hymns); setHymnId(hymnal.hymns[0]?.id ?? ''); setHwmrBooks(hwmr.books); setHwmrBookId(hwmr.books[0]?.id ?? ''); setMinistryBooks(ministry.books); setMinistryBookId(ministry.books[0]?.id ?? '') }).catch((error: Error) => setMessage(error.message)) }, [])
   useEffect(() => { if (!bookId) return; void getRecoveryBibleChapter(bookId, chapter).then((result) => setVerses(result.verses)).catch((error: Error) => setMessage(error.message)) }, [bookId, chapter])

@@ -4,9 +4,42 @@ import './PresentOnDisplay.css'
 
 type Display = { id: string; label: string; primary: boolean }
 const PRESENTATION_DISPLAY_KEY = 'lampstand.presentation.display'
+const PRESENTATION_PREFS_KEY = 'lampstand.presentation.prefs'
 let browserPresentationWindow: Window | null = null
 
 export type PresentationPayload = { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade' }
+
+export type PresentationPrefs = { showTitle: boolean; fontScale: number; theme: 'light' | 'dark'; transition: 'none' | 'fade' }
+
+const DEFAULT_PRESENTATION_PREFS: PresentationPrefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade' }
+
+const clampFontScale = (value: number) => Math.min(2, Math.max(.8, value))
+
+export function readPresentationPrefs(): PresentationPrefs {
+  let stored: Partial<PresentationPrefs> = {}
+  try { stored = JSON.parse(window.localStorage.getItem(PRESENTATION_PREFS_KEY) ?? '') as Partial<PresentationPrefs> } catch { /* First run, or a value from an older build. */ }
+  return {
+    showTitle: stored.showTitle !== false,
+    fontScale: clampFontScale(Number(stored.fontScale) || DEFAULT_PRESENTATION_PREFS.fontScale),
+    theme: stored.theme === 'dark' ? 'dark' : 'light',
+    transition: stored.transition === 'none' ? 'none' : 'fade',
+  }
+}
+
+export function writePresentationPrefs(patch: Partial<PresentationPrefs>): PresentationPrefs {
+  const next = { ...readPresentationPrefs(), ...patch, fontScale: clampFontScale(patch.fontScale ?? readPresentationPrefs().fontScale) }
+  window.localStorage.setItem(PRESENTATION_PREFS_KEY, JSON.stringify(next))
+  return next
+}
+
+export function resolvePresentationSettings(payload: Partial<PresentationPayload>, prefs: PresentationPrefs): PresentationPrefs {
+  return {
+    showTitle: payload.showTitle ?? prefs.showTitle,
+    fontScale: clampFontScale(payload.fontScale ?? prefs.fontScale),
+    theme: (payload.theme ?? prefs.theme) === 'dark' ? 'dark' : 'light',
+    transition: (payload.transition ?? prefs.transition) === 'fade' ? 'fade' : 'none',
+  }
+}
 
 const escapeText = (value: string) => value.replace(/[&<>"']/g, (character) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -20,24 +53,22 @@ const liveHighlightUi = `<div id="highlight-help">Select text to highlight</div>
 
 export async function presentOnSavedDisplay(payload: PresentationPayload) {
   const displayId = payload.displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
-  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.open({ ...payload, displayId })
+  const settings = resolvePresentationSettings(payload, readPresentationPrefs())
+  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.open({ ...payload, displayId, ...settings })
   if (!browserPresentationWindow || browserPresentationWindow.closed) browserPresentationWindow = window.open('', 'lampstand-presentation', 'popup,width=1200,height=800')
   if (!browserPresentationWindow) return false
-  const showTitle = payload.showTitle !== false
-  const scale = Math.min(2, Math.max(.8, payload.fontScale ?? 1))
-  const theme = payload.theme === 'dark' ? 'dark' : 'light'
-  const transition = payload.transition === 'fade' ? ' audience-fade' : ''
+  const transitionClass = settings.transition === 'fade' ? 'audience-fade' : ''
   browserPresentationWindow.document.open()
   browserPresentationWindow.document.write(payload.blank
     ? '<!doctype html><html><head><title>Lampstand Presentation</title><style>html,body{width:100%;height:100%;margin:0;background:#05070a}</style></head><body></body></html>'
-    : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeText(payload.title)}</title><style>${audienceLayoutStyles}${showTitle ? '' : 'main{grid-template-rows:minmax(0,1fr)}.slide-header{display:none}'} .slide-content{font-size:calc(clamp(20px,1.75vw,34px)*${scale})}${liveHighlightStyles}</style></head><body class="audience-${theme}"><main class="${transition.trim()}"><header class="slide-header">${payload.subtitle ? `<small>${escapeText(payload.subtitle)}</small>` : ''}<h1>${escapeText(payload.title)}</h1></header><section class="slide-content">${payload.html}</section></main>${liveHighlightUi}</body></html>`)
+    : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeText(payload.title)}</title><style>${audienceLayoutStyles}${settings.showTitle ? '' : 'main{grid-template-rows:minmax(0,1fr)}.slide-header{display:none}'} .slide-content{font-size:calc(clamp(20px,1.75vw,34px)*${settings.fontScale})}${liveHighlightStyles}</style></head><body class="audience-${settings.theme}"><main class="${transitionClass}"><header class="slide-header">${payload.subtitle ? `<small>${escapeText(payload.subtitle)}</small>` : ''}<h1>${escapeText(payload.title)}</h1></header><section class="slide-content">${payload.html}</section></main>${liveHighlightUi}</body></html>`)
   browserPresentationWindow.document.close()
   browserPresentationWindow.focus()
   try { await browserPresentationWindow.document.documentElement.requestFullscreen() } catch { /* Browser fullscreen permission is controlled by the browser. */ }
   return true
 }
 
-export default function PresentOnDisplay({ title, subtitle, html, disabled = false, showTitle = true, fontScale = 1, theme = 'light', transition = 'none', onPresented }: { title: string; subtitle?: string; html: string; disabled?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; onPresented?: () => void }) {
+export default function PresentOnDisplay({ title, subtitle, html, disabled = false, showTitle, fontScale, theme, transition, onPresented }: { title: string; subtitle?: string; html: string; disabled?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; onPresented?: () => void }) {
   const [displays, setDisplays] = useState<Display[]>([])
   const [displayId, setDisplayId] = useState('')
   useEffect(() => {
