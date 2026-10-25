@@ -255,8 +255,12 @@ function DocumentsPage() {
         ? `${uploaded} uploaded; ${failures.length} failed. ${failures.slice(0, 2).join(' ')}`
         : `${uploaded} document${uploaded === 1 ? '' : 's'} added and waiting to be indexed.`)
       if (isHwmrUpload && uploaded > 0) {
-        const audit = await refreshHwmrLibrary()
-        setUploadMessage(`${uploaded} HWMR PDF${uploaded === 1 ? '' : 's'} added. Reader verified: ${audit.dailyPortions} daily portions and ${audit.morningVerses} Morning Nourishment verse blocks.`)
+        try {
+          const audit = await refreshHwmrLibrary()
+          setUploadMessage(`${uploaded} HWMR PDF${uploaded === 1 ? '' : 's'} added. Reader verified: ${audit.dailyPortions} daily portions and ${audit.morningVerses} Morning Nourishment verse blocks.${audit.notice ? ` ${audit.notice}` : ''}`)
+        } catch (refreshError) {
+          setUploadMessage(refreshError instanceof Error ? refreshError.message : 'The PDF was uploaded, but the HWMR reader could not be refreshed.')
+        }
       }
       setUploadFiles([])
       setUploadInputKey((value) => value + 1)

@@ -47,7 +47,8 @@ export function shortBibleBookName(name: string) {
 }
 
 const BOOK_PATTERN = BOOKS.map(([pattern]) => `(?:${pattern})`).join('|')
-const VERSE_ITEM = `\\d+(?:\\s*[-–—]\\s*\\d+)?`
+// LSMP editions stop a range part-way through a verse, printed as "2 Sam. 7:12-14a".
+const VERSE_ITEM = `\\d+[a-c]?(?:\\s*[-–—]\\s*\\d+[a-c]?)?`
 const VERSE_LIST = `${VERSE_ITEM}(?:\\s*,\\s*${VERSE_ITEM})*`
 const REFERENCE_PATTERN = new RegExp(`\\b(?:(${BOOK_PATTERN})\\s+)?(\\d+)\\s*:\\s*(${VERSE_LIST}(?:\\s*;\\s*\\d+\\s*:\\s*${VERSE_LIST})*)`, 'gi')
 
@@ -78,11 +79,12 @@ export function linkBibleReferences(text: string, defaultBookSlug = ''): BibleTe
     if (index > position) segments.push({ type: 'text', text: text.slice(position, index) })
     let chapter = Number(match[2])
     let first = true
-    const itemPattern = /(^|\s*[,;]\s*)(?:(\d+)\s*:\s*)?(\d+)(?:\s*[-–—]\s*(\d+))?/g
+    const itemPattern = /(^|\s*[,;]\s*)(?:(\d+)\s*:\s*)?(\d+[a-c]?)(?:\s*[-–—]\s*(\d+[a-c]?))?/g
+    const numeral = (value: string) => Number(value.replace(/[a-c]$/, ''))
     for (const item of match[3].matchAll(itemPattern)) {
       if (item[1]) segments.push({ type: 'text', text: item[1] })
       if (item[2]) chapter = Number(item[2])
-      const verse = Number(item[3]); const verseEnd = Number(item[4] || verse)
+      const verse = numeral(item[3]); const verseEnd = item[4] ? numeral(item[4]) : verse
       const bookLabel = first && match[1] ? `${match[1]} ` : ''
       const chapterLabel = first || item[2] ? `${chapter}:` : ''
       segments.push({ type: 'reference', label: `${bookLabel}${chapterLabel}${item[3]}${item[4] ? `-${item[4]}` : ''}`, bookSlug: currentBookSlug, chapter, verse, verseEnd })

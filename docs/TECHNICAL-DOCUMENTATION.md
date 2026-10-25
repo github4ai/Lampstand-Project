@@ -6,7 +6,7 @@ Lampstand Project is an Electron desktop application containing a React and Type
 
 - Electron serves the production frontend on `127.0.0.1:5173`.
 - The unified local gateway runs on `127.0.0.1:9656`.
-- A legacy API can be proxied from `127.0.0.1:9655`.
+- A legacy API can be proxied from `127.0.0.1:9655`. The gateway answers Knowledge browsing itself and forwards only the paths it has not taken over.
 - Ollama normally runs on `127.0.0.1:11434`.
 - Local Whisper normally runs on `127.0.0.1:8000`.
 - Optional media providers use their separately configured local endpoints.
@@ -36,11 +36,13 @@ The Windows installer packages `data/` as an Electron extra resource. Release pr
 
 Run `pnpm run prepare:library-bundle` before packaging. The command stages externally maintained source libraries and fails when a required library is missing. Backup SQLite files are excluded from the installer.
 
-At runtime, `desktop/main.cjs` explicitly maps every packaged library to its resource path. User-created Ministry imports are stored separately under Electron's user-data directory.
+At runtime, `desktop/main.cjs` explicitly maps every packaged library to its resource path, together with the script locations (`AIOS_AI_ROOT`, `AIOS_HWMR_IMPORTER_SCRIPT`, `AIOS_INDEX_SCRIPT`), because `process.cwd()` in an installed application is not the repository. User-created Ministry imports are stored separately under Electron's user-data directory.
 
 ## Knowledge and indexing
 
 Knowledge documents are organized by category, subcollection, and optional subject. The indexing pipeline extracts supported text, chunks it, builds embeddings and FAISS data, and records document metadata. Scanned PDFs pass through OCR before indexing. Production user knowledge and indexes live under the Electron user-data directory unless overridden.
+
+Category, document, outline, viewer, and chunk-context browsing is answered locally by `server/knowledge.mjs` from the files the indexer writes, so the Knowledge screens work while the legacy API is stopped. Document detail reports its page, chunk, vector, and word counts from the stored artifacts, takes the embedding dimensions from each `.npy` header, and hashes the source file itself.
 
 Key environment variables include:
 
@@ -50,10 +52,14 @@ Key environment variables include:
 - `AIOS_INDEX_PYTHON`
 - `AIOS_INDEX_SCRIPT`
 - `AIOS_INDEX_BUILDER`
+- `AIOS_AI_ROOT` — the sibling AI root that locates `Knowledge/`, `Index/`, and the Python runtimes when the app is packaged
 
 ## Ministry import pipeline
 
-- HWMR PDFs are transformed by `scripts/import-hwmr.py` into structured daily and weekly content.
+- HWMR PDFs are transformed by `scripts/import-hwmr.py` into structured daily and weekly content. The importer reads `<AIOS_KNOWLEDGE_DIR>/Ministry/HWMR`, which is where Documents uploads land, so a PDF added through the app is picked up by the next refresh. `AIOS_HWMR_SOURCE_DIR` overrides that folder and `AIOS_HWMR_IMPORT_PYTHON` the interpreter used for it.
+- Every refresh ends in a quality check of `passed` or `passed_with_exclusions`, and both publish. A file the reader cannot use is returned as an exclusion naming the file and the reason, which the app appends to the upload message; a refresh that throws reports the importer's own closing lines rather than a bare failure.
+- Morning Nourishment references are stored so each one resolves on its own: a heading's prose lead-in ("In Revelation 20:1-4") is dropped, and a bare `8:11` inherits the book printed above it. `src/utils/bibleReferences.test.ts` requires every stored reference to link exactly one passage, which is the release gate for this library.
+- Weekly hymns set as music are rebuilt from the two-up PDF sheets: syllable fragments are rejoined along the printed hyphen strokes, and chord rows — including the flat the sheet draws as `©` — are kept out of the lyric text.
 - Recovery Bible text and study aids use the Recovery import scripts.
 - Ministry Books are imported from the authorized single-file HTML archive into SQLite by `scripts/import-ministry-books-singlefile.py`.
 - The Ministry Books importer distinguishes Content, Prefaces, numbered chapters, and appendices. Section display titles combine the role/number and actual heading.

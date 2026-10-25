@@ -1,4 +1,4 @@
-import { BookOpen, Download, FileText, FolderPlus, Languages, UserRoundCheck, Wrench } from 'lucide-react'
+import { BookOpen, Download, FileText, FolderPlus, Languages, MonitorUp, UserRoundCheck, Wrench } from 'lucide-react'
 import { useState } from 'react'
 import MarkdownMessage from '../components/Message/MarkdownMessage'
 import installationGuide from '../../docs/INSTALLATION-GUIDE.md?raw'
@@ -14,6 +14,8 @@ type GuideKey = keyof typeof guides
 
 const quickHelp = [
   { icon: FolderPlus, title: 'Custom categories', text: 'In Documents, choose Add custom category to keep personal, business, research, or other material separate.' },
+  { icon: FileText, title: 'HWMR uploads', text: 'Adding a Morning Revival PDF in Documents rebuilds the HWMR reader and names any file it could not use.' },
+  { icon: MonitorUp, title: 'Scripture footnotes on screen', text: 'In Presentation Studio, set Footnotes to Show before adding verses to print their Recovery Bible notes underneath.' },
   { icon: UserRoundCheck, title: 'Remembered profile', text: 'Lampstand restores the last selected profile on this computer. PIN protection and assigned permissions still apply.' },
   { icon: Languages, title: 'Translation fallback', text: 'Hybrid mode tries suitable local Ollama models first, then only the cloud providers configured in Settings.' },
 ]

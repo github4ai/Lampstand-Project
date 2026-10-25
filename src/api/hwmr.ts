@@ -5,7 +5,7 @@ export interface HwmrDay { day: number; pages: [number, number]; morningVerses: 
 export interface HwmrHymn { number: string; pages: [number, number]; text: string }
 export interface HwmrWeek { number: number; title: string; outline: string; days: HwmrDay[]; hymn: HwmrHymn | null }
 export interface HwmrBook { id: string; fileName: string; title: string; generalSubject: string; volume: string; author: string; event: string; keyStatements: string[]; pageCount: number; structure?: 'weekly' | 'messages'; weeks: HwmrWeek[] }
-export interface HwmrAudit { status: 'passed'; checkedAt: string; books: number; weeks: number; weeklyBooks: number; dailyPortions: number; morningVerses: number }
+export interface HwmrAudit { status: 'passed' | 'passed_with_exclusions'; checkedAt: string; books: number; weeks: number; weeklyBooks: number; dailyPortions: number; morningVerses: number; excluded?: Array<{ file: string; reason: string }>; notice?: string }
 
 export async function getHwmrLibrary(signal?: AbortSignal) {
   const response = await fetch(`${AIOS_API_BASE_URL}/hwmr/library`, { signal })
@@ -15,6 +15,9 @@ export async function getHwmrLibrary(signal?: AbortSignal) {
 
 export async function refreshHwmrLibrary() {
   const response = await fetch(`${AIOS_API_BASE_URL}/hwmr/refresh`, { method: 'POST' })
-  if (!response.ok) throw new Error('The PDF was uploaded, but the HWMR reader could not be refreshed.')
-  return response.json() as Promise<HwmrAudit & { qualityCheck: 'passed' }>
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({})) as { detail?: string }
+    throw new Error(body.detail || 'The PDF was uploaded, but the HWMR reader could not be refreshed.')
+  }
+  return response.json() as Promise<HwmrAudit & { qualityCheck: HwmrAudit['status'] }>
 }

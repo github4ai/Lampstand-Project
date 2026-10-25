@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { inspectKnowledgeHealth, listKnowledgeSources, readKnowledgeContext, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
+import { inspectKnowledgeHealth, listKnowledgeSources, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
 
 const temporaryFolders = []
 
@@ -110,6 +110,32 @@ describe('knowledge document formats', () => {
 
     const context = await readKnowledgeContext('Ministry', 'lesson', 2, 1, config)
     expect(context.chunks.map((chunk) => [chunk.id, chunk.is_current])).toEqual([[1, false], [2, true], [3, false]])
+  })
+
+  it('serves a category and its document detail without the legacy API', async () => {
+    const config = await testConfig()
+    await saveKnowledgeUpload(uploadForm('lesson.pdf', 'lesson content'), config)
+    const chunksFolder = join(config.knowledgeIndexDir, 'Ministry', 'Chunks')
+    await mkdir(chunksFolder, { recursive: true })
+    await writeFile(join(chunksFolder, 'lesson_chunks.json'), JSON.stringify([
+      { text: 'First lesson here', page: 1 },
+      { text: 'Second lesson here', page: 2 },
+    ]))
+    const embeddingsFolder = join(config.knowledgeIndexDir, 'Ministry', 'Embeddings')
+    await mkdir(embeddingsFolder, { recursive: true })
+    await writeFile(join(embeddingsFolder, 'lesson_embeddings.npy'),
+      Buffer.from('\x93NUMPY\x01\x00\x1a\x00{\'descr\': \'<f4\', \'shape\': (2, 384)}\n', 'latin1'))
+
+    const category = await readKnowledgeCategory('ministry', config)
+    expect(category).toMatchObject({ name: 'Ministry', document_count: 1, indexed_document_count: 1, chunk_count: 2 })
+
+    const detail = await readKnowledgeDocument('Ministry', 'lesson', config)
+    expect(detail.statistics).toMatchObject({ pages: 2, chunks: 2, vectors: 2, words: 6 })
+    expect(detail.embedding_dimensions).toBe(384)
+    expect(detail.pages).toEqual([1, 2])
+    expect(detail.source_hash).toMatch(/^[0-9a-f]{64}$/)
+
+    await expect(readKnowledgeCategory('Missing', config)).rejects.toThrow('The knowledge category "Missing" was not found on this computer.')
   })
 
   it('discovers lessons and chapters inside an indexed textbook', async () => {

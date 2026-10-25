@@ -252,6 +252,9 @@ async function startLocalServices(root) {
     if (existsSync(bundledKnowledgeIndex)) await cp(bundledKnowledgeIndex, knowledgeIndexDir, { recursive: true, force: false, errorOnExist: false })
   }
   const overrides = libraryOverrideRoot()
+  // The Python runtime that owns the index builder sits beside the knowledge folder, not inside
+  // the installed app, so the gateway has to be told where it is.
+  const aiRuntimeRoot = existsSync(join(adjacentAiRoot, 'ai-env')) ? adjacentAiRoot : (existsSync('I:\\AI') ? 'I:\\AI' : adjacentAiRoot)
   const preferOverride = (relative, bundled) => existsSync(join(overrides, relative)) ? join(overrides, relative) : bundled
   Object.assign(process.env, {
     AIOS_API_PORT: String(API_PORT),
@@ -268,6 +271,9 @@ async function startLocalServices(root) {
     AIOS_KNOWLEDGE_DIR: knowledgeDir,
     AIOS_KNOWLEDGE_INDEX_DIR: knowledgeIndexDir,
     AIOS_KNOWLEDGE_TRASH_DIR: join(userData, 'data', 'knowledge-trash'),
+    AIOS_AI_ROOT: aiRuntimeRoot,
+    AIOS_HWMR_IMPORTER_SCRIPT: join(root, 'scripts', 'import-hwmr.py'),
+    AIOS_INDEX_SCRIPT: join(root, 'scripts', 'prepare-and-index.py'),
     AIOS_DOCUMENT_PYTHON: join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
     AIOS_PRONUNCIATION_PYTHON: join(process.env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe'),
     AIOS_DOCUMENT_TRANSLATION_SCRIPT: join(root, 'scripts', 'translate-document.py'),

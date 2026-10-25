@@ -5,7 +5,7 @@ import { loadConfig } from './config.mjs'
 import { generateTextWithProviders, transcribeWithProviders, translateWithProviders } from './providers.mjs'
 import { cancelMediaGeneration, createMediaGeneration, getMediaGeneration, listMediaGenerations, listWanVideos, proxyAudioFile, proxyComfyFile, proxyWanFile } from './media.mjs'
 import { getAiServicesStatus, repairAiServices, startAiServices, unloadAiModels } from './services.mjs'
-import { getKnowledgeIndexStatus, inspectKnowledgeHealth, listKnowledgeSources, listKnowledgeSubcollections, readKnowledgeContext, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, startKnowledgeIndex, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
+import { getKnowledgeIndexStatus, inspectKnowledgeHealth, listKnowledgeSources, listKnowledgeSubcollections, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, startKnowledgeIndex, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
 import { pipeWebStream } from './streaming.mjs'
 import { importConfiguredHymnal, readHymnalLibrary } from './hymnal-library.mjs'
 import { readHwmrLibrary, refreshHwmrLibrary } from './hwmr-library.mjs'
@@ -337,7 +337,6 @@ export function createAiosServer() {
       const knowledgeUrl = new URL(request.url, `http://${request.headers.host}`)
       const outlineMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/outline$/)
       if (outlineMatch) {
-        if (decodeURIComponent(outlineMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeOutline(
           decodeURIComponent(outlineMatch[1]), decodeURIComponent(outlineMatch[2]), config,
         ), origin)
@@ -345,7 +344,6 @@ export function createAiosServer() {
 
       const contextMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/viewer\/(\d+)\/context$/)
       if (contextMatch) {
-        if (decodeURIComponent(contextMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeContext(
           decodeURIComponent(contextMatch[1]), decodeURIComponent(contextMatch[2]), contextMatch[3],
           knowledgeUrl.searchParams.get('radius'), config,
@@ -354,7 +352,6 @@ export function createAiosServer() {
 
       const viewerMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)\/viewer\/(\d+)$/)
       if (viewerMatch) {
-        if (decodeURIComponent(viewerMatch[1]).toLowerCase() !== 'school') return proxyLegacy(request, response, origin)
         return send(response, 200, await readKnowledgeViewer(
           decodeURIComponent(viewerMatch[1]), decodeURIComponent(viewerMatch[2]), viewerMatch[3], config,
         ), origin)
@@ -593,6 +590,18 @@ export function createAiosServer() {
       if (audioMatch) {
         const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
         return await proxyAudioFile(decodeURIComponent(audioMatch[1]), config, response, allowedOrigin)
+      }
+
+      // The category and document screens read the index folder on this computer, so the
+      // Knowledge library does not need the legacy service running.
+      const categoryMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)$/)
+      if (categoryMatch) {
+        return send(response, 200, await readKnowledgeCategory(decodeURIComponent(categoryMatch[1]), config), origin)
+      }
+
+      const documentMatch = request.method === 'GET' && knowledgeUrl.pathname.match(/^\/knowledge\/([^/]+)\/([^/]+)$/)
+      if (documentMatch) {
+        return send(response, 200, await readKnowledgeDocument(decodeURIComponent(documentMatch[1]), decodeURIComponent(documentMatch[2]), config), origin)
       }
 
       return await proxyLegacy(request, response, origin)

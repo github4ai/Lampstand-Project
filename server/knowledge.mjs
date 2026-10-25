@@ -232,6 +232,80 @@ export async function readKnowledgeLibrary(config) {
   }
 }
 
+function missing(name) {
+  const error = new Error(`The knowledge ${name} was not found on this computer.`)
+  error.status = 404
+  return error
+}
+
+export async function readKnowledgeCategory(categoryValue, config) {
+  const library = await readKnowledgeLibrary(config)
+  const name = safeSegment(categoryValue, 'Category')
+  const category = library.categories.find((item) => item.name.toLowerCase() === name.toLowerCase())
+  if (!category) throw missing(`category "${name}"`)
+  return category
+}
+
+async function readHead(path, length) {
+  const parts = []
+  for await (const part of createReadStream(path, { start: 0, end: length - 1 })) parts.push(part)
+  return Buffer.concat(parts)
+}
+
+async function readEmbeddingShape(path) {
+  try {
+    if (Buffer.compare(await readHead(path, 6), Buffer.from('\x93NUMPY', 'latin1')) !== 0) return null
+    const shape = (await readHead(path, 128)).toString('latin1').match(/'shape':\s*\(([^)]*)\)/)?.[1] ?? ''
+    const sizes = shape.split(',').map((value) => Number.parseInt(value.trim(), 10)).filter(Number.isFinite)
+    return { vectors: sizes[0] ?? 0, dimensions: sizes.length > 1 ? sizes[1] : 0 }
+  } catch { return null }
+}
+
+export async function readKnowledgeDocument(categoryValue, documentValue, config) {
+  const category = await readKnowledgeCategory(categoryValue, config)
+  const name = safeSegment(documentValue, 'Document')
+  const document = category.documents.find((item) =>
+    item.stem.toLowerCase() === name.toLowerCase() || basename(item.name, extname(item.name)).toLowerCase() === name.toLowerCase())
+  if (!document) throw missing(`document "${name}"`)
+  const artifacts = [document.chunk_file, document.embedding_file, ...document.faiss_files].filter(Boolean)
+  let chunks = []
+  if (document.chunk_file) {
+    const chunkPath = resolve(config.knowledgeIndexDir, category.name, 'Chunks', document.chunk_file.name)
+    try { chunks = await readFile(chunkPath, 'utf8').then((value) => JSON.parse(value)) } catch { chunks = [] }
+  }
+  const list = Array.isArray(chunks) ? chunks : []
+  const pages = [...new Set(list.map((item) => Number(item?.page ?? item?.metadata?.page)).filter(Number.isFinite))].sort((left, right) => left - right)
+  const statistics = {
+    pages: pages.length || null,
+    chunks: list.length || document.chunks || 0,
+    embeddings: document.embeddings ?? 0,
+    vectors: document.embeddings ?? 0,
+    words: list.reduce((total, item) => total + String(item?.text ?? '').split(/\s+/).filter(Boolean).length, 0),
+  }
+  const shape = document.embedding_file ? await readEmbeddingShape(resolve(config.knowledgeIndexDir, document.embedding_file.relative_path)) : null
+  if (shape?.vectors) statistics.vectors = shape.vectors
+  const sizes = await Promise.all(artifacts.map((artifact) => stat(resolve(config.knowledgeIndexDir, artifact.relative_path)).catch(() => null)))
+  return {
+    ...document,
+    category: category.name,
+    source_hash: await hashKnowledgeSource(resolve(config.knowledgeDir, document.relative_path)),
+    statistics,
+    embedding_dimensions: shape?.dimensions ?? 0,
+    pages,
+    artifact_size_bytes: sizes.reduce((total, file) => total + (file?.size ?? 0), 0),
+    artifacts,
+    metadata_files: category.metadata_files.filter((file) => file.stem.toLowerCase() === document.stem.toLowerCase()),
+  }
+}
+
+async function hashKnowledgeSource(path) {
+  const hash = createHash('sha256')
+  try {
+    for await (const part of createReadStream(path)) hash.update(part)
+  } catch { return '' }
+  return hash.digest('hex')
+}
+
 function normalizeViewerChunk(item, index, total, document, category, chunkFile) {
   const text = typeof item?.text === 'string' ? item.text : ''
   const pageValue = item?.page ?? item?.metadata?.page

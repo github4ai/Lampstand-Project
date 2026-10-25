@@ -21,6 +21,9 @@ Choose an assistant in the sidebar and start a conversation. Responses can use i
 - **Knowledge** searches indexed content and opens the exact matching passage.
 - Supported content includes PDF, HTML/HTM, EPUB, DOCX, TXT, Markdown, PDB, and supported presentation files.
 - Scanned PDFs require OCR before their text can be searched reliably.
+- An added file is stored immediately but is only searchable after **Index knowledge** has run.
+
+Uploading a **Holy Word for Morning Revival** PDF to its Ministry category also rebuilds the HWMR reader. The message reports the verified daily portions and verse blocks, and names any file the reader could not use and why.
 
 When adding School material, Level C is used automatically. Select its subject so School searches and activities remain grounded in the correct textbook.
 
@@ -46,6 +49,31 @@ The Ministry dashboard contains:
 - **Ministry Books:** browse by author, title, and section. Content, Prefaces, chapters, and appendices are labeled separately.
 
 Reading pages support full-page mode. Use the panel button to show or hide navigation while remaining in full-page reading.
+
+### Presentation Studio
+
+Presentation Studio (sidebar: **Presentation**) builds the running order for a meeting and projects it onto one persistent audience window. That window stays open from the first slide to the last, so nothing flashes open or closed while the meeting is under way.
+
+**Load a source.** The source rack has five tabs:
+
+- **Recovery Bible** — pick the book and chapter from the abbreviation buttons, tick the verses, and add them as one slide. Ticked verses stay in the verse basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
+- **Hymnal** — search by number or title, then set **Lyrics** (text only or with chords), **Columns** (1, 2, or 3), and **Chorus** (once, or after every stanza). With chords you can also transpose with **Key**. The line under the hymn title says whether the complete hymn fits one slide or needs more columns.
+- **HWMR** — add the week outline, one day (Morning Nourishment verses with its message and Today's Reading), or the weekly hymn.
+- **Ministry Books** — add a whole section of a selected book.
+- **Custom portion** — paste an announcement, a burden-verse, an outline, or any other text.
+
+**Show footnotes on a Scripture slide.** Under the book and chapter buttons, choose **Footnotes → Show** before adding the verses, and the Recovery Bible notes print under the verse they explain. **Hide** projects the verses alone. While **Show** is selected, the studio tells you how many notes the basket will carry. The choice is fixed when the slide is created: change it and add the slide again.
+
+**Run the show.** Every added item appears in **Run of show**, which saves itself and can be reordered, duplicated, removed, exported as a show file, or imported on another computer. The console keeps **Preview** (what you are cueing) and **Live** (what the audience sees) separate:
+
+- **Take preview live** — or `Ctrl+Enter` — puts the cued slide on the projector.
+- **Previous live / Next live** — steps the audience through the queue without disturbing your preview.
+- **Blank** — or `B` — blacks out the projector while the window stays open.
+- `←` / `→` — move the preview through the queue.
+
+**Audience settings** take effect on the next slide you take live and are remembered between meetings: title on or off, audience text size, light or dark projection theme, fade or cut transition, and fade speed. Choose the projector in **Screen** when more than one display is connected. Presenter notes stay on the studio screen and never reach the projector.
+
+**During the meeting**, a slide that is longer than the window scrolls with the mouse wheel, `↑`/`↓`, `Page Up`/`Page Down`, `Space`, `Home` or `End`. Selecting text on the audience screen opens a small highlight toolbar, so a word can be marked while it is being read. The **meeting timer** in the console tracks elapsed time and can be paused or reset.
 
 ### School
 
@@ -106,4 +134,6 @@ Use **Settings** to check services, create backups, install optional dependencie
 - **No search results:** verify that the document is indexed and that the correct category, subcollection, and subject were selected.
 - **Scanned PDF has no answers:** run OCR and re-index it.
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
+- **Newly added document is not searchable:** open **Documents** and run **Index knowledge**.
+- **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the **Screen** choice in the Presentation card; if the output was blanked, take any slide live to bring it back.
 - **Access is not available:** sign in again with the exact invited email or ask the owner to restore access.

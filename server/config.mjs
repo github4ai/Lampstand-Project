@@ -17,8 +17,15 @@ function documentPython(env, aiRoot) {
   return resolve(candidates.find((candidate)=>existsSync(candidate))||candidates[0])
 }
 
+function importPython(env, aiRoot) {
+  // The HWMR reader needs the PDF libraries, which live in the ai-env interpreter when it exists.
+  const candidates = [env.AIOS_HWMR_IMPORT_PYTHON?.trim(), join(aiRoot, 'ai-env', 'Scripts', 'python.exe'), join(env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', 'python.exe')].filter(Boolean)
+  return resolve(candidates.find((candidate) => existsSync(candidate)) || candidates[0])
+}
+
 export function loadConfig(env = process.env) {
-  const aiRoot = resolve(process.cwd(), '..')
+  const aiRoot = resolve(env.AIOS_AI_ROOT?.trim() || join(process.cwd(), '..'))
+  const knowledgeDir = resolve(env.AIOS_KNOWLEDGE_DIR?.trim() || join(aiRoot, 'Knowledge'))
   return {
     projectRoot: resolve(process.cwd()),
     mediaJobsFile: resolve(env.AIOS_MEDIA_JOBS_FILE?.trim() || join(process.cwd(), 'data', 'media-jobs.json')),
@@ -69,7 +76,7 @@ export function loadConfig(env = process.env) {
     maxDocumentBytes: Number(env.AIOS_MAX_DOCUMENT_MB || 50) * 1024 * 1024,
     documentPython: documentPython(env, aiRoot),
     documentTranslationScript: resolve(env.AIOS_DOCUMENT_TRANSLATION_SCRIPT?.trim() || join(process.cwd(), 'scripts', 'translate-document.py')),
-    knowledgeDir: resolve(env.AIOS_KNOWLEDGE_DIR?.trim() || join(process.cwd(), '..', 'Knowledge')),
+    knowledgeDir,
     knowledgeTrashDir: resolve(env.AIOS_KNOWLEDGE_TRASH_DIR?.trim() || join(process.cwd(), '..', 'Knowledge Trash')),
     knowledgeIndexDir: resolve(env.AIOS_KNOWLEDGE_INDEX_DIR?.trim() || join(process.cwd(), '..', 'Index')),
     maxKnowledgeBytes: Number(env.AIOS_MAX_KNOWLEDGE_MB || 100) * 1024 * 1024,
@@ -81,9 +88,9 @@ export function loadConfig(env = process.env) {
     knowledgeIndexCwd: aiRoot,
     hymnalLibraryFile: resolve(env.AIOS_HYMNAL_LIBRARY_FILE?.trim() || join(process.cwd(), 'data', 'hymnal-library.json')),
     hwmrLibraryFile: resolve(env.AIOS_HWMR_LIBRARY_FILE?.trim() || join(process.cwd(), 'data', 'hwmr-library.json')),
-    hwmrSourceDir: resolve(env.AIOS_HWMR_SOURCE_DIR?.trim() || join(process.cwd(), '..', 'Knowledge', 'Ministry', 'HWMR')),
+    hwmrSourceDir: resolve(env.AIOS_HWMR_SOURCE_DIR?.trim() || join(knowledgeDir, 'Ministry', 'HWMR')),
     hwmrImporterScript: resolve(env.AIOS_HWMR_IMPORTER_SCRIPT?.trim() || join(process.cwd(), 'scripts', 'import-hwmr.py')),
-    hwmrImportPython: resolve(env.AIOS_HWMR_IMPORT_PYTHON?.trim() || join(aiRoot, 'ai-env', 'Scripts', 'python.exe')),
+    hwmrImportPython: importPython(env, aiRoot),
     hymnalMirrorRoot: resolve(env.AIOS_HYMNAL_MIRROR_ROOT?.trim() || 'I:\\AI\\Libraries\\HymnalNet\\www.hymnal.net'),
     recoveryBibleDir: resolve(env.AIOS_RECOVERY_BIBLE_DIR?.trim() || join(process.cwd(), '..', 'Knowledge', 'Ministry', 'Bible', 'Recovery Version')),
     recoveryFootnotesDir: resolve(env.AIOS_RECOVERY_FOOTNOTES_DIR?.trim() || 'I:\\AI\\Libraries\\Ministry\\Footnotes\\footnotes\\bibleread.online\\note'),

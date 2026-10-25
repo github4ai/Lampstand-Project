@@ -40,6 +40,35 @@ describe('HWMR library server', () => {
     })).resolves.toMatchObject({ qualityCheck: 'passed', dailyPortions: 84, morningVerses: 150 })
   })
 
+  it('reports the PDFs an import had to leave out', async () => {
+    const folder = await temporaryFolder()
+    const result = { qualityCheck: 'passed_with_exclusions', dailyPortions: 84, morningVerses: 150, excluded: [{ file: 'believers.pdf', reason: 'Week 6 has no parsed verses' }] }
+    const importer = join(folder, 'importer.mjs')
+    await writeFile(importer, `console.log(${JSON.stringify(JSON.stringify(result))})`)
+
+    await expect(refreshHwmrLibrary({
+      hwmrImportPython: process.execPath,
+      hwmrImporterScript: importer,
+      hwmrSourceDir: folder,
+      hwmrLibraryFile: join(folder, 'library.json'),
+      projectRoot: folder,
+    })).resolves.toMatchObject({ notice: '1 PDF not added — believers.pdf: Week 6 has no parsed verses' })
+  })
+
+  it('carries the importer failure out of the server log', async () => {
+    const folder = await temporaryFolder()
+    const importer = join(folder, 'importer.mjs')
+    await writeFile(importer, 'console.error("ModuleNotFoundError: No module named fitz"); process.exit(1)')
+
+    await expect(refreshHwmrLibrary({
+      hwmrImportPython: process.execPath,
+      hwmrImporterScript: importer,
+      hwmrSourceDir: folder,
+      hwmrLibraryFile: join(folder, 'library.json'),
+      projectRoot: folder,
+    })).rejects.toThrow('No module named')
+  })
+
   it('rejects an unverified refresh result', async () => {
     const folder = await temporaryFolder()
     const importer = join(folder, 'importer.mjs')
@@ -51,6 +80,6 @@ describe('HWMR library server', () => {
       hwmrSourceDir: folder,
       hwmrLibraryFile: join(folder, 'library.json'),
       projectRoot: folder,
-    })).rejects.toThrow('did not pass its quality check')
+    })).rejects.toThrow('could not be refreshed')
   })
 })
