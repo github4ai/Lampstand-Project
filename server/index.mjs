@@ -403,7 +403,7 @@ export function createAiosServer() {
 
       if (request.method === 'GET' && request.url.startsWith('/recovery-bible/concordance?')) {
         const params = new URL(request.url, `http://${request.headers.host}`).searchParams
-        return send(response, 200, await searchRecoveryBible(params.get('q'), params.get('limit'), config), origin)
+        return send(response, 200, await searchRecoveryBible(params.get('q'), params.get('limit'), config, params.get('match')), origin)
       }
 
       if (request.method === 'GET' && request.url === '/life-study/books') {
@@ -431,7 +431,7 @@ export function createAiosServer() {
 
       if (request.method === 'GET' && request.url.startsWith('/ministry-books/search?')) {
         const params = new URL(request.url, `http://${request.headers.host}`).searchParams
-        return send(response, 200, await searchMinistryBooks(params.get('q'), params.get('limit'), config), origin)
+        return send(response, 200, await searchMinistryBooks(params.get('q'), params.get('limit'), config, params.get('match')), origin)
       }
 
       if (request.method === 'GET' && request.url === '/ministry/library') {

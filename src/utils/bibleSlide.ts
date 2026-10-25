@@ -16,7 +16,7 @@ function footnoteHtml(line: string): string {
 }
 
 // The note sits at the foot of its own verse, kept visibly secondary to the text read out.
-const rules = `.bible-slide p{margin:0 0 .6em}.bible-slide .footnote{margin:0 0 .55em;padding-left:.8em;border-left:.16em solid #9dd7ee;font:italic .58em/1.45 Georgia,'Times New Roman',serif;opacity:.92}.bible-slide .footnote-tag{font-weight:700;font-style:normal;color:#0c5474;margin-right:.35em}.audience-dark .bible-slide .footnote{border-left-color:#1d5f7c;opacity:.85}.audience-dark .bible-slide .footnote-tag{color:#83dcfa}`
+const rules = `.bible-slide p{margin:0 0 .6em}.bible-slide .footnote{margin:0 0 .55em;padding-left:.8em;border-left:.16em solid #9dd7ee;font:italic .68em/1.45 Georgia,'Times New Roman',serif;opacity:.92}.bible-slide .footnote-tag{font-weight:700;font-style:normal;color:#0c5474;margin-right:.35em}.audience-dark .bible-slide .footnote{border-left-color:#1d5f7c;opacity:.85}.audience-dark .bible-slide .footnote-tag{color:#83dcfa}`
 
 export function bibleSlideHtml(verses: BibleSlideVerse[], footnotes: BibleSlideFootnotes = 'hidden'): string {
   const body = verses.map((verse) => {

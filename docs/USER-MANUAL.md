@@ -56,22 +56,24 @@ Presentation Studio (sidebar: **Presentation**) builds the running order for a m
 
 **Load a source.** The source rack has five tabs:
 
-- **Recovery Bible** — pick the book and chapter from the abbreviation buttons, tick the verses, and add them as one slide. Ticked verses stay in the verse basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
+- **Recovery Bible** — type words into **Find a phrase** and the app lists every verse that uses that exact wording, in the order typed, with the phrase marked in the verse. Pick a result and that verse goes into the verse basket, even if it is in a book or chapter you have not opened. To browse instead, choose **Old Testament** or **New Testament**, then the book and chapter abbreviations, and tick the verses. Ticked verses stay in the basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
 - **Hymnal** — search by number or title, then set **Lyrics** (text only or with chords), **Columns** (1, 2, or 3), and **Chorus** (once, or after every stanza). With chords you can also transpose with **Key**. The line under the hymn title says whether the complete hymn fits one slide or needs more columns.
-- **HWMR** — add the week outline, one day (Morning Nourishment verses with its message and Today's Reading), or the weekly hymn.
-- **Ministry Books** — add a whole section of a selected book.
+- **HWMR** — add the week outline, one day (Morning Nourishment verses with its message and Today's Reading), or the weekly hymn. The day and outline slides are laid out the way the reading page is, with each printed reference above its verse, and every Scripture reference in them is clickable.
+- **Ministry Books** — type words into **Find a phrase** to search inside the books; each result names the book and the section and shows the passage found, and picking it opens that section in the picker below. Choose the book and section directly to add a whole section as one slide.
 - **Custom portion** — paste an announcement, a burden-verse, an outline, or any other text.
 
-**Show footnotes on a Scripture slide.** Under the book and chapter buttons, choose **Footnotes → Show** before adding the verses, and the Recovery Bible notes print under the verse they explain. **Hide** projects the verses alone. While **Show** is selected, the studio tells you how many notes the basket will carry. The choice is fixed when the slide is created: change it and add the slide again.
+**Show footnotes on a Scripture slide.** Under the book and chapter buttons, choose **Footnotes → Show** before adding the verses, and the Recovery Bible notes print under the verse they explain. **Hide** projects the verses alone. Notes are set smaller than the Scripture so the verse stays primary, but large enough to read from the back of the room. While **Show** is selected, the studio tells you how many notes the basket will carry. The choice is fixed when the slide is created: change it and add the slide again.
 
-**Run the show.** Every added item appears in **Run of show**, which saves itself and can be reordered, duplicated, removed, exported as a show file, or imported on another computer. The console keeps **Preview** (what you are cueing) and **Live** (what the audience sees) separate:
+**Follow a Scripture reference.** Every verse reference on a slide is a link, in the studio preview and on the audience screen. Click one — on the projector itself, with the mouse or a clicker — and that verse alone fills the screen while you explain it, using the same text, projection theme and text size as the rest of the show. The live channel then reads **Verse: …** and a **Return to** *slide title* button appears in the console; pressing it puts the slide you were on back up. An interlude never changes your run of show, and taking any slide live ends it.
+
+**Run the show.** Every added item appears in **Run of show**, which saves itself and can be reordered, duplicated, removed, exported as a show file, or imported on another computer. The **Program Output** panel at the top of the console keeps **Preview** (what you are cueing) and **Live** (what the audience sees) side by side in one compact row, with the meeting timer beside them. From there:
 
 - **Take preview live** — or `Ctrl+Enter` — puts the cued slide on the projector.
 - **Previous live / Next live** — steps the audience through the queue without disturbing your preview.
 - **Blank** — or `B` — blacks out the projector while the window stays open.
 - `←` / `→` — move the preview through the queue.
 
-**Audience settings** take effect on the next slide you take live and are remembered between meetings: title on or off, audience text size, light or dark projection theme, fade or cut transition, and fade speed. Choose the projector in **Screen** when more than one display is connected. Presenter notes stay on the studio screen and never reach the projector.
+**Audience settings** take effect on the next slide you take live and are remembered between meetings: title on or off, audience text size, light or dark projection theme, fade or cut transition, and fade speed. Choose the projector in **Screen** when more than one display is connected, and use **Detect displays** after a projector or cable is plugged in or unplugged — it re-reads the connected screens and reports how many it finds. Presenter notes stay on the studio screen and never reach the projector.
 
 **During the meeting**, a slide that is longer than the window scrolls with the mouse wheel, `↑`/`↓`, `Page Up`/`Page Down`, `Space`, `Home` or `End`. Selecting text on the audience screen opens a small highlight toolbar, so a word can be marked while it is being read. The **meeting timer** in the console tracks elapsed time and can be paused or reset.
 
@@ -136,4 +138,6 @@ Use **Settings** to check services, create backups, install optional dependencie
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
 - **Newly added document is not searchable:** open **Documents** and run **Index knowledge**.
 - **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the **Screen** choice in the Presentation card; if the output was blanked, take any slide live to bring it back.
+- **The projector shows a verse you did not queue:** a verse reference on the audience screen was clicked. Use **Return to** *slide title* in the console, or take any slide live.
+- **A phrase search finds nothing:** the Bible phrase box needs the words in the order typed, so a shorter phrase usually works. The Recovery Version wording differs from other versions in places — *kingdom of the heavens*, not *kingdom of heaven* — so search the wording the Recovery Version actually prints.
 - **Access is not available:** sign in again with the exact invited email or ask the owner to restore access.

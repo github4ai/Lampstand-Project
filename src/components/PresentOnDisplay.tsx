@@ -1,4 +1,4 @@
-import { MonitorUp } from 'lucide-react'
+import { MonitorUp, RotateCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import './PresentOnDisplay.css'
 
@@ -61,6 +61,10 @@ const audienceScrollUi = `<script>(()=>{const slide=document.querySelector(".sli
 
 const liveHighlightUi = `<div id="highlight-tools" hidden><span>Highlight</span><button class="highlight-swatch" data-color="#ffe066" style="background:#ffe066" aria-label="Yellow"></button><button class="highlight-swatch" data-color="#a9e5a0" style="background:#a9e5a0" aria-label="Green"></button><button class="highlight-swatch" data-color="#9ed8ff" style="background:#9ed8ff" aria-label="Blue"></button><button class="highlight-swatch" data-color="#f8b4d9" style="background:#f8b4d9" aria-label="Pink"></button><button class="highlight-swatch" data-color="#ffc98b" style="background:#ffc98b" aria-label="Orange"></button><button class="highlight-remove" type="button">Remove</button><button class="highlight-close" type="button" aria-label="Close">&times;</button></div><script>(()=>{const main=document.querySelector('main'),tools=document.getElementById('highlight-tools'),selection=()=>window.getSelection();let range=null,target=null;const hide=()=>{tools.hidden=true;range=null;target=null;selection()?.removeAllRanges()};const show=()=>{tools.hidden=false};document.addEventListener('mouseup',event=>{if(event.target.closest('#highlight-tools')||event.target.closest('mark'))return;const current=selection();if(!current||current.isCollapsed||!current.rangeCount)return;const next=current.getRangeAt(0);if(!main.contains(next.commonAncestorContainer))return;range=next.cloneRange();target=null;show()});main.addEventListener('click',event=>{const mark=event.target.closest('mark');if(!mark)return;target=mark;range=null;show();event.stopPropagation()});tools.querySelectorAll('[data-color]').forEach(button=>button.addEventListener('click',()=>{const color=button.dataset.color;if(target){target.style.backgroundColor=color}else if(range&&!range.collapsed){const mark=document.createElement('mark');mark.style.backgroundColor=color;try{mark.appendChild(range.extractContents());range.insertNode(mark)}catch{hide();return}}hide()}));tools.querySelector('.highlight-remove').addEventListener('click',()=>{if(target){const parent=target.parentNode;while(target.firstChild)parent.insertBefore(target.firstChild,target);target.remove();parent.normalize()}hide()});tools.querySelector('.highlight-close').addEventListener('click',hide);document.addEventListener('keydown',event=>{if(event.key==='Escape')hide()})})()</script>`
 
+const audienceVerseUi = `<script>(()=>{document.addEventListener("click",event=>{const link=event.target instanceof Element&&event.target.closest("a[data-book]");if(!link)return;event.preventDefault();const verseEnd=Number(link.dataset.verseEnd)||Number(link.dataset.verse);const request={book:link.dataset.book,chapter:Number(link.dataset.chapter),verse:Number(link.dataset.verse),verseEnd,label:link.textContent.trim()};if(window.lampstandAudience)window.lampstandAudience.selectVerse(request);else if(window.opener)window.opener.postMessage({type:"lampstand:audience-verse",request},"*")})})()</script>`
+
+const verseLinkStyles = `.slide-content a[data-book]{text-decoration:none;border-bottom:.06em solid currentColor;cursor:pointer}`
+
 export async function presentOnSavedDisplay(payload: PresentationPayload) {
   const displayId = payload.displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
   const settings = resolvePresentationSettings(payload, readPresentationPrefs())
@@ -72,7 +76,7 @@ export async function presentOnSavedDisplay(payload: PresentationPayload) {
   browserPresentationWindow.document.open()
   browserPresentationWindow.document.write(payload.blank
     ? '<!doctype html><html><head><title>Lampstand Presentation</title><style>html,body{width:100%;height:100%;margin:0;background:#05070a}</style></head><body></body></html>'
-    : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeText(payload.title)}</title><style>${audienceLayoutStyles}${settings.showTitle ? '' : 'main{grid-template-rows:minmax(0,1fr)}.slide-header{display:none}'} .slide-content{font-size:calc(clamp(20px,1.75vw,34px)*${settings.fontScale})}${liveHighlightStyles}</style></head><body class="audience-${settings.theme}"><main class="${transitionClass}"${transitionStyle}><header class="slide-header"><h1>${escapeText(payload.title)}</h1></header><section class="slide-content">${payload.html}</section></main>${liveHighlightUi}${audienceScrollUi}</body></html>`)
+    : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeText(payload.title)}</title><style>${audienceLayoutStyles}${settings.showTitle ? '' : 'main{grid-template-rows:minmax(0,1fr)}.slide-header{display:none}'} .slide-content{font-size:calc(clamp(20px,1.75vw,34px)*${settings.fontScale})}${liveHighlightStyles}${verseLinkStyles}</style></head><body class="audience-${settings.theme}"><main class="${transitionClass}"${transitionStyle}><header class="slide-header"><h1>${escapeText(payload.title)}</h1></header><section class="slide-content">${payload.html}</section></main>${liveHighlightUi}${audienceScrollUi}${audienceVerseUi}</body></html>`)
   browserPresentationWindow.document.close()
   browserPresentationWindow.focus()
   try { await browserPresentationWindow.document.documentElement.requestFullscreen() } catch { /* Browser fullscreen permission is controlled by the browser. */ }
@@ -82,17 +86,28 @@ export async function presentOnSavedDisplay(payload: PresentationPayload) {
 export default function PresentOnDisplay({ title, subtitle, html, disabled = false, showTitle, fontScale, theme, transition, transitionSpeed, onPresented }: { title: string; subtitle?: string; html: string; disabled?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; onPresented?: () => void }) {
   const [displays, setDisplays] = useState<Display[]>([])
   const [displayId, setDisplayId] = useState('')
-  useEffect(() => {
-    void window.lampstandDesktop?.presentation.getDisplays().then((items) => {
-      const savedDisplayId = window.localStorage.getItem(PRESENTATION_DISPLAY_KEY)
-      const selectedDisplayId = items.some((item) => item.id === savedDisplayId)
-        ? savedDisplayId!
-        : items.find((item) => !item.primary)?.id ?? items[0]?.id ?? ''
-      setDisplays(items)
-      setDisplayId(selectedDisplayId)
-      if (selectedDisplayId) window.localStorage.setItem(PRESENTATION_DISPLAY_KEY, selectedDisplayId)
-    })
-  }, [])
+  const [checking, setChecking] = useState(false)
+  const [detected, setDetected] = useState<number | null>(null)
+  const canDetect = Boolean(window.lampstandDesktop?.presentation)
+
+  async function loadDisplays() {
+    const items = await window.lampstandDesktop?.presentation.getDisplays().catch(() => [] as Display[]) ?? []
+    const savedDisplayId = window.localStorage.getItem(PRESENTATION_DISPLAY_KEY)
+    const selectedDisplayId = items.some((item) => item.id === savedDisplayId)
+      ? savedDisplayId!
+      : items.find((item) => !item.primary)?.id ?? items[0]?.id ?? ''
+    setDisplays(items)
+    setDisplayId(selectedDisplayId)
+    setDetected(items.length)
+    if (selectedDisplayId) window.localStorage.setItem(PRESENTATION_DISPLAY_KEY, selectedDisplayId)
+  }
+
+  useEffect(() => { void loadDisplays() }, [])
+
+  async function detectDisplays() {
+    setChecking(true)
+    try { await loadDisplays() } finally { setChecking(false) }
+  }
 
   function selectDisplay(nextDisplayId: string) {
     setDisplayId(nextDisplayId)
@@ -105,6 +120,7 @@ export default function PresentOnDisplay({ title, subtitle, html, disabled = fal
   return <div className="present-on-display">
     <div className="present-on-display-heading"><MonitorUp size={17} /><span><strong>Presentation</strong><small>Fullscreen display</small></span></div>
     <label><span>Screen</span><select aria-label="Presentation monitor" value={displayId} onChange={(event) => selectDisplay(event.target.value)}>{displays.length ? displays.map((display) => <option key={display.id} value={display.id}>{display.label}</option>) : <option value="">Presentation window</option>}</select></label>
+    {canDetect && <div className="present-detect"><button type="button" disabled={checking} onClick={() => void detectDisplays()}><RotateCcw size={14} /> {checking ? 'Checking…' : 'Detect displays'}</button>{detected !== null && <small>{detected} display{detected === 1 ? '' : 's'} connected</small>}</div>}
     <button type="button" disabled={disabled} onClick={() => void present()}><MonitorUp size={16} /> Take live</button>
   </div>
 }

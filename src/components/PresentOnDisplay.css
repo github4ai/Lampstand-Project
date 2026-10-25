@@ -1,6 +1,6 @@
 .present-on-display {
   display: inline-grid;
-  grid-template-columns: auto minmax(150px, 220px) auto;
+  grid-template-columns: auto minmax(150px, 220px) auto auto;
   align-items: end;
   gap: 8px;
   max-width: 100%;
@@ -11,6 +11,25 @@
   color: #e8f4ff;
   box-shadow: 0 8px 22px rgb(5 15 28 / 18%);
 }
+
+.present-detect {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+}
+
+.present-detect button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-color: #64748b;
+  background: #10202f;
+  color: #cfe3f5;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.present-detect button:hover:not(:disabled) { background: #16304a; }
+.present-detect small { padding-left: 3px; color: #a8bdd3; font-size: 9px; }
 
 .present-on-display-heading {
   display: flex;
@@ -66,6 +85,7 @@
 @media (max-width: 760px) {
   .present-on-display { grid-template-columns: 1fr auto; width: 100%; }
   .present-on-display-heading { grid-column: 1 / -1; }
+  .present-detect { grid-column: 1 / -1; grid-auto-flow: column; justify-content: start; align-items: center; }
 }
 
 @media (max-width: 480px) {

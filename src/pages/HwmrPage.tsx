@@ -7,6 +7,7 @@ import { getHymnalLibrary } from '../api/hymnal'
 import { getMinistryBookChapters, getMinistryBooksLibrary, type MinistryBookSummary } from '../api/ministryBooks'
 import type { Hymn } from '../types/hymnal'
 import { lastMentionedBibleBook, linkBibleReferences } from '../utils/bibleReferences'
+import { repairHwmrReadingText } from '../utils/hwmrText'
 import { streamAIOS } from '../services/api'
 import '../styles/hwmr.css'
 
@@ -24,15 +25,6 @@ const SAVED_STUDIES_KEY = 'aios-hwmr-saved-studies-v1'
 const READER_ZOOM_KEY = 'aios-hwmr-reader-zoom-v1'
 interface SavedStudy { id: string; bookId: string; week: number; title: string; content: string; createdAt: string; updatedAt: string }
 interface FurtherReadingLink { label: string; title: string; sectionLabel: string; section: number; sectionKind: 'chapter' | 'message' | 'hymn'; destination: 'ministry' | 'life-study' | 'hymnal'; book?: MinistryBookSummary; lifeStudyBook?: string; hymn?: Hymn }
-
-function repairHwmrReadingText(value = '') {
-  return value
-    .replace(/\b(vol\.)\s*\n+\s*(\d+)/gi, '$1 $2')
-    .replace(/\b(chs?\.)\s*\n+\s*([\d—–-]+)/gi, '$1 $2')
-    .replace(/([“"][^”"]{3,})\s*\n+\s*([^”"]{1,80}[”"])/g, '$1 $2')
-    .replace(/([^\n])\s+(Further Reading\s*:)/gi, '$1\n\n$2 ')
-    .replace(/\n{3,}/g, '\n\n')
-}
 
 function normalizedMinistryTitle(value: string) {
   return value.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9']+/g, ' ').replace(/\bbook\s+0+(\d+)/g, 'book $1').replace(/^(?:a|an|the)\s+/, '').replace(/\s+the(?=\s+(?:msgs?|vol)|$)/, '').trim()

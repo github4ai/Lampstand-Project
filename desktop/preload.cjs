@@ -27,5 +27,10 @@ contextBridge.exposeInMainWorld('lampstandDesktop', {
   presentation: {
     getDisplays: () => ipcRenderer.invoke('lampstand:presentation-displays'),
     open: (payload) => ipcRenderer.invoke('lampstand:open-presentation', payload),
+    subscribeVerseRequest: (listener) => {
+      const handler = (_event, reference) => listener(reference)
+      ipcRenderer.on('lampstand:audience-verse', handler)
+      return () => ipcRenderer.removeListener('lampstand:audience-verse', handler)
+    },
   },
 })

@@ -65,6 +65,22 @@ Key environment variables include:
 - The Ministry Books importer distinguishes Content, Prefaces, numbered chapters, and appendices. Section display titles combine the role/number and actual heading.
 - Scripture references preserve a return target so a reader can return to the same source position.
 
+## Scripture and phrase search
+
+Both reading libraries are served by the gateway from locally held text; neither depends on the legacy API or on embeddings.
+
+- `/recovery-bible/concordance?q=&limit=&match=` reads the 66 chapter files under `AIOS_RECOVERY_BIBLE_DIR` through `server/recovery-bible.mjs`, which caches the ~31,000 verse lines in memory as a concordance. The default `match=words` requires each typed word to appear somewhere in the verse. `match=phrase` requires the whole string, in order. Omitting `match` keeps the historical behaviour, which is what the Recovery Bible and Ministry Books browsing pages rely on.
+- `/ministry-books/search?q=&limit=&match=` queries the FTS5 table `block_search` over `data/ministry-books/library.sqlite` and ranks with `bm25()`. Word mode ANDs the individual words; `match=phrase` quotes the whole sanitized string as one FTS5 phrase, which is what gives adjacency. If the SQLite library is absent, the same handler falls back to the HTML source folders and applies the identical word/phrase distinction in code.
+- Presentation Studio uses phrase mode in its **Find a phrase** boxes; the picked result seeds the verse basket or the section picker through a deferred-selection ref, because the chapter the result names may still be loading when it is clicked.
+
+## Presentation projection
+
+The audience output is one persistent window owned by `desktop/main.cjs`. It is created on the first take-live and reused for every later slide so nothing flashes open mid-meeting; the same document is reproduced in a browser popup when the desktop bridge is unavailable.
+
+- Slide payloads are built in `src/utils/` (`bibleSlide.ts`, `hymnalSlide.ts`, `hwmrSlide.ts`) and each builder embeds its own `<style>` in the HTML it hands to the audience window. Footnote, hymn and HWMR typography therefore travels with the slide and cannot silently drift from the studio. Audience *layout* CSS is the exception: it exists in three places — `audienceLayoutStyles` in `src/components/PresentOnDisplay.tsx`, the inline `<style>` written by `desktop/main.cjs`, and `src/pages/PresentationPage.css` for the studio preview. Change all three together.
+- Scripture references are rendered as `<a class="verse-link" data-book data-chapter data-verse data-verse-end>` by `src/utils/bibleLinks.ts`, which is shared by the Bible slide and HWMR slide builders. A small script appended to the audience document intercepts the click and calls `window.lampstandAudience.selectVerse(reference)` — exposed by `desktop/presentation-preload.cjs`, sent as `lampstand:presentation-verse`, and re-emitted by the main process as `lampstand:audience-verse` to the studio window. The popup path uses `window.opener.postMessage({ type: 'lampstand:audience-verse' })` instead. The studio resolves the reference against the local Recovery Bible library and projects the verse as an interlude; the queued slide and run of show are untouched, and taking any slide live clears the interlude.
+- `PresentOnDisplay` asks the main process for the current display list on demand — the **Detect displays** control — so a projector connected after launch becomes selectable without restarting the app. Preferences (screen, theme, text size, transition and fade speed) persist through the gateway and resolve on the next take-live.
+
 ## Authentication and remote access
 
 The desktop client uses only the Supabase project URL and public publishable key. Never distribute a service-role key. Row Level Security protects membership and workspace policies. Database setup and repairs are maintained in:

@@ -80,6 +80,6 @@ export function getOfficialRecoveryBibleOutlineUrl(bookName?: string) {
   return filename ? `https://text.recoveryversion.bible/${filename}` : null
 }
 
-export async function searchRecoveryBible(query: string, signal?: AbortSignal) {
-  return readJson<ConcordanceResponse>(`/recovery-bible/concordance?q=${encodeURIComponent(query)}&limit=100`, signal)
+export async function searchRecoveryBible(query: string, signal?: AbortSignal, mode: 'words' | 'phrase' = 'words') {
+  return readJson<ConcordanceResponse>(`/recovery-bible/concordance?q=${encodeURIComponent(query)}&limit=100${mode === 'phrase' ? '&match=phrase' : ''}`, signal)
 }

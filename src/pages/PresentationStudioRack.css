@@ -135,7 +135,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .status-channel {
@@ -144,11 +144,49 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-  padding: 10px 12px;
+  padding: 6px 10px;
   border: 1px solid #38566d;
   border-radius: 9px;
   background: #0b1724;
 }
+
+.verse-interlude {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -4px 0 8px;
+  padding: 7px 10px;
+  border: 1px dashed #d9a13b;
+  border-radius: 9px;
+  background: #2a1f10;
+  color: #ffe2b4;
+  font-size: .78rem;
+}
+
+.verse-interlude span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verse-interlude button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 11px;
+  border: 1px solid #d9a13b;
+  border-radius: 8px;
+  background: transparent;
+  color: #ffd490;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.verse-interlude button:hover { background: #3c2c14; }
 
 .status-channel small {
   padding: 3px 7px;

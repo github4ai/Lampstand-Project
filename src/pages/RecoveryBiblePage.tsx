@@ -4,20 +4,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { getOfficialRecoveryBibleOutlineUrl, getRecoveryBibleBookMatter, getRecoveryBibleBooks, getRecoveryBibleChapter, getRecoveryBibleOutlineUrl, searchRecoveryBible } from '../api/recoveryBible'
 import type { BibleBook, BibleBookMatter, BibleChapter, BibleStudyNote, BibleVerse, ConcordanceResult } from '../api/recoveryBible'
 import { formatVerseReading } from '../utils/bibleReading'
+import { bookMatchesSlug } from '../utils/bibleBooks'
 import { BIBLE_VOICE_STORAGE_KEY } from '../utils/bibleVoices'
 import { shortBibleBookName } from '../utils/bibleReferences'
 import { useReaderAnnotations } from '../hooks/useReaderAnnotations'
 import PresentOnDisplay from '../components/PresentOnDisplay'
 import '../styles/recovery-bible.css'
 import '../styles/reader-annotations.css'
-
-function simpleBookSlug(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-}
-
-function bookMatchesSlug(book: BibleBook, slug: string | null) {
-  return Boolean(slug && (book.slug === slug || simpleBookSlug(book.name) === slug))
-}
 
 function RecoveryBiblePage() {
   const location = useLocation()

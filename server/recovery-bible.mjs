@@ -252,10 +252,12 @@ async function concordance(config) {
   return rows
 }
 
-export async function searchRecoveryBible(query, limitValue, config) {
+export async function searchRecoveryBible(query, limitValue, config, mode) {
   const term = String(query || '').trim().toLowerCase()
   if (term.length < 2) return { query: term, results: [], total: 0, oldTestamentTotal: 0, newTestamentTotal: 0 }
-  const words = term.split(/\s+/).filter(Boolean); const matches = (await concordance(config)).filter((row) => words.every((word) => row.text.toLowerCase().includes(word)))
+  // A phrase has to read in order; a word list only has to appear somewhere in the verse.
+  const words = term.split(/\s+/).filter(Boolean)
+  const matches = (await concordance(config)).filter((row) => (mode === 'phrase' ? row.text.toLowerCase().includes(term) : words.every((word) => row.text.toLowerCase().includes(word))))
   const limit = Math.min(200, Math.max(1, Number(limitValue) || 50))
   const isNewTestament = (row) => Number.parseInt(String(row.book?.id || ''), 10) >= 40
   const oldTestament = matches.filter((row) => !isNewTestament(row))

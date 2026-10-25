@@ -175,14 +175,17 @@ async function buildSearchIndex(config) {
   return rows
 }
 
-export async function searchMinistryBooks(queryValue, limitValue, config) {
+export async function searchMinistryBooks(queryValue, limitValue, config, mode) {
   const query = String(queryValue || '').trim()
   const stopWords = new Set(['a', 'an', 'and', 'for', 'in', 'is', 'of', 'on', 'the', 'to', 'what', 'who', 'with'])
   const words = query.toLowerCase().split(/\s+/).map((word) => word.replace(/[^a-z0-9'-]/g, '')).filter((word) => word.length > 1 && !stopWords.has(word))
-  if (!words.length) return { query, total: 0, results: [] }
+  // Phrase mode promises the words in the order typed, so the small words stay in the phrase.
+  const phrase = query.toLowerCase().split(/\s+/).map((word) => word.replace(/[^a-z0-9'-]/g, '')).filter(Boolean).join(' ')
+  const terms = mode === 'phrase' ? (phrase ? [phrase] : []) : words
+  if (!terms.length) return { query, total: 0, results: [] }
   const database = await databaseFor(config)
   if (database) {
-    const match = words.map((word) => `"${word.replaceAll('"', '""')}"`).join(' AND ')
+    const match = terms.map((word) => `"${word.replaceAll('"', '""')}"`).join(' AND ')
     const limit = Math.min(20, Math.max(1, Number(limitValue) || 5))
     const rows = database.prepare(`
       SELECT b.id, b.title, b.author, b.chapters, b.first_chapter, b.last_chapter, b.source_url,
@@ -196,23 +199,23 @@ export async function searchMinistryBooks(queryValue, limitValue, config) {
     `).all(match, limit)
     const results = rows.map((row) => ({
       book: databaseBook(row), chapter: { number: row.chapter_number, title: row.chapter_title },
-      block: row.block_number, excerpt: excerptFor(row.text, words), score: Math.abs(Number(row.rank || 0)),
+      block: row.block_number, excerpt: excerptFor(row.text, terms), score: Math.abs(Number(row.rank || 0)),
     }))
     return { query, total: results.length, results }
   }
   if (!searchIndexCache) searchIndexCache = await buildSearchIndex(config)
   const results = []
   for (const row of searchIndexCache) {
-    if (!words.every((word) => row.searchable.includes(word))) continue
-    const block = row.blocks.find((item) => words.every((word) => item.text.toLowerCase().includes(word)))
-      || row.blocks.find((item) => words.some((word) => item.text.toLowerCase().includes(word)))
+    if (!terms.every((word) => row.searchable.includes(word))) continue
+    const block = row.blocks.find((item) => terms.every((word) => item.text.toLowerCase().includes(word)))
+      || row.blocks.find((item) => terms.some((word) => item.text.toLowerCase().includes(word)))
     if (!block) continue
     const lower = block.text.toLowerCase()
-    const positions = words.map((word) => lower.indexOf(word)).filter((position) => position >= 0)
+    const positions = terms.map((word) => lower.indexOf(word)).filter((position) => position >= 0)
     const start = Math.max(0, Math.min(...positions) - 120)
     const excerpt = `${start ? '…' : ''}${block.text.slice(start, start + 520).trim()}${block.text.length > start + 520 ? '…' : ''}`
     const titleText = `${row.book.title} ${row.chapter.title}`.toLowerCase()
-    const score = words.filter((word) => titleText.includes(word)).length * 4 + words.filter((word) => lower.includes(word)).length
+    const score = terms.filter((word) => titleText.includes(word)).length * 4 + terms.filter((word) => lower.includes(word)).length
     results.push({ book: row.book, chapter: row.chapter, block: block.id, excerpt, score })
   }
   results.sort((left, right) => right.score - left.score || left.book.title.localeCompare(right.book.title) || left.chapter.number - right.chapter.number)
