@@ -24,7 +24,10 @@ export type StagedWebState = { open: boolean; url: string; title: string; loadin
 export type AudienceInputEvent = { type: 'click' | 'double-click' | 'move'; x: number; y: number } | { type: 'wheel'; x: number; y: number; deltaY: number } | { type: 'key'; value: string } | { type: 'text'; value: string }
 
 declare global {
-  interface Window {    lampstandDesktop?: {
+  interface Window {
+    /** Chromium's Local Font Access, which the app window answers without a prompt; undefined in a plain browser tab. */
+    queryLocalFonts?(): Promise<Array<{ family: string; fullName: string; postscriptName: string; style: string }>>
+    lampstandDesktop?: {
       updates: {
         getState(): Promise<LampstandUpdateState>
         check(): Promise<LampstandUpdateState>

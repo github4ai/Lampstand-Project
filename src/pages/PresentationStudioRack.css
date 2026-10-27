@@ -203,42 +203,121 @@
 .live-channel.on-air { border-color: #d54f4f; box-shadow: inset 0 0 0 1px #d54f4f55; }
 .live-channel.on-air small { background: #b43131; }
 
-.live-controls {
-  display: grid;
-  grid-template-columns: 1fr 1.35fr 1fr .8fr;
-  gap: 7px;
-  margin: 8px 0;
-}
-
-.live-controls button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 34px;
-}
-
-.live-controls .take-live {
-  border-color: #4bd09b;
-  background: #116749;
-  color: #fff;
-  font-weight: 800;
-}
-
-.output-options {
+/* The console runs on two rails - cue and go live on one, how the room sees it on the other - and each control
+   carries the icon of what it does, with the words kept in its tooltip and accessible name. */
+.console-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
-  margin-bottom: 9px;
-  padding: 8px 10px;
+  gap: 8px 8px;
+  margin-bottom: 7px;
+  padding: 6px 8px;
   border: 1px solid #314c61;
   border-radius: 9px;
   background: #101f30;
 }
-.output-options label { display: inline-flex; align-items: center; gap: 7px; font-size: .78rem; }
-.output-options select { min-height: 32px; margin-left: 4px; }
-.shortcut-hint { margin-left: auto; color: #8099ad; font-size: .7rem; }
+
+.console-group { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-width: 0; }
+
+/* A rail control that squeezed to a sliver would still be one click away but impossible to read, so the controls
+   keep their natural width; the group itself gives way and wraps its own rows when the window gets narrow. */
+.console-group { flex: 0 1 auto; }
+.console-group > * { flex: none; }
+
+/* Cueing the preview and working the live output are the same job with one finger apart, so they share a rail. */
+.console-group + .console-group { padding-left: 12px; border-left: 1px solid #2b4256; }
+
+.console-group-label { color: #7f9ab0; font-size: .6rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+
+/* The screen picker already sits on the rail, so it takes the rail's frame instead of drawing a card inside a card. */
+.console-bar .present-on-display { flex: 0 1 auto; min-width: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+
+.icon-action,
+.icon-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 1px solid #405a76;
+  border-radius: 8px;
+  background: #1c3048;
+  color: #dcecff;
+  cursor: pointer;
+}
+
+.icon-action:hover:not(:disabled),
+.icon-toggle:hover { border-color: #55d6ff; background: #25405c; }
+
+/* The theme gives every button in a workspace 13px of side padding and a 36px floor. On a rail that only shows
+   glyphs, that padding eats the square and squeezes each icon to a sliver, so the rail keeps its own box. */
+.console-bar .icon-action,
+.console-bar .icon-toggle,
+.console-bar .take-live { min-height: 32px; }
+.console-bar .icon-action,
+.console-bar .icon-toggle { padding-inline: 0; }
+.console-bar .take-live { padding-inline: 12px; }
+
+.icon-action:disabled { opacity: .38; cursor: not-allowed; }
+
+.icon-toggle.active { border-color: #32c4f3; background: #0d5b79; color: #eafcff; }
+
+.take-live {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #4bd09b;
+  border-radius: 8px;
+  background: #116749;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.console-field { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+
+/* Two choices read as one switch with both icons on it, so the operator sees the state and the alternative at once. */
+.console-switch { display: inline-flex; gap: 3px; padding: 2px; border-radius: 10px; background: #0b1724; }
+.console-switch .icon-toggle { width: 28px; min-height: 28px; border-radius: 7px; }
+.console-switch .icon-toggle.active { box-shadow: inset 0 0 0 1px #55d6ff55; }
+
+.console-field select {
+  min-height: 32px;
+  max-width: 130px;
+  padding: 0 6px;
+  border: 1px solid #4b6078;
+  border-radius: 8px;
+  background: #f7f3ea;
+  color: #172033;
+  font: inherit;
+  font-size: .78rem;
+}
+
+.console-field svg { flex: none; color: #7f9ab0; }
+.console-field select:disabled { opacity: .45; cursor: not-allowed; }
+
+.meeting-timer button.icon-action { width: 28px; min-height: 26px; padding: 0; }
+
+.shortcut-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 22px;
+  border: 1px solid #3c5f79;
+  border-radius: 7px;
+  color: #8099ad;
+  cursor: help;
+}
+
+/* The legend belongs to the panel, not to one control, so it sits at the end of the rack strip. */
+.rack-label .shortcut-hint { margin: 0 0 0 6px; }
+.rack-label .shortcut-hint:hover { border-color: #55d6ff; color: #cfeaf7; }
 .queue-heading-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .queue-heading-actions button { display: inline-flex; align-items: center; gap: 6px; }
 .queue-item.live { border-left-color: #e04d4d; box-shadow: inset 0 0 0 1px #e04d4d44; }
@@ -350,6 +429,5 @@
   }
 
   .program-status { grid-template-columns: 1fr; }
-  .live-controls { grid-template-columns: 1fr 1fr; }
-  .shortcut-hint { width: 100%; margin-left: 0; }
+  .console-group + .console-group { padding-left: 0; border-left: 0; }
 }

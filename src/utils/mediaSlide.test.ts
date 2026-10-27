@@ -52,17 +52,34 @@ describe('mediaSlideHtml', () => {
 
 describe('announcementSlideHtml', () => {
   it('drops blank lines and numbers the items by default', () => {
-    const html = announcementSlideHtml({ heading: 'Announcements', lines: ['Baptism service', '', '  Book stand  ', ''] })
+    const html = announcementSlideHtml({ heading: 'Announcements', source: '<p>Baptism service</p><p>  Book stand  </p>' })
     expect(html).toContain('<ol><li>Baptism service</li><li>Book stand</li></ol>')
   })
 
   it('switches to bullets and prints a closing line', () => {
-    const html = announcementSlideHtml({ heading: 'Notices', lines: ['One'], numbered: false, footer: 'Lunch after the meeting' })
+    const html = announcementSlideHtml({ heading: 'Notices', source: '<p>One</p>', numbered: false, footer: 'Lunch after the meeting' })
     expect(html).toContain('<ul><li>One</li></ul>')
     expect(html).toContain('<p class="announcement-footer">Lunch after the meeting</p>')
   })
 
   it('falls back to a heading the congregation recognises', () => {
-    expect(announcementSlideHtml({ heading: '  ', lines: [] })).toContain('<h2 class="announcement-heading">Announcements</h2>')
+    expect(announcementSlideHtml({ heading: '  ', source: '' })).toContain('<h2 class="announcement-heading">Announcements</h2>')
+  })
+
+  it('carries the shaping the operator gave the words of an item', () => {
+    const html = announcementSlideHtml({ heading: 'Announcements', source: '<p>Book stand <b>after</b> the meeting</p><p style="text-align:center">Lunch <span style="color:#e05a4f">Sunday</span></p>' })
+    expect(html).toContain('<li>Book stand <b>after</b> the meeting</li>')
+    expect(html).toContain('<li style="text-align:center">Lunch <span style="color:#e05a4f">Sunday</span></li>')
+  })
+
+  it('never lets a pasted announcement reach the room as anything but words', () => {
+    const html = announcementSlideHtml({ heading: 'Announcements', source: '<p><script>alert(1)</script>Tracts by the door</p>' })
+    expect(html).not.toContain('script')
+    expect(html).toContain('<li>Tracts by the door</li>')
+  })
+
+  it('gradates the room between the lines when the slide is asked to breathe', () => {
+    expect(announcementSlideHtml({ heading: 'Announcements', source: '<p>One</p>' })).toContain('line-height:1.55')
+    expect(announcementSlideHtml({ heading: 'Announcements', source: '<p>One</p>', spacing: 'open' })).toContain('line-height:2.2')
   })
 })

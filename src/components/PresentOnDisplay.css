@@ -1,79 +1,46 @@
+/* The projector card is one line of controls now: which screen, check the screens again, take the slide live. */
 .present-on-display {
-  display: inline-grid;
-  grid-template-columns: auto minmax(150px, 220px) auto auto;
-  align-items: end;
-  gap: 8px;
-  max-width: 100%;
-  padding: 7px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 5px 7px;
   border: 1px solid #41556f;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #16263a;
   color: #e8f4ff;
   box-shadow: 0 8px 22px rgb(5 15 28 / 18%);
 }
 
-.present-detect {
-  display: grid;
-  gap: 2px;
-  justify-items: start;
-}
-
-.present-detect button {
-  min-height: 30px;
-  padding: 0 10px;
-  border-color: #64748b;
-  background: #10202f;
-  color: #cfe3f5;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.present-detect button:hover:not(:disabled) { background: #16304a; }
-.present-detect small { padding-left: 3px; color: #a8bdd3; font-size: 9px; }
-
-.present-on-display-heading {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0 4px 3px;
-}
-
-.present-on-display-heading > span,
-.present-on-display label {
-  display: grid;
-  gap: 2px;
-}
-
-.present-on-display-heading strong { font-size: 12px; line-height: 1.15; }
-.present-on-display-heading small,
-.present-on-display label > span { color: #a8bdd3; font-size: 9px; line-height: 1.1; }
-.present-on-display label > span { padding-left: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-
-.present-on-display select,
-.present-on-display button {
-  min-height: 36px;
-  border: 1px solid #64748b;
-  border-radius: 8px;
-  font: inherit;
+.present-on-display > svg {
+  flex: none;
+  color: #8adfff;
 }
 
 .present-on-display select {
-  width: 100%;
-  min-width: 0;
-  padding: 0 28px 0 9px;
+  flex: 1 1 auto;
+  min-width: 112px;
+  padding: 0 26px 0 9px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
   background: #fff;
   color: #172033;
+  font: inherit;
+  min-height: 32px;
 }
 
 .present-on-display button {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 0 13px;
-  border-color: #25bceb;
+  min-height: 32px;
+  border: 1px solid #25bceb;
+  border-radius: 8px;
   background: #087aa5;
   color: #fff;
+  font: inherit;
   font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
@@ -82,14 +49,24 @@
 .present-on-display button:hover:not(:disabled) { background: #0696c8; }
 .present-on-display button:disabled { cursor: not-allowed; opacity: .45; }
 
-@media (max-width: 760px) {
-  .present-on-display { grid-template-columns: 1fr auto; width: 100%; }
-  .present-on-display-heading { grid-column: 1 / -1; }
-  .present-detect { grid-column: 1 / -1; grid-auto-flow: column; justify-content: start; align-items: center; }
+/* The re-scan is a quiet square beside the screen list; named like this it also outranks the card's own
+   button styling and the theme's workspace padding, which would otherwise paint it cyan and squeeze the glyph. */
+.present-on-display button.present-detect {
+  width: 32px;
+  min-height: 32px;
+  padding-inline: 0;
+  border-color: #64748b;
+  background: #10202f;
+  color: #cfe3f5;
 }
 
-@media (max-width: 480px) {
-  .present-on-display { grid-template-columns: 1fr; }
-  .present-on-display-heading { grid-column: auto; }
-  .present-on-display button { width: 100%; }
+.present-on-display button.present-detect:hover:not(:disabled) { background: #16304a; }
+.present-on-display button.present-detect .checking { animation: present-detect-spin 1s linear infinite; }
+
+@keyframes present-detect-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .present-on-display button.present-detect .checking { animation: none; }
 }

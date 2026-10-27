@@ -1,5 +1,5 @@
 import { MonitorUp, RotateCcw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { presentationMediaFileIsMissing } from '../api/presentationMedia'
 import { setElementSink } from '../utils/audioRouting'
 import { deckSlidePath, type MediaSlideSource } from '../utils/mediaSlide'
@@ -78,13 +78,13 @@ const verseLinkStyles = `.slide-content a[data-book]{text-decoration:none;border
 
 /**
  * A cued file can leave the media library afterwards, and the projector would then show black with nothing on the
- * console to say why. The operator is told before go-live, and told which tab puts the file back.
+ * console to say why. The operator is told before go-live, and told where to put the file back.
  */
 export async function mediaProjectionWarning(media?: MediaSlideSource) {
   if (!media) return ''
   const file = media.kind === 'deck' ? deckSlidePath(media) : media.name
   if (!file || !(await presentationMediaFileIsMissing(file))) return ''
-  if (media.kind === 'deck') return `${media.title}: slide ${media.page || 1} is no longer in the media library - the audience screen stays black until the deck is made into slides again on the PowerPoint tab.`
+  if (media.kind === 'deck') return `${media.title}: slide ${media.page || 1} is no longer in the media library - the audience screen stays black until the deck is made into slides again on the Media tab.`
   return `${media.title} is no longer in the media library - the audience screen stays black until the file is added again on the Media tab.`
 }
 
@@ -128,11 +128,11 @@ export async function presentWebSource({ url, title, displayId }: { url: string;
   return true
 }
 
-export default function PresentOnDisplay({ title, subtitle, html, disabled = false, media, showTitle, fontScale, theme, transition, transitionSpeed, onPresented, onMissingMedia }: { title: string; subtitle?: string; html: string; disabled?: boolean; media?: MediaSlideSource; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; onPresented?: () => void; onMissingMedia?: (message: string) => void }) {
+/** The screens plugged into this computer, with the one the projector window opens on remembered between meetings. */
+function usePresentationDisplay() {
   const [displays, setDisplays] = useState<Display[]>([])
   const [displayId, setDisplayId] = useState('')
   const [checking, setChecking] = useState(false)
-  const [detected, setDetected] = useState<number | null>(null)
   const canDetect = Boolean(window.lampstandDesktop?.presentation)
 
   async function loadDisplays() {
@@ -143,7 +143,6 @@ export default function PresentOnDisplay({ title, subtitle, html, disabled = fal
       : items.find((item) => !item.primary)?.id ?? items[0]?.id ?? ''
     setDisplays(items)
     setDisplayId(selectedDisplayId)
-    setDetected(items.length)
     if (selectedDisplayId) window.localStorage.setItem(PRESENTATION_DISPLAY_KEY, selectedDisplayId)
   }
 
@@ -159,17 +158,30 @@ export default function PresentOnDisplay({ title, subtitle, html, disabled = fal
     if (nextDisplayId) window.localStorage.setItem(PRESENTATION_DISPLAY_KEY, nextDisplayId)
   }
 
+  return { displays, displayId, checking, canDetect, detectDisplays, selectDisplay }
+}
+
+const screenControls = (screen: ReturnType<typeof usePresentationDisplay>, action?: ReactNode) => <div className="present-on-display">
+  <MonitorUp size={16} aria-hidden="true" />
+  <select aria-label="Audience screen" title="The screen the projector window opens on" value={screen.displayId} onChange={(event) => screen.selectDisplay(event.target.value)}>{screen.displays.length ? screen.displays.map((display) => <option key={display.id} value={display.id}>{display.label}</option>) : <option value="">Presentation window</option>}</select>
+  {screen.canDetect && <button type="button" className="present-detect" disabled={screen.checking} onClick={() => void screen.detectDisplays()} aria-label="Check again for screens plugged into this computer" title="Check again for screens plugged into this computer"><RotateCcw size={14} className={screen.checking ? 'checking' : ''}/></button>}
+  {action}
+</div>
+
+/** The studio chooses the screen here and takes the slide live from its own rail, so this half stands alone. */
+export function AudienceScreenPicker() {
+  return screenControls(usePresentationDisplay())
+}
+
+export default function PresentOnDisplay({ title, subtitle, html, disabled = false, media, showTitle, fontScale, theme, transition, transitionSpeed, onPresented, onMissingMedia }: { title: string; subtitle?: string; html: string; disabled?: boolean; media?: MediaSlideSource; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; onPresented?: () => void; onMissingMedia?: (message: string) => void }) {
+  const screen = usePresentationDisplay()
+
   async function present() {
     const warning = await mediaProjectionWarning(media)
-    if (await presentOnSavedDisplay({ title, subtitle, html, displayId, showTitle, fontScale, theme, transition, transitionSpeed })) {
+    if (await presentOnSavedDisplay({ title, subtitle, html, displayId: screen.displayId, showTitle, fontScale, theme, transition, transitionSpeed })) {
       onPresented?.()
       if (warning) onMissingMedia?.(warning)
     }
   }
-  return <div className="present-on-display">
-    <div className="present-on-display-heading"><MonitorUp size={17} /><span><strong>Presentation</strong><small>Fullscreen display</small></span></div>
-    <label><span>Screen</span><select aria-label="Presentation monitor" value={displayId} onChange={(event) => selectDisplay(event.target.value)}>{displays.length ? displays.map((display) => <option key={display.id} value={display.id}>{display.label}</option>) : <option value="">Presentation window</option>}</select></label>
-    {canDetect && <div className="present-detect"><button type="button" disabled={checking} onClick={() => void detectDisplays()}><RotateCcw size={14} /> {checking ? 'Checking…' : 'Detect displays'}</button>{detected !== null && <small>{detected} display{detected === 1 ? '' : 's'} connected</small>}</div>}
-    <button type="button" disabled={disabled} onClick={() => void present()}><MonitorUp size={16} /> Take live</button>
-  </div>
+  return screenControls(screen, <button type="button" disabled={disabled} onClick={() => void present()}><MonitorUp size={16} /> Take live</button>)
 }

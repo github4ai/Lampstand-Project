@@ -12,6 +12,8 @@ const REQUESTED_WEB_PORT = process.env.LAMPSTAND_WEB_PORT
   ? Number(process.env.LAMPSTAND_WEB_PORT)
   : app.isPackaged ? 0 : 5173
 const API_PORT = Number(process.env.LAMPSTAND_API_PORT || 9656)
+/** Set by scripts/desktop-dev.ps1: load Vite's dev server, so a save reaches the window without a build. */
+const DEV_URL = app.isPackaged ? '' : String(process.env.LAMPSTAND_DEV_URL || '').trim()
 // A projected video or stream starts with the slide, not with a click on the audience screen.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const AUDIENCE_PARTITION = 'persist:lampstand-audience'
@@ -471,7 +473,7 @@ function createWindow(root) {
   })
   window.removeMenu()
   window.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' } })
-  window.loadURL(`http://127.0.0.1:${webPort}`)
+  window.loadURL(DEV_URL || `http://127.0.0.1:${webPort}`)
   mainWindow = window
   window.webContents.once('did-finish-load', () => {
     publishUpdateState()
@@ -487,7 +489,8 @@ app.whenReady().then(async () => {
     configureLibraryUpdater()
     configurePresentationWindows()
     configureMediaPermissions()
-    await startWebServer(root)
+    if (DEV_URL) webPort = Number(new URL(DEV_URL).port) || 80
+    else await startWebServer(root)
     await startLocalServices(resources)
     createWindow(root)
   } catch (error) {

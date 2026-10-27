@@ -18,6 +18,7 @@
     "test": "vitest run",
     "verify:release": "pnpm run lint && pnpm test && pnpm run build",
     "desktop": "electron desktop/main.cjs",
+    "desktop:dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/desktop-dev.ps1",
     "prepare:library-bundle": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-library-bundle.ps1",
     "desktop:pack": "pnpm run build && electron-builder --dir",
     "desktop:installer": "pnpm run prepare:library-bundle && pnpm run build && electron-builder --win nsis",

@@ -110,7 +110,7 @@ describe('mediaProjectionWarning', () => {
     const calls = answer(404)
     const warning = await mediaProjectionWarning({ kind: 'deck', name: 'decks/Msg 2 NCST/slide-03.png', title: 'Msg 2 NCST', pages: ['decks/Msg 2 NCST/slide-01.png', 'decks/Msg 2 NCST/slide-02.png', 'decks/Msg 2 NCST/slide-03.png'], page: 3 })
     expect(warning).toContain('Msg 2 NCST: slide 3')
-    expect(warning).toContain('PowerPoint tab')
+    expect(warning).toContain('Media tab')
     // The arrows move a deck, so the file being asked about is the page about to go on air.
     expect(calls[0]).toContain(encodeURIComponent('decks/Msg 2 NCST/slide-03.png'))
   })

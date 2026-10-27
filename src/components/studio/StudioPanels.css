@@ -314,16 +314,24 @@
   background: #0e1c2b;
 }
 
-.audio-panel .audio-fields {
+/* The whole audio path is one row: which speaker the room hears, which microphone feeds it, and the three live
+   buttons. The two captions sit above their pickers so the row stays at control height. */
+.audio-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 8px;
 }
 
+.audio-panel .audio-row button { min-height: 32px; }
+
+/* Each picker is capped so the two captions, the two pickers, the level and the three buttons share one line;
+   a long device name tails off with an ellipsis rather than pushing the row to wrap. */
 .audio-panel label {
   display: grid;
   gap: 4px;
-  min-width: 190px;
+  flex: 0 1 215px;
+  min-width: 0;
   color: #9db3c6;
   font-size: 0.68rem;
   font-weight: 800;
@@ -332,6 +340,8 @@
 }
 
 .audio-panel select {
+  width: 100%;
+  min-width: 0;
   min-height: 32px;
   padding: 5px 8px;
   border: 1px solid #2f5f7d;
@@ -339,13 +349,9 @@
   background: #102434;
   color: #e6f4fb;
   font: 600 0.8rem/1.2 Inter, 'Segoe UI', sans-serif;
-}
-
-.audio-live-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .level-meter {
@@ -473,9 +479,244 @@
   font-weight: 700;
 }
 
-.announcement-lines textarea {
-  min-height: 150px;
-  line-height: 1.5;
+/* A portion is written in a window that reads the way the projector will. It opens compact and the operator
+   drags its bottom edge to grow it - a long list of announcements should not have to be read a screenful at a
+   time - and past seven tenths of the viewport it scrolls instead of pushing the rest of the panel away. */
+.custom-editor-wrap {
+  position: relative;
+}
+
+.custom-editor {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 190px;
+  max-height: 70vh;
+  overflow: auto;
+  resize: vertical;
+  padding: 12px 14px;
+  border: 1px solid #4b6078;
+  border-radius: 9px;
+  background: #f7f3ea;
+  color: #172033;
+  font-size: 15px;
+  cursor: text;
+}
+
+.custom-editor:focus {
+  outline: 2px solid #32c4f3;
+  outline-offset: -1px;
+}
+
+.editor-placeholder {
+  position: absolute;
+  left: 15px;
+  top: 13px;
+  max-width: calc(100% - 30px);
+  color: #8695a6;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  pointer-events: none;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 8px;
+  border: 1px solid #2b4d66;
+  border-radius: 9px;
+  background: #0e1c2b;
+}
+
+.editor-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 28px;
+  height: 30px;
+  padding: 0 7px;
+  border: 1px solid #2f5f7d;
+  border-radius: 7px;
+  background: #123046;
+  color: #cfe0ec;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.editor-toolbar button:hover {
+  border-color: #55d6ff;
+  color: #eafaff;
+}
+
+.editor-toolbar button.active {
+  border-color: #55d6ff;
+  background: #164056;
+  color: #eafaff;
+}
+
+.editor-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+.font-picker,
+.swatch-picker {
+  position: absolute;
+  z-index: 8;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 216px;
+  max-height: 288px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #2b4d66;
+  border-radius: 9px;
+  background: #0e1c2b;
+  box-shadow: 0 14px 30px #030b14cc;
+}
+
+.source-form .font-picker input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 28px;
+  margin-bottom: 3px;
+  padding: 0 7px;
+  border: 1px solid #2f5f7d;
+  border-radius: 7px;
+  background: #123046;
+  color: #eaf6ff;
+  font-size: 0.76rem;
+}
+
+.editor-toolbar .font-picker button,
+.editor-toolbar .swatch-picker button {
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 8px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.editor-toolbar .font-picker button:hover,
+.editor-toolbar .swatch-picker button:hover {
+  border-color: #2f5f7d;
+  background: #164056;
+}
+
+.font-picker small,
+.swatch-picker small {
+  margin-left: auto;
+  color: #7f95ab;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.font-picker p {
+  margin: 4px 6px;
+  color: #8fa8c2;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.swatch {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid #456b87;
+  border-radius: 4px;
+}
+
+.swatch.none {
+  border-style: dashed;
+  background: transparent;
+}
+
+.swatch-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  color: #cfe0ec;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.swatch-custom:hover {
+  background: #164056;
+}
+
+.source-form .swatch-custom input {
+  width: 26px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.editor-size-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.source-form .editor-size-step input {
+  box-sizing: border-box;
+  width: 46px;
+  height: 30px;
+  padding: 0 4px;
+  border: 1px solid #2f5f7d;
+  border-radius: 7px;
+  background: #123046;
+  color: #cfe0ec;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.editor-size-step input::-webkit-outer-spin-button,
+.editor-size-step input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.size-unit {
+  color: #8fa8c2;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.editor-tool-sep {
+  width: 1px;
+  height: 22px;
+  margin: 0 3px;
+  background: #2b4d66;
+}
+
+/* A slide-level switch carries its words, because the icon beside it would answer for the caret instead. */
+.editor-toolbar .editor-slide-tool {
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+/* The rule that parts the slide switches from the word tools travels with them, so when the toolbar runs out of
+   width the pair drops to the next line together instead of leaving the rule hanging at the end of the row above. */
+.editor-toolbar .editor-tool-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .spin {

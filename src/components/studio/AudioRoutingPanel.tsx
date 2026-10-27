@@ -49,7 +49,7 @@ export default function AudioRoutingPanel({ outputDeviceId, onOutputDevice, onNo
   const canChooseOutput = canChooseAudioOutput()
 
   return <div className="audio-panel">
-    <div className="audio-fields">
+    <div className="audio-row">
       <label>Speaker output for the room
         <select value={outputDeviceId} disabled={!canChooseOutput} onChange={(event) => onOutputDevice(event.target.value)}>
           <option value="">System default</option>
@@ -62,8 +62,6 @@ export default function AudioRoutingPanel({ outputDeviceId, onOutputDevice, onNo
           {inputs.map((device) => <option key={device.deviceId} value={device.deviceId}>{device.label}</option>)}
         </select>
       </label>
-    </div>
-    <div className="audio-live-row">
       <button type="button" className={micOn ? 'take-live' : ''} onClick={() => setMicOn((value) => !value)}>{micOn ? <MicOff size={15}/> : <Mic size={15}/>} {micOn ? 'Stop the microphone to the room' : 'Send the microphone to the room'}</button>
       <span className="level-meter" role="meter" aria-valuenow={Math.round(level * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Microphone level"><span style={{ width: `${Math.round(level * 100)}%` }} /></span>
       <button type="button" onClick={toggleMasterMute}>{masterMute ? <Volume2 size={15}/> : <MicOff size={15}/>} {masterMute ? 'Unmute the room' : 'Mute the room'}</button>
