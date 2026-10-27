@@ -1,12 +1,14 @@
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BookOpen, ChevronDown, Clock3, Copy, Download, Eye, EyeOff, FileText, Image, Megaphone, MonitorUp, Music2, Plus, Radio, RotateCcw, SkipBack, SkipForward, Trash2, Upload, Video, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import PresentOnDisplay, { FADE_SPEEDS, presentOnSavedDisplay, presentWebSource, readPresentationPrefs, writePresentationPrefs, type TransitionSpeed } from '../components/PresentOnDisplay'
+import { AlignCenter, AlignLeft, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Bold, BookOpen, ChevronDown, Clock3, Copy, Download, Eye, EyeOff, FileText, Image, Italic, Megaphone, MonitorUp, Music2, Plus, Radio, RotateCcw, SkipBack, SkipForward, Trash2, Upload, Video, X } from 'lucide-react'
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
+import PresentOnDisplay, { FADE_SPEEDS, mediaProjectionWarning, presentOnSavedDisplay, presentWebSource, readPresentationPrefs, writePresentationPrefs, type TransitionSpeed } from '../components/PresentOnDisplay'
 import AnnouncementSourcePanel from '../components/studio/AnnouncementSourcePanel'
 import AudioRoutingPanel from '../components/studio/AudioRoutingPanel'
+import DeckSourcePanel from '../components/studio/DeckSourcePanel'
 import MediaSourcePanel from '../components/studio/MediaSourcePanel'
 import MediaTransport from '../components/studio/MediaTransport'
 import WebSourcePanel from '../components/studio/WebSourcePanel'
 import { shortBibleBookName } from '../utils/bibleReferences'
+import { customSlideHtml, DEFAULT_CUSTOM_STYLE, type CustomSlideStyle } from '../utils/customSlide'
 import { bibleSlideHtml, type BibleSlideFootnotes } from '../utils/bibleSlide'
 import { findBookBySlug, isNewTestamentBook } from '../utils/bibleBooks'
 import { verseRequestFromLink, type AudienceVerseRequest } from '../utils/bibleLinks'
@@ -30,7 +32,6 @@ type SelectedBibleVerse = { id: string; bookId: string; bookName: string; chapte
 const STORAGE_KEY = 'lampstand.presentation.workspace.v1'
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]!))
-const paragraphs = (value: string) => value.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean).map((part) => `<p>${escapeHtml(part).replace(/\n/g, '<br>')}</p>`).join('')
 // The operator searched for these words, so the result shows them inside the text, not just a reference.
 function markPhrase(text: string, phrase: string) {
   const needle = phrase.trim()
@@ -40,8 +41,33 @@ function markPhrase(text: string, phrase: string) {
 }
 const makeId = () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
-const SOURCE_TABS: SourceKind[] = ['bible', 'hymnal', 'hwmr', 'ministry', 'media', 'announcement', 'web', 'custom']
-const SOURCE_TAB_LABELS: Record<SourceKind, string> = { bible: 'Recovery Bible', hymnal: 'Hymnal', hwmr: 'HWMR', ministry: 'Ministry Books', media: 'Media', announcement: 'Announcements', web: 'Web output', custom: 'Custom portion' }
+/**
+ * The operator often works the run of show with the keyboard while watching the projector, so a row action has to
+ * run from Enter or Space. The key must not reach the row it sits in as a click too - that row is a button itself.
+ */
+function QueueAction({ label, onAct, children }: { label: string; onAct: () => void; children: ReactNode }) {
+  return <span role="button" tabIndex={0} aria-label={label}
+    onClick={(event) => { event.stopPropagation(); onAct() }}
+    onKeyDown={(event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return
+      event.preventDefault(); event.stopPropagation()
+      const button = event.currentTarget
+      onAct()
+      // Reordering moves the row this button belongs to, and Chrome drops focus from a node it moves, so the
+      // same action is handed back at the row's new place in the list.
+      requestAnimationFrame(() => button.focus())
+    }}>{children}</span>
+}
+
+/**
+ * Enter on a row's action also makes the browser click the row itself, which would preview a slide the operator is
+ * not standing on. A hand click reports the button press it came from (detail >= 1), and a key pressed while the
+ * row is focused keeps the row as the target, so only this combination is the echo of the action's own key.
+ */
+const isActionKeyEcho = (event: ReactMouseEvent<HTMLButtonElement>) => event.detail === 0 && event.target !== document.activeElement
+
+const SOURCE_TABS: SourceKind[] = ['bible', 'hymnal', 'hwmr', 'ministry', 'media', 'deck', 'announcement', 'web', 'custom']
+const SOURCE_TAB_LABELS: Record<SourceKind, string> = { bible: 'Recovery Bible', hymnal: 'Hymnal', hwmr: 'HWMR', ministry: 'Ministry Books', media: 'Media', deck: 'PowerPoint', announcement: 'Announcements', web: 'Web output', custom: 'Custom portion' }
 
 export default function PresentationPage() {
   const [source, setSource] = useState<SourceKind>('bible')
@@ -78,6 +104,7 @@ export default function PresentationPage() {
   const [ministrySection, setMinistrySection] = useState(1)
   const [customTitle, setCustomTitle] = useState('Meeting portion')
   const [customText, setCustomText] = useState('')
+  const [customStyle, setCustomStyle] = useState<CustomSlideStyle>(DEFAULT_CUSTOM_STYLE)
   const [notes, setNotes] = useState('')
   const [notesOpen, setNotesOpen] = useState(false)
   const [elapsed, setElapsed] = useState(0)
@@ -164,11 +191,13 @@ export default function PresentationPage() {
   async function takeLive(index = current) {
     const item = queue[index]
     if (!item) return
+    // A missing file is checked first so the console can say so instead of the wall simply going dark.
+    const warning = item.url ? '' : await mediaProjectionWarning(item.media)
     // A web source is the page itself in the projector window; everything else is a built slide.
     const opened = item.url
       ? await presentWebSource({ url: item.url, title: item.title })
       : await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html: item.html, showTitle, fontScale, theme: projectionTheme, transition: liveTransition, transitionSpeed: fadeSpeed, audioSinkId: audioOutput })
-    if (opened) { setLiveId(item.id); setInterlude(null); setMessage(`Live: ${item.title}`) }
+    if (opened) { setLiveId(item.id); setInterlude(null); setMessage(warning || `Live: ${item.title}`) }
   }
   async function stepLive(direction: -1 | 1) {
     const base = liveIndex >= 0 ? liveIndex : current
@@ -176,15 +205,20 @@ export default function PresentationPage() {
     setCurrent(next); setNotes(queue[next]?.notes ?? '')
     await takeLive(next)
   }
-  /** A PDF has no page keys of its own, so the studio rebuilds the slide at the next page and re-projects it. */
-  async function stepDocumentPage(direction: -1 | 1) {
+  /** A PDF or a deck has no keys of its own, so the studio rebuilds the slide at the next page and re-projects it. */
+  async function stepMediaPage(direction: -1 | 1) {
     const item = liveItem
-    if (!item?.media || item.media.kind !== 'document') return
-    const page = Math.max(1, (Number(item.media.page) || 1) + direction)
-    const html = mediaSlideHtml({ ...item.media, page })
-    setQueue((items) => items.map((entry) => entry.id === item.id && entry.media ? { ...entry, html, media: { ...entry.media, page } } : entry))
-    const opened = await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html, showTitle, fontScale, theme: projectionTheme, transition: 'none', audioSinkId: audioOutput })
-    if (opened) setMessage(`${item.title} - page ${page} on the audience screen.`)
+    const source = item?.media
+    if (!source || (source.kind !== 'document' && source.kind !== 'deck')) return
+    const last = source.kind === 'deck' ? (source.pages?.length || 1) : Infinity
+    const page = Math.min(last, Math.max(1, (Number(source.page) || 1) + direction))
+    const nextSource = { ...source, page, name: source.kind === 'deck' ? (source.pages?.[page - 1] || source.name) : source.name }
+    const html = mediaSlideHtml(nextSource)
+    const subtitle = source.kind === 'deck' ? `PowerPoint · slide ${page} of ${source.pages?.length || 1}` : item.subtitle
+    setQueue((items) => items.map((entry) => entry.id === item.id && entry.media ? { ...entry, html, subtitle, media: nextSource } : entry))
+    const warning = await mediaProjectionWarning(nextSource)
+    const opened = await presentOnSavedDisplay({ title: item.title, subtitle, html, showTitle, fontScale, theme: projectionTheme, transition: 'none', audioSinkId: audioOutput })
+    if (opened) setMessage(warning || `${item.title} - ${source.kind === 'deck' ? `slide ${page}` : `page ${page}`} on the audience screen.`)
   }
   async function blankOutput() {
     if (await presentOnSavedDisplay({ title: 'Lampstand Project', html: '', blank: true })) { setLiveId(null); setInterlude(null); setMessage('Audience screen blanked.') }
@@ -307,9 +341,10 @@ export default function PresentationPage() {
         {source === 'hwmr' && <div className="source-form"><label>HWMR book<select value={hwmrBookId} onChange={(e) => { setHwmrBookId(e.target.value); setHwmrWeek(1) }}>{hwmrBooks.map((book) => <option key={book.id} value={book.id}>{book.title}</option>)}</select></label><div className="field-row"><label>Week<select value={hwmrWeek} onChange={(e) => setHwmrWeek(Number(e.target.value))}>{selectedHwmr?.weeks.map((week) => <option key={week.number} value={week.number}>Week {week.number}: {week.title}</option>)}</select></label><label>Portion<select value={hwmrPortion} onChange={(e) => setHwmrPortion(e.target.value)}><option value="outline">Week outline</option>{selectedWeek?.days.map((day) => <option key={day.day} value={`day-${day.day}`}>Day {day.day}</option>)}{selectedWeek?.hymn && <option value="hymn">Weekly hymn</option>}</select></label></div><button className="primary-action" onClick={addHwmr}><Plus size={17}/> Add HWMR portion</button></div>}
         {source === 'ministry' && <div className="source-form"><label>Find a phrase<input type="search" value={ministryPhrase} onChange={(event) => setMinistryPhrase(event.target.value)} placeholder="Search inside the ministry books — e.g. the word of God" /></label>{ministryPhraseQuery.length >= 3 && <div className="source-search-results" aria-label="Ministry book search results"><header><strong>Sections containing “{ministryPhraseQuery}”</strong><span>{ministrySearching ? 'Searching…' : `${ministryMatches.length} shown`}</span></header>{ministryMatches.map((result) => <button type="button" key={`${result.book.id}-${result.chapter.number}-${result.block}`} onClick={() => pickMinistryMatch(result)} title="Open this section in the picker below"><strong>{result.book.title}</strong><span>{result.chapter.displayTitle || result.chapter.title || `Section ${result.chapter.number}`}</span><p>{markPhrase(result.excerpt, ministryPhraseQuery)}</p></button>)}{!ministrySearching && !ministryMatches.length && <p>No ministry book uses that exact phrase. Try fewer words.</p>}</div>}<label>Book<select value={ministryBookId} onChange={(e) => setMinistryBookId(e.target.value)}>{ministryBooks.map((book) => <option key={book.id} value={book.id}>{book.title}</option>)}</select></label><label>Section<select value={ministrySection} onChange={(e) => setMinistrySection(Number(e.target.value))}>{ministrySections.map((section) => <option key={section.number} value={section.number}>{section.displayTitle || section.title}</option>)}</select></label><button className="primary-action" onClick={() => void addMinistry()}><Plus size={17}/> Add ministry section</button></div>}
         {source === 'media' && <MediaSourcePanel onAdd={addItem} onNotice={setMessage} />}
+        {source === 'deck' && <DeckSourcePanel onAdd={addItem} onNotice={setMessage} />}
         {source === 'announcement' && <AnnouncementSourcePanel onAdd={addItem} onNotice={setMessage} />}
         {source === 'web' && <WebSourcePanel onAdd={addItem} onNotice={setMessage} />}
-        {source === 'custom' && <div className="source-form"><label>Title<input value={customTitle} onChange={(e) => setCustomTitle(e.target.value)}/></label><label>Text<textarea rows={10} value={customText} onChange={(e) => setCustomText(e.target.value)} placeholder="Paste an announcement, burden, outline, or meeting text…"/></label><button className="primary-action" disabled={!customText.trim()} onClick={() => { addItem({ kind: 'custom', title: customTitle || 'Meeting portion', subtitle: 'Custom presentation', html: paragraphs(customText), notes: '' }); setCustomText('') }}><Plus size={17}/> Add custom portion</button></div>}
+        {source === 'custom' && <div className="source-form"><label>Title<input value={customTitle} onChange={(e) => setCustomTitle(e.target.value)}/></label><label>Text<textarea rows={10} value={customText} onChange={(e) => setCustomText(e.target.value)} placeholder="Paste an announcement, burden, outline, or meeting text…"/></label><div className="slide-display-options"><div className="slide-option" role="group" aria-label="Typeface on the custom slide"><span>Typeface</span><button type="button" className={customStyle.family === 'script' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, family: 'script' }))}>Script</button><button type="button" className={customStyle.family === 'print' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, family: 'print' }))}>Print</button><button type="button" className={customStyle.family === 'typewriter' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, family: 'typewriter' }))}>Typewriter</button></div><div className="slide-option" role="group" aria-label="Emphasis on the custom slide"><span>Emphasis</span><button type="button" className={customStyle.bold ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, bold: !value.bold }))} title="Bold"><Bold size={15}/></button><button type="button" className={customStyle.italic ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, italic: !value.italic }))} title="Italic"><Italic size={15}/></button></div><div className="slide-option" role="group" aria-label="Alignment on the custom slide"><span>Alignment</span><button type="button" className={customStyle.align === 'left' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, align: 'left' }))} title="Align left"><AlignLeft size={15}/></button><button type="button" className={customStyle.align === 'center' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, align: 'center' }))} title="Center on the screen"><AlignCenter size={15}/></button></div><div className="slide-option" role="group" aria-label="Line spacing on the custom slide"><span>Spacing</span><button type="button" className={customStyle.spacing === 'normal' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, spacing: 'normal' }))}>Normal</button><button type="button" className={customStyle.spacing === 'roomy' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, spacing: 'roomy' }))}>Roomy</button><button type="button" className={customStyle.spacing === 'open' ? 'active' : ''} onClick={() => setCustomStyle((value) => ({ ...value, spacing: 'open' }))}>Open</button></div></div><button className="primary-action" disabled={!customText.trim()} onClick={() => { addItem({ kind: 'custom', title: customTitle || 'Meeting portion', subtitle: 'Custom presentation', html: customSlideHtml(customText, customStyle), notes: '' }); setCustomText('') }}><Plus size={17}/> Add custom portion</button></div>}
       </section>
 
       <section className="presentation-console panel-card">
@@ -320,15 +355,15 @@ export default function PresentationPage() {
             <div className={`status-channel live-channel ${liveItem ? 'on-air' : ''}`}><small>{liveItem ? 'LIVE' : 'AUDIENCE'}</small><strong>{interlude ? `Verse: ${interlude.label}` : liveItem?.title ?? 'Blank output'}</strong><span>{liveItem ? `${liveIndex + 1} of ${queue.length}` : 'Projector is blank'}</span></div>
           </div>
           {interlude && <div className="verse-interlude"><span><Radio size={13} /> A verse clicked on the audience screen is live now.</span><button type="button" onClick={() => void returnToSlide()}><ArrowLeft size={14} /> Return to {queue.find((item) => item.id === interlude.slideId)?.title ?? 'the previous slide'}</button></div>}
-          <div className="present-controls"><button disabled={current === 0} onClick={() => { setCurrent((value) => value - 1); setNotes(queue[current - 1]?.notes ?? '') }}><ArrowLeft size={16}/> Previous preview</button><PresentOnDisplay title={active.title} subtitle={active.subtitle} html={active.html} showTitle={showTitle} fontScale={fontScale} theme={projectionTheme} transition={liveTransition} transitionSpeed={fadeSpeed} onPresented={() => { setLiveId(active.id); setInterlude(null) }}/><button disabled={current === queue.length - 1} onClick={() => { setCurrent((value) => value + 1); setNotes(queue[current + 1]?.notes ?? '') }}>Next preview <ArrowRight size={16}/></button></div>
+          <div className="present-controls"><button disabled={current === 0} onClick={() => { setCurrent((value) => value - 1); setNotes(queue[current - 1]?.notes ?? '') }}><ArrowLeft size={16}/> Previous preview</button><PresentOnDisplay title={active.title} subtitle={active.subtitle} html={active.html} media={active.media} showTitle={showTitle} fontScale={fontScale} theme={projectionTheme} transition={liveTransition} transitionSpeed={fadeSpeed} onPresented={() => { setLiveId(active.id); setInterlude(null) }} onMissingMedia={setMessage}/><button disabled={current === queue.length - 1} onClick={() => { setCurrent((value) => value + 1); setNotes(queue[current + 1]?.notes ?? '') }}>Next preview <ArrowRight size={16}/></button></div>
           <div className="live-controls"><button disabled={liveIndex <= 0} onClick={() => void stepLive(-1)}><SkipBack size={16}/> Previous live</button><button className="take-live" onClick={() => void takeLive()}><Radio size={16}/> Take preview live</button><button disabled={liveIndex < 0 || liveIndex >= queue.length - 1} onClick={() => void stepLive(1)}>Next live <SkipForward size={16}/></button><button onClick={() => void blankOutput()}><EyeOff size={16}/> Blank</button></div>
-          {liveItem?.media && <MediaTransport media={liveItem.media} onPage={(delta) => void stepDocumentPage(delta)} />}
+          {liveItem?.media && <MediaTransport media={liveItem.media} onPage={(delta) => void stepMediaPage(delta)} />}
           <div className="output-options"><label><input type="checkbox" checked={showTitle} onChange={(event) => setShowTitle(event.target.checked)}/>{showTitle ? <Eye size={15}/> : <EyeOff size={15}/>} Show title on audience screen</label><label>Audience text size<select value={fontScale} onChange={(event) => setFontScale(Number(event.target.value))}><option value={0.9}>Small</option><option value={1}>Normal</option><option value={1.15}>Large</option><option value={1.3}>Extra large</option><option value={1.45}>Very large</option><option value={1.6}>Huge</option><option value={1.8}>Extra huge</option><option value={2}>Maximum</option></select></label><label>Projection theme<select value={projectionTheme} onChange={(event) => setProjectionTheme(event.target.value as 'light' | 'dark')}><option value="light">Light</option><option value="dark">Dark</option></select></label><label>Live transition<select value={liveTransition} onChange={(event) => setLiveTransition(event.target.value as 'none' | 'fade')}><option value="fade">Fade</option><option value="none">None</option></select></label><label>Fade speed<select value={fadeSpeed} disabled={liveTransition !== 'fade'} onChange={(event) => setFadeSpeed(event.target.value as TransitionSpeed)}>{(Object.keys(FADE_SPEEDS) as TransitionSpeed[]).map((speed) => <option key={speed} value={speed}>{speed[0].toUpperCase() + speed.slice(1)} ({FADE_SPEEDS[speed]}s)</option>)}</select></label><span className="shortcut-hint">Ctrl+Enter: take live · B: blank · ←/→: preview · click a verse reference in the preview or on the audience screen to project that verse</span></div>
           <AudioRoutingPanel outputDeviceId={audioOutput} onOutputDevice={setAudioOutput} onNotice={setMessage} />
           <div className="presentation-preview" onClick={(event) => { const link = (event.target as HTMLElement).closest?.('a[data-book]'); if (!link) return; event.preventDefault(); const request = verseRequestFromLink(link as HTMLElement); if (request) void projectVerse(request) }}><div><header><h2>{active.title}</h2></header><article dangerouslySetInnerHTML={{ __html: active.html || (active.url ? `<p style="font-size:.78em;color:#8ea6b9">Live web page - the projector window loads:<br/>${escapeHtml(active.url)}</p>` : "") }}/></div></div><div className="speaker-notes-panel"><button type="button" className="speaker-notes-toggle" aria-expanded={notesOpen} onClick={() => setNotesOpen((value) => !value)}><ChevronDown size={15} className={notesOpen ? 'open' : ''}/> Presenter notes <small>Private — never shown to the audience</small>{!notesOpen && (notes || active.notes) ? <em>· written for this slide</em> : null}</button>{notesOpen && <label className="speaker-notes"><textarea rows={4} value={notes || active.notes} onChange={(e) => updateActiveNotes(e.target.value)} placeholder="Talking points, timing, or reminders…"/></label>}</div>
         </> : <div className="empty-console"><MonitorUp size={42}/><h3>Your presentation is empty</h3><p>Add Recovery Bible verses, hymns, HWMR portions, ministry-book sections, media, announcements, a web page, or custom text.</p></div>}
       </section>
     </div>
-    <section className="presentation-queue panel-card"><div className="section-heading"><div><h2>Run of show</h2><p>Arrange the complete meeting flow. Your program is saved automatically.</p></div><div className="queue-heading-actions"><input ref={importRef} type="file" accept="application/json,.json" hidden onChange={(event) => { void importShow(event.target.files?.[0]); event.currentTarget.value = '' }}/><button onClick={() => importRef.current?.click()}><Upload size={16}/> Import show</button>{queue.length > 0 && <><button onClick={exportShow}><Download size={16}/> Export show</button><button className="danger-quiet" onClick={() => { if (confirm('Clear the complete presentation queue?')) { setQueue([]); setLiveId(null) } }}><Trash2 size={16}/> Clear all</button></>}</div></div><div className="queue-list">{queue.map((item, index) => <button key={item.id} className={`queue-item ${index === current ? 'active' : ''} ${item.id === liveId ? 'live' : ''}`} onClick={() => { setCurrent(index); setNotes(item.notes) }}><span className="queue-number">{index + 1}</span><span className="queue-source">{item.kind === 'hymnal' ? <Music2/> : item.kind === 'bible' ? <BookOpen/> : item.kind === 'hwmr' || item.kind === 'custom' || item.kind === 'ministry' ? <FileText/> : item.kind === 'announcement' ? <Megaphone/> : item.kind === 'web' ? <MonitorUp/> : item.media?.kind === 'video' ? <Video/> : item.media?.kind === 'audio' ? <Music2/> : <Image/>}</span><span className="queue-copy"><strong>{item.title}</strong><small>{item.subtitle}</small></span>{item.id === liveId && <span className="live-pill">LIVE</span>}<span className="queue-actions"><span role="button" tabIndex={0} aria-label="Move up" onClick={(e) => { e.stopPropagation(); move(index, -1) }}><ArrowUp/></span><span role="button" tabIndex={0} aria-label="Move down" onClick={(e) => { e.stopPropagation(); move(index, 1) }}><ArrowDown/></span><span role="button" tabIndex={0} aria-label="Duplicate" onClick={(e) => { e.stopPropagation(); setQueue((items) => [...items.slice(0, index + 1), { ...item, id: makeId() }, ...items.slice(index + 1)]) }}><Copy/></span><span role="button" tabIndex={0} aria-label="Delete" onClick={(e) => { e.stopPropagation(); setQueue((items) => items.filter((_, itemIndex) => itemIndex !== index)) }}><Trash2/></span></span></button>)}</div></section>
+    <section className="presentation-queue panel-card"><div className="section-heading"><div><h2>Run of show</h2><p>Arrange the complete meeting flow. Your program is saved automatically.</p></div><div className="queue-heading-actions"><input ref={importRef} type="file" accept="application/json,.json" hidden onChange={(event) => { void importShow(event.target.files?.[0]); event.currentTarget.value = '' }}/><button onClick={() => importRef.current?.click()}><Upload size={16}/> Import show</button>{queue.length > 0 && <><button onClick={exportShow}><Download size={16}/> Export show</button><button className="danger-quiet" onClick={() => { if (confirm('Clear the complete presentation queue?')) { setQueue([]); setLiveId(null) } }}><Trash2 size={16}/> Clear all</button></>}</div></div><div className="queue-list">{queue.map((item, index) => <button key={item.id} className={`queue-item ${index === current ? 'active' : ''} ${item.id === liveId ? 'live' : ''}`} onClick={(event) => { if (isActionKeyEcho(event)) return; setCurrent(index); setNotes(item.notes) }}><span className="queue-number">{index + 1}</span><span className="queue-source">{item.kind === 'hymnal' ? <Music2/> : item.kind === 'bible' ? <BookOpen/> : item.kind === 'hwmr' || item.kind === 'custom' || item.kind === 'ministry' ? <FileText/> : item.kind === 'announcement' ? <Megaphone/> : item.kind === 'web' ? <MonitorUp/> : item.media?.kind === 'video' ? <Video/> : item.media?.kind === 'audio' ? <Music2/> : <Image/>}</span><span className="queue-copy"><strong>{item.title}</strong><small>{item.subtitle}</small></span>{item.id === liveId && <span className="live-pill">LIVE</span>}<span className="queue-actions"><QueueAction label="Move up" onAct={() => move(index, -1)}><ArrowUp/></QueueAction><QueueAction label="Move down" onAct={() => move(index, 1)}><ArrowDown/></QueueAction><QueueAction label="Duplicate" onAct={() => setQueue((items) => [...items.slice(0, index + 1), { ...item, id: makeId() }, ...items.slice(index + 1)])}><Copy/></QueueAction><QueueAction label="Delete" onAct={() => setQueue((items) => items.filter((_, itemIndex) => itemIndex !== index))}><Trash2/></QueueAction></span></button>)}</div></section>
   </section>
 }

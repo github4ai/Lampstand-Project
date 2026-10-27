@@ -1,6 +1,8 @@
 import { MonitorUp, RotateCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { presentationMediaFileIsMissing } from '../api/presentationMedia'
 import { setElementSink } from '../utils/audioRouting'
+import { deckSlidePath, type MediaSlideSource } from '../utils/mediaSlide'
 import './PresentOnDisplay.css'
 
 type Display = { id: string; label: string; primary: boolean }
@@ -12,13 +14,16 @@ export const FADE_SPEEDS = { fast: .15, normal: .3, slow: .6, slower: 1 } as con
 
 export type TransitionSpeed = keyof typeof FADE_SPEEDS
 
-export type PresentationPayload = { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; audioSinkId?: string }
+export type PresentationPayload = { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; audioSinkId?: string; mediaLevel?: number }
 
-export type PresentationPrefs = { showTitle: boolean; fontScale: number; theme: 'light' | 'dark'; transition: 'none' | 'fade'; transitionSpeed: TransitionSpeed; audioOutput: string }
+export type PresentationPrefs = { showTitle: boolean; fontScale: number; theme: 'light' | 'dark'; transition: 'none' | 'fade'; transitionSpeed: TransitionSpeed; audioOutput: string; mediaLevel: number }
 
-const DEFAULT_PRESENTATION_PREFS: PresentationPrefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' }
+const DEFAULT_PRESENTATION_PREFS: PresentationPrefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal', audioOutput: '', mediaLevel: .2 }
 
 const clampFontScale = (value: number) => Math.min(2, Math.max(.8, value))
+const clampLevel = (value: number) => Math.min(1, Math.max(0, value))
+/** 0 is a real level here - silence - so only a genuinely absent value falls back to the starting level. */
+const levelOr = (value: unknown) => { const parsed = Number(value); return Number.isFinite(parsed) ? clampLevel(parsed) : DEFAULT_PRESENTATION_PREFS.mediaLevel }
 const isTransitionSpeed = (value: unknown): value is TransitionSpeed => typeof value === 'string' && value in FADE_SPEEDS
 
 export function readPresentationPrefs(): PresentationPrefs {
@@ -31,12 +36,14 @@ export function readPresentationPrefs(): PresentationPrefs {
     transition: stored.transition === 'none' ? 'none' : 'fade',
     transitionSpeed: isTransitionSpeed(stored.transitionSpeed) ? stored.transitionSpeed : DEFAULT_PRESENTATION_PREFS.transitionSpeed,
     audioOutput: String(stored.audioOutput || ''),
+    mediaLevel: levelOr(stored.mediaLevel),
   }
 }
 
 export function writePresentationPrefs(patch: Partial<PresentationPrefs>): PresentationPrefs {
   const next = { ...readPresentationPrefs(), ...patch }
   next.fontScale = clampFontScale(next.fontScale)
+  next.mediaLevel = clampLevel(Number(next.mediaLevel))
   window.localStorage.setItem(PRESENTATION_PREFS_KEY, JSON.stringify(next))
   return next
 }
@@ -49,6 +56,7 @@ export function resolvePresentationSettings(payload: Partial<PresentationPayload
     transition: (payload.transition ?? prefs.transition) === 'fade' ? 'fade' : 'none',
     transitionSpeed: isTransitionSpeed(payload.transitionSpeed) ? payload.transitionSpeed : prefs.transitionSpeed,
     audioOutput: String(payload.audioSinkId ?? prefs.audioOutput ?? ''),
+    mediaLevel: levelOr(payload.mediaLevel ?? prefs.mediaLevel),
   }
 }
 
@@ -67,6 +75,18 @@ const liveHighlightUi = `<div id="highlight-tools" hidden><span>Highlight</span>
 const audienceVerseUi = `<script>(()=>{document.addEventListener("click",event=>{const link=event.target instanceof Element&&event.target.closest("a[data-book]");if(!link)return;event.preventDefault();const verseEnd=Number(link.dataset.verseEnd)||Number(link.dataset.verse);const request={book:link.dataset.book,chapter:Number(link.dataset.chapter),verse:Number(link.dataset.verse),verseEnd,label:link.textContent.trim()};if(window.lampstandAudience)window.lampstandAudience.selectVerse(request);else if(window.opener)window.opener.postMessage({type:"lampstand:audience-verse",request},"*")})})()</script>`
 
 const verseLinkStyles = `.slide-content a[data-book]{text-decoration:none;border-bottom:.06em solid currentColor;cursor:pointer}`
+
+/**
+ * A cued file can leave the media library afterwards, and the projector would then show black with nothing on the
+ * console to say why. The operator is told before go-live, and told which tab puts the file back.
+ */
+export async function mediaProjectionWarning(media?: MediaSlideSource) {
+  if (!media) return ''
+  const file = media.kind === 'deck' ? deckSlidePath(media) : media.name
+  if (!file || !(await presentationMediaFileIsMissing(file))) return ''
+  if (media.kind === 'deck') return `${media.title}: slide ${media.page || 1} is no longer in the media library - the audience screen stays black until the deck is made into slides again on the PowerPoint tab.`
+  return `${media.title} is no longer in the media library - the audience screen stays black until the file is added again on the Media tab.`
+}
 
 export async function presentOnSavedDisplay(payload: PresentationPayload) {
   const displayId = payload.displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
@@ -108,7 +128,7 @@ export async function presentWebSource({ url, title, displayId }: { url: string;
   return true
 }
 
-export default function PresentOnDisplay({ title, subtitle, html, disabled = false, showTitle, fontScale, theme, transition, transitionSpeed, onPresented }: { title: string; subtitle?: string; html: string; disabled?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; onPresented?: () => void }) {
+export default function PresentOnDisplay({ title, subtitle, html, disabled = false, media, showTitle, fontScale, theme, transition, transitionSpeed, onPresented, onMissingMedia }: { title: string; subtitle?: string; html: string; disabled?: boolean; media?: MediaSlideSource; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; onPresented?: () => void; onMissingMedia?: (message: string) => void }) {
   const [displays, setDisplays] = useState<Display[]>([])
   const [displayId, setDisplayId] = useState('')
   const [checking, setChecking] = useState(false)
@@ -140,7 +160,11 @@ export default function PresentOnDisplay({ title, subtitle, html, disabled = fal
   }
 
   async function present() {
-    if (await presentOnSavedDisplay({ title, subtitle, html, displayId, showTitle, fontScale, theme, transition, transitionSpeed })) onPresented?.()
+    const warning = await mediaProjectionWarning(media)
+    if (await presentOnSavedDisplay({ title, subtitle, html, displayId, showTitle, fontScale, theme, transition, transitionSpeed })) {
+      onPresented?.()
+      if (warning) onMissingMedia?.(warning)
+    }
   }
   return <div className="present-on-display">
     <div className="present-on-display-heading"><MonitorUp size={17} /><span><strong>Presentation</strong><small>Fullscreen display</small></span></div>

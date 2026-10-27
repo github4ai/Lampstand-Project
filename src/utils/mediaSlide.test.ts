@@ -22,10 +22,27 @@ describe('mediaSlideHtml', () => {
     expect(mediaSlideHtml({ kind: 'video', name: 'clip.mp4', title: 'Clip', muted: true })).toContain('muted playsinline')
   })
 
-  it('opens a document at the page the operator chose', () => {
+  it('opens a document at the page the operator chose, filling the screen', () => {
     const html = mediaSlideHtml({ kind: 'document', name: 'order-of-service.pdf', title: 'Order of Service', page: 3 })
-    expect(html).toContain('#page=3&toolbar=0&statusbar=0&view=FitH')
+    expect(html).toContain('#page=3&toolbar=0&statusbar=0&navpanes=0&view=Fit')
+    expect(html).toContain('class="doc-stage"')
+    expect(html).toContain('.slide-header{display:none}')
     expect(mediaSlideHtml({ kind: 'document', name: 'a.pdf', title: 'A', page: 0 })).toContain('#page=1&')
+  })
+
+  it('projects a deck slide edge to edge with no heading or padding', () => {
+    const html = mediaSlideHtml({ kind: 'deck', name: 'decks/Outreach/slide-02.png', title: 'Outreach', pages: ['decks/Outreach/slide-01.png', 'decks/Outreach/slide-02.png', 'decks/Outreach/slide-03.png'], page: 2 })
+    expect(html).toContain('/presentation-media/file?name=decks%2FOutreach%2Fslide-02.png')
+    expect(html).toContain('slide 2 of 3')
+    expect(html).toContain('.slide-header{display:none}')
+    expect(html).toContain('.slide-content{padding:0')
+    expect(html).not.toContain('<video')
+  })
+
+  it('clamps a deck page to the slides it actually has', () => {
+    const pages = ['decks/A/slide-01.png', 'decks/A/slide-02.png']
+    expect(mediaSlideHtml({ kind: 'deck', name: pages[0], title: 'A', pages, page: 9 })).toContain('slide-02.png')
+    expect(mediaSlideHtml({ kind: 'deck', name: pages[1], title: 'A', pages, page: 0 })).toContain('slide-01.png')
   })
 
   it('escapes a title that carries markup', () => {

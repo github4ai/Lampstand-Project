@@ -15,6 +15,8 @@ const API_PORT = Number(process.env.LAMPSTAND_API_PORT || 9656)
 // A projected video or stream starts with the slide, not with a click on the audience screen.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required')
 const AUDIENCE_PARTITION = 'persist:lampstand-audience'
+/** Projected media opens quiet so a video never blasts the room; the console Level slider raises it from here. */
+const DEFAULT_MEDIA_LEVEL = .2
 // The studio remote may drive a web page on the audience screen; only these keys ever reach it.
 const KEYS = { enter: 'Enter', tab: 'Tab', escape: 'Escape', backspace: 'Backspace', space: 'Space', delete: 'Delete', home: 'Home', end: 'End', pageup: 'PageUp', pagedown: 'PageDown', arrowup: 'Up', arrowdown: 'Down', arrowleft: 'Left', arrowright: 'Right' }
 let webPort = REQUESTED_WEB_PORT
@@ -23,6 +25,9 @@ let gatewayServer
 let serviceProcess
 let mainWindow
 let presentationWindow
+/** True once a slide is on the projector, so a swap knows there is something to fade out. */
+let audienceHasContent = false
+let stagingWindow
 let updateState = { status: 'idle', currentVersion: app.getVersion(), availableVersion: null, percent: 0, message: 'Ready to check for updates.' }
 let libraryUpdateState = { status: 'idle', installedVersion: null, availableVersion: null, percent: 0, message: 'Ready to check library updates.', manifestUrl: '' }
 
@@ -188,7 +193,7 @@ function configurePresentationWindows() {
     }
     presentationWindow = new BrowserWindow({ ...audienceBounds(payload), title: String(payload.title || 'Lampstand presentation'), backgroundColor: '#f5f1e8', frame: false, fullscreen: true, autoHideMenuBar: true, webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, partition: AUDIENCE_PARTITION, preload: join(__dirname, 'presentation-preload.cjs') } })
     presentationWindow.setMenuBarVisibility(false)
-    presentationWindow.on('closed', () => { presentationWindow = undefined })
+    presentationWindow.on('closed', () => { presentationWindow = undefined; audienceHasContent = false })
     return presentationWindow
   }
   // A web source keeps its own signed-in session, so a login done once here is still valid next meeting.
@@ -202,6 +207,51 @@ function configurePresentationWindows() {
     })
     return true
   })
+  // Web output is signed in and chosen on the operator's own screen first. The projector stays
+  // dark until Take live, which loads the same address into the audience window's shared session.
+  const stagingWindowFor = () => {
+    if (stagingWindow && !stagingWindow.isDestroyed()) return stagingWindow
+    const { x, y, width, height } = screen.getPrimaryDisplay().workArea
+    stagingWindow = new BrowserWindow({
+      x: Math.round(x + width * 0.1), y: Math.round(y + height * 0.08), width: Math.round(width * 0.72), height: Math.round(height * 0.78),
+      title: 'Lampstand - staged web output', backgroundColor: '#101b2d', autoHideMenuBar: true, show: false,
+      webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, partition: AUDIENCE_PARTITION, preload: join(__dirname, 'presentation-preload.cjs') },
+    })
+    stagingWindow.setMenuBarVisibility(false)
+    // Sign-in flows pop their own window; the child keeps this partition, so the session lands here.
+    stagingWindow.setWindowOpenHandler(({ url }) => (/^https?:\/\//i.test(url) ? { action: 'allow', overrideBrowserWindowOptions: { width: 900, height: 700, autoHideMenuBar: true } } : { action: 'deny' }))
+    stagingWindow.on('page-title-updated', (event, title) => { event.preventDefault(); stagingWindow?.setTitle(`Lampstand - ${title}`) })
+    stagingWindow.on('closed', () => { stagingWindow = undefined })
+    return stagingWindow
+  }
+  ipcMain.handle('lampstand:stage-web', (_event, payload = {}) => {
+    const target = /^https?:\/\/\S+$/i.test(String(payload.url || '').trim()) ? String(payload.url).trim() : ''
+    if (!target) return false
+    const stage = stagingWindowFor()
+    void stage.loadURL(target)
+    stage.show(); stage.focus()
+    return true
+  })
+  ipcMain.handle('lampstand:stage-state', () => {
+    if (!stagingWindow || stagingWindow.isDestroyed()) return { open: false, url: '', title: '', loading: false, canGoBack: false, canGoForward: false }
+    const contents = stagingWindow.webContents
+    return { open: true, url: contents.getURL(), title: contents.getTitle(), loading: contents.isLoading(), canGoBack: contents.navigationHistory.canGoBack(), canGoForward: contents.navigationHistory.canGoForward() }
+  })
+  ipcMain.handle('lampstand:stage-capture', async () => {
+    if (!stagingWindow || stagingWindow.isDestroyed()) return ''
+    const image = await stagingWindow.webContents.capturePage().catch(() => null)
+    return image ? image.toDataURL() : ''
+  })
+  ipcMain.handle('lampstand:stage-command', (_event, payload = {}) => {
+    if (!stagingWindow || stagingWindow.isDestroyed()) return false
+    const contents = stagingWindow.webContents
+    const action = String(payload.action || '')
+    if (action === 'reload') return contents.reload(), true
+    if (action === 'back') return contents.navigationHistory.canGoBack() ? (contents.goBack(), true) : false
+    if (action === 'forward') return contents.navigationHistory.canGoForward() ? (contents.goForward(), true) : false
+    if (action === 'close') return stagingWindow.close(), true
+    return false
+  })
   ipcMain.handle('lampstand:presentation-command', async (_event, payload = {}) => {
     const contents = presentationWindow && !presentationWindow.isDestroyed() ? presentationWindow.webContents : null
     if (!contents || contents.isDestroyed()) return false
@@ -209,7 +259,10 @@ function configurePresentationWindows() {
     if (action === 'reload') return contents.reload(), true
     if (action === 'back') return contents.navigationHistory.canGoBack() ? (contents.goBack(), true) : false
     if (action === 'forward') return contents.navigationHistory.canGoForward() ? (contents.goForward(), true) : false
-    const volume = Math.min(1, Math.max(0, Number(payload.value) || 0))
+    // The one number the console sends is a 0-1 amount: a level for volume, a fraction for seek.
+    const amount = Math.min(1, Math.max(0, Number(payload.value) || 0))
+    // One element is the live one: whichever is playing, otherwise the first the slide contains.
+    const live = 'const l=(a=>a.find((m)=>!m.paused)||a[0])([...document.querySelectorAll("video,audio")])'
     const scripts = {
       play: 'document.querySelectorAll("video,audio").forEach((m)=>{const r=m.play&&m.play();if(r&&r.catch)r.catch(()=>{})});"ok"',
       pause: 'document.querySelectorAll("video,audio").forEach((m)=>{m.pause&&m.pause()});"ok"',
@@ -217,13 +270,21 @@ function configurePresentationWindows() {
       restart: 'document.querySelectorAll("video,audio").forEach((m)=>{m.currentTime=0;const r=m.play&&m.play();if(r&&r.catch)r.catch(()=>{})});"ok"',
       mute: 'document.querySelectorAll("video,audio").forEach((m)=>{m.muted=true});"ok"',
       unmute: 'document.querySelectorAll("video,audio").forEach((m)=>{m.muted=false});"ok"',
-      volume: `document.querySelectorAll("video,audio").forEach((m)=>{m.volume=${volume};m.muted=${volume === 0}});"ok"`,
+      volume: `document.querySelectorAll("video,audio").forEach((m)=>{m.volume=${amount};m.muted=${amount === 0}});"ok"`,
+      seek: `(()=>{${live};const d=l&&Number(l.duration);if(l&&Number.isFinite(d)&&d>0)l.currentTime=Math.min(d,Math.max(0,d*${amount}));return "ok"})()`,
       fullscreen: 'const v=document.querySelector("video");if(v&&v.requestFullscreen)v.requestFullscreen();"ok"',
     }
     const script = scripts[action]
     if (!script) return false
     await contents.executeJavaScript(script, true).catch(() => undefined)
     return true
+  })
+  // The player on the projector answers for itself, so the console can show real time and level.
+  ipcMain.handle('lampstand:presentation-media-state', async () => {
+    const contents = presentationWindow && !presentationWindow.isDestroyed() ? presentationWindow.webContents : null
+    if (!contents || contents.isDestroyed()) return null
+    const script = '(()=>{const a=[...document.querySelectorAll("video,audio")];if(!a.length)return null;const m=a.find((x)=>!x.paused)||a[0];const d=Number(m.duration);const c=Number(m.currentTime);return {kind:m.tagName.toLowerCase(),playing:!m.paused&&!m.ended,time:Number.isFinite(c)?c:0,duration:Number.isFinite(d)?d:0,volume:Number(m.volume)||0,muted:Boolean(m.muted)}})()'
+    return contents.executeJavaScript(script, true).catch(() => null)
   })
   // The studio shows what the audience screen is really displaying and lets the operator work it with mouse and keyboard.
   ipcMain.handle('lampstand:presentation-capture', async () => {
@@ -272,15 +333,30 @@ function configurePresentationWindows() {
     const document = payload.blank
       ? '<!doctype html><html><head><meta charset="utf-8"><style>html,body{width:100%;height:100%;margin:0;background:#000}</style></head><body></body></html>'
       : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${clean(payload.title || 'Presentation')}</title><style>html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#132238}body{display:grid;place-items:center;color:#172033}main{box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr);width:min(100vw,177.7778vh);height:min(100vh,56.25vw);aspect-ratio:16/9;overflow:hidden;background:#f7f3ea;box-shadow:0 0 50px #0006}.slide-header{box-sizing:border-box;padding:clamp(18px,2.2vw,38px) clamp(34px,5vw,90px) clamp(14px,1.6vw,28px);border-bottom:clamp(2px,.18vw,4px) solid #35bdec;text-align:center;font-family:Inter,Segoe UI,sans-serif}.slide-header h1{margin:0;color:#172033;font-size:clamp(28px,3vw,58px);line-height:1.12}.slide-content{box-sizing:border-box;min-height:0;overflow-y:auto;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#0c547488 transparent;display:grid;justify-items:start;align-content:safe center;padding:clamp(26px,3.2vw,58px) clamp(46px,7vw,128px) clamp(42px,5vw,90px);font-family:Georgia,'Times New Roman',serif;font-size:calc(clamp(20px,1.75vw,34px) * ${fontScale});line-height:1.55;text-align:left}.slide-content>*{box-sizing:border-box;width:100%;max-width:44em}.slide-content h2,.slide-content h3{color:#0c5474;font-family:Inter,Segoe UI,sans-serif}.slide-content strong{color:#0c3853}.slide-content a{color:#047bad}.slide-content a[data-book]{text-decoration:none;border-bottom:.06em solid currentColor;cursor:pointer}body.audience-dark{background:#05070a;color:#f4f7fb}body.audience-dark main{background:#101722;box-shadow:0 0 50px #000}.audience-dark .slide-header{border-color:#58d4ff}.audience-dark .slide-header h1,.audience-dark .slide-content{color:#f4f7fb;scrollbar-color:#83dcfa66 transparent}.audience-dark .slide-content h2,.audience-dark .slide-content h3{color:#83dcfa}.audience-dark .slide-content strong{color:#d9f3ff}.audience-dark .slide-content a{color:#83dcfa}@keyframes audienceFadeIn{from{opacity:0}to{opacity:1}}main.audience-fade{animation:audienceFadeIn var(--audience-fade,0.3s) ease-out both}mark{padding:0 .08em;border-radius:3px;color:#171717;box-decoration-break:clone;-webkit-box-decoration-break:clone;cursor:pointer}#highlight-tools{position:fixed;z-index:20;font:600 14px/1.2 Inter,Segoe UI,sans-serif;box-shadow:0 8px 28px #0005;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #ffffff66;border-radius:14px;background:#132238f5;color:#fff}#highlight-tools[hidden]{display:none}.highlight-swatch{width:30px;height:30px;padding:0;border:2px solid #fff;border-radius:50%;cursor:pointer}.highlight-remove{min-height:32px;padding:0 12px;border:1px solid #ff9b9b;border-radius:8px;background:transparent;color:#ffd0d0;cursor:pointer}.highlight-close{width:30px;height:30px;padding:0;border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer}${titleStyle}</style></head><body class="audience-${projectionTheme}"><main class="${transitionClass.trim()}"${transitionStyle}><header class="slide-header"><h1>${clean(payload.title || 'Presentation')}</h1></header><section class="slide-content">${String(payload.html || '')}</section></main>${highlightUi}${audienceScrollUi}${audienceVerseUi}</body></html>`
-    void output.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(document)}`).then(() => {
+    // The console carries the level the operator last set; a first run gets the low starting level.
+    const mediaLevel = Math.min(1, Math.max(0, Number(payload.mediaLevel))) || DEFAULT_MEDIA_LEVEL
+    const fadeMs = Math.round(fadeSeconds * 1000)
+    const fadeOut = async () => {
+      if (!audienceHasContent || payload.transition === 'none' || output.webContents.isDestroyed()) return
+      // Whatever is on air dims and goes quiet over the same beat, so a clip change never snaps or clicks.
+      await output.webContents.executeJavaScript(`(()=>{const d=${fadeMs};document.body.style.transition="opacity ${fadeMs}ms linear";document.body.style.opacity="0";const media=[...document.querySelectorAll("video,audio")];const start=media.map((m)=>Number(m.volume)||0);const t0=performance.now();const step=()=>{const k=Math.min(1,(performance.now()-t0)/d);media.forEach((m,i)=>{m.volume=start[i]*(1-k)});if(k<1)requestAnimationFrame(step)};if(media.length)requestAnimationFrame(step);return "ok"})()`, true).catch(() => undefined)
+      await new Promise((done) => setTimeout(done, fadeMs))
+    }
+    const showSlide = async () => {
+      await fadeOut()
+      await output.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(document)}`)
       if (output.isDestroyed()) return
+      audienceHasContent = true
       output.show()
       output.setFullScreen(true)
       output.focus()
       const sink = String(payload.audioSinkId || '')
+      // Projected media opens at the console's level, never at full blast.
+      void output.webContents.executeJavaScript(`document.querySelectorAll("video,audio").forEach((m)=>{m.volume=${mediaLevel}})`, true).catch(() => undefined)
       // Projected video and audio leave through the speaker output chosen in the studio.
       if (sink) void output.webContents.executeJavaScript(`(()=>{const sink=${JSON.stringify(sink)};const apply=()=>document.querySelectorAll("video,audio").forEach((m)=>{if(m.setSinkId)m.setSinkId(sink).catch(()=>{})});apply();new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true})})()`, true).catch(() => undefined)
-    })
+    }
+    void showSlide().catch(() => undefined)
     return true
   })
   ipcMain.on('lampstand:presentation-verse', (_event, reference) => {

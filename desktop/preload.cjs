@@ -29,7 +29,12 @@ contextBridge.exposeInMainWorld('lampstandDesktop', {
     open: (payload) => ipcRenderer.invoke('lampstand:open-presentation', payload),
     openWeb: (payload) => ipcRenderer.invoke('lampstand:open-presentation-web', payload),
     command: (action, value) => ipcRenderer.invoke('lampstand:presentation-command', { action, value }),
+    mediaState: () => ipcRenderer.invoke('lampstand:presentation-media-state'),
     capture: () => ipcRenderer.invoke('lampstand:presentation-capture'),
+    stage: (payload) => ipcRenderer.invoke('lampstand:stage-web', payload),
+    stageState: () => ipcRenderer.invoke('lampstand:stage-state'),
+    stageCapture: () => ipcRenderer.invoke('lampstand:stage-capture'),
+    stageCommand: (action) => ipcRenderer.invoke('lampstand:stage-command', { action }),
     sendToAudience: (event) => ipcRenderer.invoke('lampstand:presentation-input', event),
     subscribeVerseRequest: (listener) => {
       const handler = (_event, reference) => listener(reference)

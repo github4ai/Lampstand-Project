@@ -262,6 +262,47 @@
   accent-color: #55d6ff;
 }
 
+.transport-bar .transport-progress {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.transport-bar .transport-progress input[type='range'] {
+  width: 100%;
+}
+
+.transport-bar .transport-progress input[type='range']:disabled {
+  opacity: .35;
+}
+
+.transport-bar .transport-time {
+  font: 700 0.76rem/1 ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  color: #d9f3ff;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.deck-waiting {
+  display: grid;
+  gap: 8px;
+  padding: 9px 11px;
+  border: 1px dashed #3d6b86;
+  border-radius: 11px;
+  background: #0d2135;
+}
+
+.deck-waiting > strong {
+  color: #55d6ff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.deck-row .media-thumb {
+  border: 1px solid #2b6c86;
+}
+
 /* Audio routing */
 .audio-panel {
   display: grid;

@@ -1,4 +1,4 @@
-import { BookOpen, Clapperboard, Download, FileText, FolderPlus, Image, Languages, Layers, Map, Mic, MonitorUp, MousePointerClick, Search, UserRoundCheck, Wrench } from 'lucide-react'
+import { BookOpen, Clapperboard, Download, FileText, FolderPlus, Image, Keyboard, Languages, Layers, Map, Mic, MonitorUp, MousePointerClick, Search, UserRoundCheck, Wrench } from 'lucide-react'
 import { useState } from 'react'
 import MarkdownMessage from '../components/Message/MarkdownMessage'
 import installationGuide from '../../docs/INSTALLATION-GUIDE.md?raw'
@@ -18,8 +18,10 @@ const quickHelp = [
   { icon: MonitorUp, title: 'Scripture footnotes on screen', text: 'In Presentation Studio, set Footnotes to Show before adding verses to print their Recovery Bible notes underneath.' },
   { icon: MousePointerClick, title: 'Click a verse on the projector', text: 'Verse references are live links in the preview and on the audience screen. Clicking one projects that verse alone; Return to restores the slide.' },
   { icon: Search, title: 'Find a phrase', text: 'On the Recovery Bible and Ministry Books tabs, search the exact wording of a passage. Pick a result to load it into the slide picker.' },
-  { icon: Image, title: 'Project images and video', text: 'The Media tab keeps pictures, video, audio and PDFs on this computer and plays them on the projector. While one is live, the transport bar controls play, pause, restart, mute and level.' },
-  { icon: Layers, title: 'PowerPoint decks', text: 'Press Make slides on a .pptx in the Media tab to put one projected image per slide into the queue. If PowerPoint is not installed, save the deck as a PDF and step through its pages.' },
+  { icon: Image, title: 'Project images and video', text: 'The Media tab keeps pictures, video, audio and PDFs on this computer and plays them on the projector. While one is live, the transport bar shows the time and a bar you can drag to any moment, with play, restart, mute and level. Media opens at one fifth volume and remembers what you last set.' },
+  { icon: Layers, title: 'PowerPoint decks', text: 'The PowerPoint tab turns a .pptx into one full-screen image per slide and queues the whole deck as a single entry. While it is live, the console arrows step it slide by slide. If PowerPoint is not installed, save the deck as a PDF and step through its pages.' },
+  { icon: MonitorUp, title: 'A media file that has gone', text: 'Media is read from this computer at the moment it is projected. If a file was deleted or moved after you queued it, taking the slide live tells you on the console - naming the tab that puts it back - instead of the audience screen quietly going black.' },
+  { icon: Keyboard, title: 'Work the run of show without the mouse', text: 'Tab walks the queue: Enter or Space on a row previews that slide, and the Move up, Move down, Duplicate and Delete buttons beside its title run the same way. Focus stays on the button you pressed, so holding Enter walks one slide through the order.' },
   { icon: Map, title: 'Maps, streams and meetings', text: 'Web output fills the projector window with a Google Maps search, a YouTube video or live stream, a Meet, Zoom or Teams link, or any other web page.' },
   { icon: MousePointerClick, title: 'Sign in once on the projector', text: 'Audience monitor and remote mirrors the projector window and forwards your clicks and keystrokes, so a login-protected webcast is already signed in next meeting.' },
   { icon: Mic, title: 'Room audio', text: 'In Program Output choose the speaker the room uses; the microphone can be sent to that same output with a live level bar, and one button mutes the room.' },

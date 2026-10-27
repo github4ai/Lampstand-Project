@@ -14,6 +14,14 @@ export async function getPresentationMediaLibrary(signal?: AbortSignal) {
 /** The audience window is a separate document, so every media source has to be an absolute gateway URL. */
 export const presentationMediaFileUrl = (name: string) => `${AIOS_API_BASE_URL}/presentation-media/file?name=${encodeURIComponent(name)}`
 
+/**
+ * A cued file can leave the library afterwards, so the console asks the gateway before the room sees a black
+ * screen. Only a 404 counts as missing - a stopped gateway is a different problem and must not be reported as one.
+ */
+export async function presentationMediaFileIsMissing(name: string) {
+  try { return (await fetch(presentationMediaFileUrl(name), { method: 'HEAD' })).status === 404 } catch { return false }
+}
+
 /** The body is the file itself, so a large video is streamed by the browser instead of buffered in memory here. */
 export function uploadPresentationMediaFile(file: File, onProgress?: (percent: number) => void) {
   return new Promise<PresentationMediaItem>((resolve, reject) => {

@@ -18,7 +18,9 @@ export interface LampstandLibraryUpdateState {
 }
 
 export interface LampstandVerseRequest { book: string; chapter: number; verse: number; verseEnd: number; label: string }
-export type AudienceCommand = 'play' | 'pause' | 'toggle' | 'restart' | 'mute' | 'unmute' | 'volume' | 'fullscreen' | 'reload' | 'back' | 'forward'
+export type AudienceCommand = 'play' | 'pause' | 'toggle' | 'restart' | 'mute' | 'unmute' | 'volume' | 'seek' | 'fullscreen' | 'reload' | 'back' | 'forward'
+export type AudienceMediaState = { kind: string; playing: boolean; time: number; duration: number; volume: number; muted: boolean }
+export type StagedWebState = { open: boolean; url: string; title: string; loading: boolean; canGoBack: boolean; canGoForward: boolean }
 export type AudienceInputEvent = { type: 'click' | 'double-click' | 'move'; x: number; y: number } | { type: 'wheel'; x: number; y: number; deltaY: number } | { type: 'key'; value: string } | { type: 'text'; value: string }
 
 declare global {
@@ -40,10 +42,15 @@ declare global {
       }
       presentation: {
         getDisplays(): Promise<Array<{ id: string; label: string; primary: boolean }>>
-        open(payload: { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: string; audioSinkId?: string }): Promise<boolean>
+        open(payload: { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: string; audioSinkId?: string; mediaLevel?: number }): Promise<boolean>
         openWeb(payload: { url: string; title?: string; displayId?: string }): Promise<boolean>
         command(action: AudienceCommand, value?: number): Promise<boolean>
+        mediaState(): Promise<AudienceMediaState | null>
         capture(): Promise<string>
+        stage(payload: { url: string; title?: string }): Promise<boolean>
+        stageState(): Promise<StagedWebState>
+        stageCapture(): Promise<string>
+        stageCommand(action: 'reload' | 'back' | 'forward' | 'close'): Promise<boolean>
         sendToAudience(event: AudienceInputEvent): Promise<boolean>
         subscribeVerseRequest(listener: (request: LampstandVerseRequest) => void): () => void
       }

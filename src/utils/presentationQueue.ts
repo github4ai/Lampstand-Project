@@ -1,6 +1,6 @@
 import type { MediaSlideSource } from './mediaSlide'
 
-export type StudioSourceKind = 'bible' | 'hymnal' | 'hwmr' | 'ministry' | 'custom' | 'media' | 'announcement' | 'web'
+export type StudioSourceKind = 'bible' | 'hymnal' | 'hwmr' | 'ministry' | 'custom' | 'media' | 'deck' | 'announcement' | 'web'
 
 /**
  * One shape for everything the studio can put on the audience screen: a slide keeps its HTML,

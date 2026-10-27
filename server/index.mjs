@@ -12,6 +12,7 @@ import { readHwmrLibrary, refreshHwmrLibrary } from './hwmr-library.mjs'
 import { deleteVideoTrainingFile, getVideoTrainingLibrary, saveVideoTrainingUpload, streamVideoTrainingFile } from './video-training.mjs'
 import { deletePresentationMediaFile, deletePresentationMediaGroup, getPresentationMediaLibrary, savePresentationMediaUpload, streamPresentationMediaFile } from './presentation-media.mjs'
 import { convertPresentationDeck } from './presentation-decks.mjs'
+import { describeWebLink } from './presentation-links.mjs'
 import { listRecoveryBibleBooks, readRecoveryBibleBookMatter, readRecoveryBibleBookOutline, readRecoveryBibleChapter, searchRecoveryBible } from './recovery-bible.mjs'
 import { listLifeStudyBooks, listLifeStudyMessages, readLifeStudyMessage, searchLifeStudy } from './life-study.mjs'
 import { listMinistryBookChapters, readMinistryBookChapter, readMinistryBooksLibrary, searchMinistryBooks } from './ministry-books.mjs'
@@ -431,6 +432,11 @@ export function createAiosServer() {
       if (request.method === 'POST' && request.url.startsWith('/presentation-media/deck?')) {
         const params = new URL(request.url, `http://${request.headers.host}`).searchParams
         return send(response, 200, await convertPresentationDeck(params.get('name'), config), origin)
+      }
+
+      if (request.method === 'GET' && request.url.startsWith('/presentation-links/info?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        return send(response, 200, await describeWebLink(params.get('url')), origin)
       }
 
       if (request.method === 'GET' && request.url === '/recovery-bible/books') {

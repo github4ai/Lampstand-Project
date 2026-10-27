@@ -55,8 +55,11 @@ export function youtubeProjectionUrl(input: string) {
   if (detectWebSource(value) !== 'youtube') return value
   if (/\/(live|streaming)\b/i.test(url.pathname) || url.searchParams.get('live') === 'true') return value
   const id = youtubeVideoId(url)
-  if (!id) return value
-  return `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`
+  const list = url.searchParams.get('list') || ''
+  if (id && list) return `https://www.youtube.com/embed/${encodeURIComponent(id)}?list=${encodeURIComponent(list)}&autoplay=1&rel=0`
+  if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`
+  if (list) return `https://www.youtube.com/embed?listType=playlist&list=${encodeURIComponent(list)}&autoplay=1&rel=0`
+  return value
 }
 
 /** What the audience window should load for whatever the operator typed or picked. */
