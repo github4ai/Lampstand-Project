@@ -61,6 +61,7 @@ const PresentationPage = lazy(() => import('./pages/PresentationPage'))
 const SchoolPage = lazy(() => import('./pages/SchoolPage'))
 const SchoolLessonReaderPage = lazy(() => import('./pages/SchoolLessonReaderPage'))
 const HwmrPage = lazy(() => import('./pages/HwmrPage'))
+const VideoTrainingPage = lazy(() => import('./pages/VideoTrainingPage'))
 const ChurchPage = lazy(() => import('./pages/ChurchPage'))
 const PrayerBurdenPage = lazy(() => import('./pages/PrayerBurdenPage'))
 const ChurchAnnouncementsPage = lazy(() => import('./pages/ChurchAnnouncementsPage'))
@@ -627,6 +628,7 @@ function App() {
         <Route path="/school" element={protect('school', <main className="workspace-panel"><SchoolPage /></main>)} />
         <Route path="/school/read" element={protect('school', <main className="workspace-panel"><SchoolLessonReaderPage /></main>)} />
         <Route path="/ministry/hwmr" element={protect('ministry', <main className="workspace-panel"><HwmrPage /></main>)} />
+        <Route path="/ministry/video-training" element={protect('ministry', <main className="workspace-panel"><VideoTrainingPage /></main>)} />
         <Route path="/church" element={protect('church', <main className="workspace-panel"><ChurchPage /></main>)} />
         <Route path="/church/prayer-points" element={protect('church', <main className="workspace-panel"><PrayerBurdenPage /></main>)} />
         <Route path="/church/prayer-burden" element={<Navigate to="/church/prayer-points" replace />} />

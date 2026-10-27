@@ -6,6 +6,8 @@
 - At least 4 GB of free space for the application and bundled reading libraries.
 - Additional space is required only for optional local AI models.
 - A GPU is optional for reading, School, Church, documents, and ordinary chat. A capable NVIDIA GPU is recommended for high-quality local image, audio, and video generation.
+- Microsoft PowerPoint is optional. Presentation Studio converts a `.pptx` or `.ppt` deck into projected slides by opening it in PowerPoint on this computer; without PowerPoint, save the deck as a PDF and the app projects that page by page.
+- A microphone and a second speaker output are optional, for sending a live speaker's voice to the room from Presentation Studio. Nothing is recorded.
 
 ## Install the app
 
@@ -41,6 +43,14 @@ Ollama, Local Whisper, ComfyUI, ACE-Step, and WanGP are not part of the core rea
 - **WanGP/LTX:** local video generation.
 
 Computers with limited storage can use the core app without these large model packages.
+
+## Existing data
+
+The installer shows an **Existing data on this computer** page on every install and update. **Keep my data (recommended)** is selected; choosing it, or pressing Enter, leaves reading progress, annotations, profiles, preferences, and files added to the local library exactly where they are.
+
+The second choice, **Erase all Lampstand data on this computer and start fresh**, asks for confirmation and then removes the personal data folder `%APPDATA%\lampstand-studio` before the new version is installed. Every profile on that computer loses its data, and the bundled libraries are copied again on first launch, which takes several minutes. Downloaded and generated media are stored outside that folder and are not removed.
+
+An installer run without interaction — for example a deployment script that passes `/S` — never erases anything; the confirmation defaults to keeping data. If the app was still open during an erase, some files cannot be removed and the installer reports that it left them on disk; close Lampstand and run the installer again to finish.
 
 ## First-run checks
 

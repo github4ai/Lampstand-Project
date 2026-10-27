@@ -44,27 +44,47 @@ The Ministry dashboard contains:
 
 - **Holy Word for Morning Revival (HWMR):** daily portions, weekly progress, hymns, highlights, annotations, and study outputs.
 - **Hymnal:** browse and search hymns; read lyrics and chords; use available tunes and sheets.
+- **Video Training:** play training messages and open handouts kept on this computer, and add new ones from inside the app.
 - **Recovery Bible:** choose a book and chapter, follow footnotes and cross-references, select verses for reading or copying, and return from linked study pages.
 - **Life-Study:** browse books and messages with Scripture links, reading controls, highlights, and annotations.
 - **Ministry Books:** browse by author, title, and section. Content, Prefaces, chapters, and appendices are labeled separately.
 
 Reading pages support full-page mode. Use the panel button to show or hide navigation while remaining in full-page reading.
 
+**Video Training** opens the local training library. Every stored video and document is listed across the top; choose one to open it. Videos play in the page with the normal controls and seek without waiting for the whole file. PDF and HTML handouts open beside it; text and Markdown handouts print as text. **Add videos or documents** accepts MP4, WebM, MOV, AVI, MKV, WMV video and PDF, TXT, Markdown, or HTML files, and several can be chosen at once; the progress bar shows how much of each file has been stored. Files you copy into the Ministry **Video Training** folder of the local library appear in the same list, so a shared folder works as well as the button. **Remove** deletes the selected file from that folder after asking once. The library starts empty until the first file is added.
+
+The **Recovery Bible** is opened with two lists — **Book** and **Chapter** — the same way Life-Study is. Type a reference such as `John 3:16` in the box beside them to jump to it, or use the arrows on either side to step one chapter at a time.
+
 ### Presentation Studio
 
 Presentation Studio (sidebar: **Presentation**) builds the running order for a meeting and projects it onto one persistent audience window. That window stays open from the first slide to the last, so nothing flashes open or closed while the meeting is under way.
 
-**Load a source.** The source rack has five tabs:
+**Load a source.** The source rack has eight tabs:
 
 - **Recovery Bible** — type words into **Find a phrase** and the app lists every verse that uses that exact wording, in the order typed, with the phrase marked in the verse. Pick a result and that verse goes into the verse basket, even if it is in a book or chapter you have not opened. To browse instead, choose **Old Testament** or **New Testament**, then the book and chapter abbreviations, and tick the verses. Ticked verses stay in the basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
 - **Hymnal** — search by number or title, then set **Lyrics** (text only or with chords), **Columns** (1, 2, or 3), and **Chorus** (once, or after every stanza). With chords you can also transpose with **Key**. The line under the hymn title says whether the complete hymn fits one slide or needs more columns.
 - **HWMR** — add the week outline, one day (Morning Nourishment verses with its message and Today's Reading), or the weekly hymn. The day and outline slides are laid out the way the reading page is, with each printed reference above its verse, and every Scripture reference in them is clickable.
 - **Ministry Books** — type words into **Find a phrase** to search inside the books; each result names the book and the section and shows the passage found, and picking it opens that section in the picker below. Choose the book and section directly to add a whole section as one slide.
+- **Media** — add images, video, audio, PDFs and PowerPoint files, then project any of them. See **Project media** below.
+- **Announcements** — type a heading, one announcement per line, and an optional closing line. Tick **Number the items** for a numbered list or leave it for bullets. Each line is read from the stage, so it stands on its own on the slide; a long list scrolls on the projector.
+- **Web output** — a map, a stream, a meeting, or any other web page fills the projector window, including a page that needs a sign-in. See **Send a map, a stream or a meeting to the projector** below.
 - **Custom portion** — paste an announcement, a burden-verse, an outline, or any other text.
 
 **Show footnotes on a Scripture slide.** Under the book and chapter buttons, choose **Footnotes → Show** before adding the verses, and the Recovery Bible notes print under the verse they explain. **Hide** projects the verses alone. Notes are set smaller than the Scripture so the verse stays primary, but large enough to read from the back of the room. While **Show** is selected, the studio tells you how many notes the basket will carry. The choice is fixed when the slide is created: change it and add the slide again.
 
 **Follow a Scripture reference.** Every verse reference on a slide is a link, in the studio preview and on the audience screen. Click one — on the projector itself, with the mouse or a clicker — and that verse alone fills the screen while you explain it, using the same text, projection theme and text size as the rest of the show. The live channel then reads **Verse: …** and a **Return to** *slide title* button appears in the console; pressing it puts the slide you were on back up. An interlude never changes your run of show, and taking any slide live ends it.
+
+**Project media.** **Add images, video, audio, PDF or PowerPoint** stores the files on this computer, inside the `Presentation Media` folder of your data directory, and the projector reads them from there — nothing is uploaded anywhere. Filter the list with **Everything / Images / Video / Audio / Docs**, then set the options before pressing **Project**: **Fill the whole screen** crops to the projection shape instead of fitting inside it, **Start playing on take-live** begins a video or song the moment the slide goes live, **Repeat** loops it, **Keep it silent** plays it without sound, and **First page** chooses which page of a PDF opens.
+
+While a video, song or PDF is on air, a transport bar appears in **Program Output**: **Play**, **Pause**, **Restart**, **Mute**, a **Level** slider and, for video, **Fullscreen**. A PDF gets **Previous page / Next page** instead. Remove a file from the library with the trash button; a converted deck removes all of its slides at once.
+
+**PowerPoint.** Press **Make slides** on a `.pptx` or `.ppt` file. Lampstand opens the deck in PowerPoint on this computer and puts one projected image per slide into the queue, in order, each carrying the slide's own title. If PowerPoint is not installed, the app says so: open the deck yourself, save it as a PDF, add that PDF, and project it page by page with the page buttons.
+
+**Send a map, a stream or a meeting to the projector.** The **Web output** tab loads a real web page into the projector window, so the page keeps its own player, chat and controls. Type a **Place on the map** to get Google Maps at the zoom and view you choose (Road, Satellite, Hybrid, Terrain). Or paste any address — a YouTube video opens in the clean full-screen player, a YouTube *live* page keeps its own stream player, and Google Meet, Zoom, Teams or any other site load as they are. Then **Project now** puts it on screen immediately, **Add to the show** queues it so it can be taken live in order, and **Save link** keeps it in the saved list for next time.
+
+**A page that needs a sign-in.** The projector window has its own browser profile, separate from the studio. Open **Audience monitor and remote**: it mirrors what the projector is showing, and every click, scroll and keystroke you make on the mirror goes to the real page. Sign in that way once — type into the mirror, or paste a long text into the focused field and press **Send** — and the next meeting opens already logged in. Lampstand never stores, sends or records the password; it only forwards what you type.
+
+**Room audio.** In **Program Output**, choose the **Speaker output for the room** — the port the projector cable or the mixer is plugged into — and everything the studio plays with sound leaves through it. Pick the **Microphone input** and press **Send the microphone to the room** to make a speaker's voice come out of that same output; the bar beside the button is the live microphone level, so you can see it is open. **Mute the room** silences the microphone and whatever is playing at the same time, and pressing it again brings both back. **Refresh devices** re-reads the list when a device only names itself after access is allowed. The microphone is a live path only: nothing is recorded and nothing leaves the computer.
 
 **Run the show.** Every added item appears in **Run of show**, which saves itself and can be reordered, duplicated, removed, exported as a show file, or imported on another computer. The **Program Output** panel at the top of the console keeps **Preview** (what you are cueing) and **Live** (what the audience sees) side by side in one compact row, with the meeting timer beside them. From there:
 
@@ -73,7 +93,9 @@ Presentation Studio (sidebar: **Presentation**) builds the running order for a m
 - **Blank** — or `B` — blacks out the projector while the window stays open.
 - `←` / `→` — move the preview through the queue.
 
-**Audience settings** take effect on the next slide you take live and are remembered between meetings: title on or off, audience text size, light or dark projection theme, fade or cut transition, and fade speed. Choose the projector in **Screen** when more than one display is connected, and use **Detect displays** after a projector or cable is plugged in or unplugged — it re-reads the connected screens and reports how many it finds. Presenter notes stay on the studio screen and never reach the projector.
+**Audience settings** take effect on the next slide you take live and are remembered between meetings: title on or off, audience text size, light or dark projection theme, fade or cut transition, fade speed, and the speaker output the room audio uses. Choose the projector in **Screen** when more than one display is connected, and use **Detect displays** after a projector or cable is plugged in or unplugged — it re-reads the connected screens and reports how many it finds.
+
+**Presenter notes** sit below the preview behind a **Presenter notes** button. The preview always shows the whole slide at its projection shape; the notes stay folded away until you need them, and the button tells you when the current slide already has notes written. Notes are private to this screen and never reach the projector.
 
 **During the meeting**, a slide that is longer than the window scrolls with the mouse wheel, `↑`/`↓`, `Page Up`/`Page Down`, `Space`, `Home` or `End`. Selecting text on the audience screen opens a small highlight toolbar, so a word can be marked while it is being read. The **meeting timer** in the console tracks elapsed time and can be paused or reset.
 
@@ -130,6 +152,8 @@ Lampstand remembers the most recently selected local profile on that computer an
 
 Use **Settings** to check services, create backups, install optional dependencies, and check for app updates. App updates do not remove local user data unless **Reset personal data after update** is explicitly selected before installing an update.
 
+Every install — the downloaded Setup file or an update the app starts for you — shows an **Existing data on this computer** page. **Keep my data (recommended)** is selected and nothing is removed. Choosing **Erase all Lampstand data on this computer and start fresh** asks you to confirm once more, then clears the personal data folder for every profile on that computer, including files added to the local library. Downloaded and generated media are not stored there and are left where they are. Back up from **Settings** first if you may want any of it later.
+
 ## Common problems
 
 - **Backend unavailable:** reopen the app, then use **Settings → Repair services**.
@@ -140,4 +164,5 @@ Use **Settings** to check services, create backups, install optional dependencie
 - **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the **Screen** choice in the Presentation card; if the output was blanked, take any slide live to bring it back.
 - **The projector shows a verse you did not queue:** a verse reference on the audience screen was clicked. Use **Return to** *slide title* in the console, or take any slide live.
 - **A phrase search finds nothing:** the Bible phrase box needs the words in the order typed, so a shorter phrase usually works. The Recovery Version wording differs from other versions in places — *kingdom of the heavens*, not *kingdom of heaven* — so search the wording the Recovery Version actually prints.
+- **A training video will not play:** the file was stored, but Windows cannot always decode that video inside the app — MKV, AVI and WMV in particular. Converting it to MP4 makes it playable everywhere; the file itself is not damaged.
 - **Access is not available:** sign in again with the exact invited email or ask the owner to restore access.

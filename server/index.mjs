@@ -9,6 +9,9 @@ import { getKnowledgeIndexStatus, inspectKnowledgeHealth, listKnowledgeSources, 
 import { pipeWebStream } from './streaming.mjs'
 import { importConfiguredHymnal, readHymnalLibrary } from './hymnal-library.mjs'
 import { readHwmrLibrary, refreshHwmrLibrary } from './hwmr-library.mjs'
+import { deleteVideoTrainingFile, getVideoTrainingLibrary, saveVideoTrainingUpload, streamVideoTrainingFile } from './video-training.mjs'
+import { deletePresentationMediaFile, deletePresentationMediaGroup, getPresentationMediaLibrary, savePresentationMediaUpload, streamPresentationMediaFile } from './presentation-media.mjs'
+import { convertPresentationDeck } from './presentation-decks.mjs'
 import { listRecoveryBibleBooks, readRecoveryBibleBookMatter, readRecoveryBibleBookOutline, readRecoveryBibleChapter, searchRecoveryBible } from './recovery-bible.mjs'
 import { listLifeStudyBooks, listLifeStudyMessages, readLifeStudyMessage, searchLifeStudy } from './life-study.mjs'
 import { listMinistryBookChapters, readMinistryBookChapter, readMinistryBooksLibrary, searchMinistryBooks } from './ministry-books.mjs'
@@ -380,6 +383,54 @@ export function createAiosServer() {
 
       if (request.method === 'POST' && request.url === '/hwmr/refresh') {
         return send(response, 200, await refreshHwmrLibrary(config), origin)
+      }
+
+      if (request.method === 'GET' && request.url === '/video-training/library') {
+        return send(response, 200, await getVideoTrainingLibrary(config), origin)
+      }
+
+      if (request.method === 'POST' && request.url.startsWith('/video-training/upload?')) {
+        return send(response, 201, await saveVideoTrainingUpload(request, config), origin)
+      }
+
+      if ((request.method === 'GET' || request.method === 'HEAD') && request.url.startsWith('/video-training/file?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        await streamVideoTrainingFile(request, response, params.get('name'), config, allowedOrigin(config, origin))
+        return
+      }
+
+      if (request.method === 'DELETE' && request.url.startsWith('/video-training/file?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        return send(response, 200, await deleteVideoTrainingFile(params.get('name'), config), origin)
+      }
+
+      if (request.method === 'GET' && request.url === '/presentation-media/library') {
+        return send(response, 200, await getPresentationMediaLibrary(config), origin)
+      }
+
+      if (request.method === 'POST' && request.url.startsWith('/presentation-media/upload?')) {
+        return send(response, 201, await savePresentationMediaUpload(request, config), origin)
+      }
+
+      if ((request.method === 'GET' || request.method === 'HEAD') && request.url.startsWith('/presentation-media/file?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        await streamPresentationMediaFile(request, response, params.get('name'), config, allowedOrigin(config, origin))
+        return
+      }
+
+      if (request.method === 'DELETE' && request.url.startsWith('/presentation-media/file?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        return send(response, 200, await deletePresentationMediaFile(params.get('name'), config), origin)
+      }
+
+      if (request.method === 'DELETE' && request.url.startsWith('/presentation-media/group?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        return send(response, 200, await deletePresentationMediaGroup(params.get('name'), config), origin)
+      }
+
+      if (request.method === 'POST' && request.url.startsWith('/presentation-media/deck?')) {
+        const params = new URL(request.url, `http://${request.headers.host}`).searchParams
+        return send(response, 200, await convertPresentationDeck(params.get('name'), config), origin)
       }
 
       if (request.method === 'GET' && request.url === '/recovery-bible/books') {

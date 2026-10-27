@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { FADE_SPEEDS, readPresentationPrefs, resolvePresentationSettings, writePresentationPrefs } from './PresentOnDisplay'
 
-const prefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal' } as const
+const prefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' } as const
 
 beforeEach(() => {
   const store = new Map<string, string>()
@@ -21,7 +21,7 @@ describe('resolvePresentationSettings', () => {
 
   it('applies the saved preference when a page presents without it', () => {
     expect(resolvePresentationSettings({ title: 'Song', html: '' }, { ...prefs, theme: 'dark', fontScale: 1.45 }))
-      .toEqual({ showTitle: true, fontScale: 1.45, theme: 'dark', transition: 'fade', transitionSpeed: 'normal' })
+      .toEqual({ showTitle: true, fontScale: 1.45, theme: 'dark', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' })
   })
 
   it('keeps a hidden title that the payload switched on', () => {
@@ -33,6 +33,11 @@ describe('resolvePresentationSettings', () => {
     expect(resolvePresentationSettings({ fontScale: 0.2 }, prefs).fontScale).toBe(.8)
   })
 
+  it('carries the chosen room speaker through to the projector window', () => {
+    expect(resolvePresentationSettings({ audioSinkId: 'sink-2' }, prefs).audioOutput).toBe('sink-2')
+    expect(resolvePresentationSettings({ title: 'Song', html: '' }, { ...prefs, audioOutput: 'sink-1' }).audioOutput).toBe('sink-1')
+  })
+
   it('coerces an unknown theme or transition to a supported value', () => {
     const legacy = { theme: 'sepia', transition: 'slide' } as unknown as Parameters<typeof resolvePresentationSettings>[0]
     expect(resolvePresentationSettings(legacy, prefs)).toMatchObject({ theme: 'light', transition: 'none' })
@@ -41,7 +46,7 @@ describe('resolvePresentationSettings', () => {
 
 describe('saved preferences', () => {
   it('starts from the defaults, including a 300 millisecond fade', () => {
-    expect(readPresentationPrefs()).toEqual({ showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal' })
+    expect(readPresentationPrefs()).toEqual({ showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' })
     expect(FADE_SPEEDS.normal).toBe(.3)
   })
 
@@ -52,7 +57,7 @@ describe('saved preferences', () => {
 
   it('round-trips a partial patch without dropping the rest', () => {
     writePresentationPrefs({ theme: 'dark' })
-    expect(writePresentationPrefs({ fontScale: 3 })).toEqual({ showTitle: true, fontScale: 2, theme: 'dark', transition: 'fade', transitionSpeed: 'normal' })
+    expect(writePresentationPrefs({ fontScale: 3 })).toEqual({ showTitle: true, fontScale: 2, theme: 'dark', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' })
   })
 
   it('keeps a stored text size when only another field is patched', () => {

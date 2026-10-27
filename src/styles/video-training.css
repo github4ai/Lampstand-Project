@@ -1,0 +1,43 @@
+/* The training page keeps the HWMR reading chrome: dark controls above a paper-white sheet. */
+.video-training-page { padding: 28px 30px 60px; color: var(--text); }
+
+.video-training-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.video-training-header > span { display: grid; width: 52px; height: 52px; place-items: center; border: 1px solid var(--border); border-radius: 15px; color: var(--primary); background: var(--panel); }
+.video-training-header h1 { margin: 0 0 5px; font-size: 28px; }
+.video-training-header p { margin: 0; color: var(--text-muted); }
+.video-training-back { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 9px 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--panel); color: var(--text-muted); font-size: 12px; text-decoration: none; }
+.video-training-back:hover { border-color: var(--primary); color: var(--text); }
+
+.video-training-controls { position: sticky; z-index: 14; top: 0; max-width: 980px; margin: 0 auto 18px; padding: 12px; border: 1px solid var(--border); border-radius: 14px; background: color-mix(in srgb, var(--panel) 95%, transparent); box-shadow: 0 10px 28px rgba(0, 0, 0, .18); backdrop-filter: blur(12px); }
+.video-training-controls nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.video-training-controls nav button { display: flex; align-items: center; gap: 5px; max-width: 260px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); color: var(--text-muted); cursor: pointer; font: inherit; font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.video-training-controls nav button.active { border-color: var(--primary); background: rgba(54, 181, 224, .13); color: var(--text); }
+.video-training-count { padding: 0 6px; color: var(--text-muted); font-size: 11px; }
+.video-training-upload { display: flex; gap: 8px; margin-top: 10px; }
+.video-training-upload button { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border: 1px solid var(--primary); border-radius: 9px; background: rgba(54, 181, 224, .12); color: var(--text); cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
+.video-training-upload button:disabled { cursor: wait; opacity: .7; }
+.video-training-progress { height: 6px; margin-top: 10px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, .08); }
+.video-training-progress span { display: block; height: 100%; border-radius: inherit; background: var(--primary); transition: width .2s ease; }
+.video-training-controls p { margin: 10px 0 0; color: var(--text-muted); font-size: 12px; }
+
+.video-training-sheet { max-width: 880px; margin: 0 auto; padding: 38px 48px; border: 1px solid var(--border); border-radius: 8px; background: #f9f8f5; color: #191919; box-shadow: var(--shadow); font-family: Georgia, 'Times New Roman', serif; line-height: 1.62; }
+.video-training-sheet > span { display: block; color: #245fc7; font-family: Inter, 'Segoe UI', sans-serif; font-weight: 800; text-align: center; text-transform: uppercase; font-size: 12px; }
+.video-training-sheet h2 { margin: 8px 0 22px; text-align: center; font-size: 22px; }
+.video-training-player { display: block; width: 100%; max-height: 62vh; margin: 0 auto; border: 0; border-radius: 6px; background: #000; }
+.video-training-frame { display: block; width: 100%; height: 62vh; margin: 0 auto; border: 1px solid #d4d4d4; border-radius: 6px; background: #fff; }
+.video-training-text pre { margin: 0; color: #191919; font: 16px/1.62 Georgia, 'Times New Roman', serif; white-space: pre-wrap; word-break: break-word; }
+.video-training-sheet footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 24px; padding-top: 14px; border-top: 1px solid rgba(25, 25, 25, .14); font-family: Inter, 'Segoe UI', sans-serif; }
+.video-training-sheet footer small { color: #6b6b6b; font-size: 12px; }
+.video-training-remove { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border: 1px solid #c9c9c9; border-radius: 8px; background: transparent; color: #8a2b2b; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
+.video-training-remove:hover { border-color: #b43131; background: #f6e4e4; }
+
+.video-training-empty { max-width: 880px; margin: 0 auto; padding: 46px 40px; border: 1px dashed var(--border); border-radius: 14px; background: var(--panel); color: var(--text-muted); text-align: center; }
+.video-training-empty h2 { margin: 14px 0 8px; color: var(--text); font-size: 20px; }
+.video-training-empty p { margin: 0 auto 10px; max-width: 620px; font-size: 13px; line-height: 1.6; }
+.video-training-folder code { padding: 2px 6px; border-radius: 6px; background: rgba(255, 255, 255, .06); color: var(--text); font-size: 12px; word-break: break-all; }
+
+@media (max-width: 720px) {
+  .video-training-page { padding: 20px 14px 45px; }
+  .video-training-sheet { padding: 26px 20px; }
+  .video-training-controls nav button { max-width: none; flex: 1 1 160px; }
+}

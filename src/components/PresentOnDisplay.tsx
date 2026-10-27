@@ -1,5 +1,6 @@
 import { MonitorUp, RotateCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { setElementSink } from '../utils/audioRouting'
 import './PresentOnDisplay.css'
 
 type Display = { id: string; label: string; primary: boolean }
@@ -11,11 +12,11 @@ export const FADE_SPEEDS = { fast: .15, normal: .3, slow: .6, slower: 1 } as con
 
 export type TransitionSpeed = keyof typeof FADE_SPEEDS
 
-export type PresentationPayload = { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed }
+export type PresentationPayload = { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: TransitionSpeed; audioSinkId?: string }
 
-export type PresentationPrefs = { showTitle: boolean; fontScale: number; theme: 'light' | 'dark'; transition: 'none' | 'fade'; transitionSpeed: TransitionSpeed }
+export type PresentationPrefs = { showTitle: boolean; fontScale: number; theme: 'light' | 'dark'; transition: 'none' | 'fade'; transitionSpeed: TransitionSpeed; audioOutput: string }
 
-const DEFAULT_PRESENTATION_PREFS: PresentationPrefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal' }
+const DEFAULT_PRESENTATION_PREFS: PresentationPrefs = { showTitle: true, fontScale: 1, theme: 'light', transition: 'fade', transitionSpeed: 'normal', audioOutput: '' }
 
 const clampFontScale = (value: number) => Math.min(2, Math.max(.8, value))
 const isTransitionSpeed = (value: unknown): value is TransitionSpeed => typeof value === 'string' && value in FADE_SPEEDS
@@ -29,6 +30,7 @@ export function readPresentationPrefs(): PresentationPrefs {
     theme: stored.theme === 'dark' ? 'dark' : 'light',
     transition: stored.transition === 'none' ? 'none' : 'fade',
     transitionSpeed: isTransitionSpeed(stored.transitionSpeed) ? stored.transitionSpeed : DEFAULT_PRESENTATION_PREFS.transitionSpeed,
+    audioOutput: String(stored.audioOutput || ''),
   }
 }
 
@@ -46,6 +48,7 @@ export function resolvePresentationSettings(payload: Partial<PresentationPayload
     theme: (payload.theme ?? prefs.theme) === 'dark' ? 'dark' : 'light',
     transition: (payload.transition ?? prefs.transition) === 'fade' ? 'fade' : 'none',
     transitionSpeed: isTransitionSpeed(payload.transitionSpeed) ? payload.transitionSpeed : prefs.transitionSpeed,
+    audioOutput: String(payload.audioSinkId ?? prefs.audioOutput ?? ''),
   }
 }
 
@@ -68,7 +71,7 @@ const verseLinkStyles = `.slide-content a[data-book]{text-decoration:none;border
 export async function presentOnSavedDisplay(payload: PresentationPayload) {
   const displayId = payload.displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
   const settings = resolvePresentationSettings(payload, readPresentationPrefs())
-  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.open({ ...payload, displayId, ...settings })
+  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.open({ ...payload, displayId, ...settings, audioSinkId: settings.audioOutput })
   if (!browserPresentationWindow || browserPresentationWindow.closed) browserPresentationWindow = window.open('', 'lampstand-presentation', 'popup,width=1200,height=800')
   if (!browserPresentationWindow) return false
   const transitionClass = settings.transition === 'fade' ? 'audience-fade' : ''
@@ -79,7 +82,29 @@ export async function presentOnSavedDisplay(payload: PresentationPayload) {
     : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeText(payload.title)}</title><style>${audienceLayoutStyles}${settings.showTitle ? '' : 'main{grid-template-rows:minmax(0,1fr)}.slide-header{display:none}'} .slide-content{font-size:calc(clamp(20px,1.75vw,34px)*${settings.fontScale})}${liveHighlightStyles}${verseLinkStyles}</style></head><body class="audience-${settings.theme}"><main class="${transitionClass}"${transitionStyle}><header class="slide-header"><h1>${escapeText(payload.title)}</h1></header><section class="slide-content">${payload.html}</section></main>${liveHighlightUi}${audienceScrollUi}${audienceVerseUi}</body></html>`)
   browserPresentationWindow.document.close()
   browserPresentationWindow.focus()
+  if (!payload.blank && settings.audioOutput) {
+    const routeAudio = () => {
+      browserPresentationWindow?.document.querySelectorAll<HTMLMediaElement>('video, audio')
+        .forEach((element) => { void setElementSink(element, settings.audioOutput) })
+    }
+    routeAudio()
+    new MutationObserver(routeAudio).observe(browserPresentationWindow.document.body, { childList: true, subtree: true })
+  }
   try { await browserPresentationWindow.document.documentElement.requestFullscreen() } catch { /* Browser fullscreen permission is controlled by the browser. */ }
+  return true
+}
+
+/**
+ * Projects a live web page - a map, a YouTube stream, a meeting - on the audience display. The desktop
+ * build reuses the one persistent audience window, which keeps its own sign-in session between meetings.
+ */
+export async function presentWebSource({ url, title, displayId }: { url: string; title: string; displayId?: string }) {
+  const selectedDisplayId = displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
+  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.openWeb({ url, title, displayId: selectedDisplayId })
+  const opened = window.open(url, 'lampstand-presentation', 'popup,width=1600,height=900')
+  if (!opened) return false
+  browserPresentationWindow = opened
+  try { await opened.document.documentElement.requestFullscreen() } catch { /* Cross-origin pages cannot be forced fullscreen from here. */ }
   return true
 }
 

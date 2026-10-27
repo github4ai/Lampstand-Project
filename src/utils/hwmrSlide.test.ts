@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hwmrDaySlideHtml, hwmrOutlineSlideHtml } from './hwmrSlide'
+import { hwmrDaySlideHtml, hwmrHymnSlideHtml, hwmrOutlineSlideHtml } from './hwmrSlide'
 
 const day = {
   morningVerses: [
@@ -11,12 +11,18 @@ const day = {
 }
 
 describe('HWMR audience slides', () => {
-  it('keeps the reader order of verse reference, verse text, commentary and reading', () => {
+  it('builds the same structure the Ministry reader prints', () => {
     const html = hwmrDaySlideHtml(day)
-    expect(html).toContain('Morning Nourishment')
-    expect(html).toContain('Today’s Reading')
-    expect(html.indexOf('verse-reference')).toBeLessThan(html.indexOf('verse-text'))
-    expect(html.indexOf('verse-text')).toBeLessThan(html.indexOf('hwmr-commentary'))
+    expect(html).toContain('<section class="hwmr-nourishment"><h3>Morning Nourishment</h3><div class="hwmr-morning-verses">')
+    expect(html).toContain('<div class="hwmr-formatted-text morning-commentary">')
+    expect(html).toContain('<section class="hwmr-todays-reading"><h3>Today’s Reading</h3>')
+  })
+
+  it('keeps the reader order of verse reference, verse text, commentary and reading', () => {
+    const body = hwmrDaySlideHtml(day).split('</style>')[1]
+    expect(body.indexOf('verse-reference')).toBeLessThan(body.indexOf('verse-text'))
+    expect(body.indexOf('verse-text')).toBeLessThan(body.indexOf('morning-commentary'))
+    expect(body.indexOf('morning-commentary')).toBeLessThan(body.indexOf('Today’s Reading'))
   })
 
   it('carries the book of a list written without one', () => {
@@ -49,5 +55,17 @@ describe('HWMR audience slides', () => {
     expect(html).toContain('<p class="level-a">A. Subpoint.</p>')
     expect(html).toContain('<p class="level-1">1. Detail.</p>')
     expect(html).toContain('<p class="level-a-lower">a. Deeper detail.</p>')
+  })
+
+  it('boxes the printed day headings the outline page uses', () => {
+    const html = hwmrOutlineSlideHtml('Day 4\nI. The first thing.')
+    expect(html).toContain('<div class="hwmr-outline-content"><h3>Day 4</h3>')
+  })
+
+  it('prints the weekly hymn with its stanza numbers in their own column', () => {
+    const html = hwmrHymnSlideHtml({ number: '120', text: '1\tO worship the King\nall glorious and great\n\n2\tSecond stanza line' })
+    expect(html).toContain('<h2 class="hymn-heading">Hymns, #120</h2>')
+    expect(html).toContain('<div class="hwmr-hymn-stanza"><span>1</span><p>O worship the King\nall glorious and great</p></div>')
+    expect(html).toContain('<div class="hwmr-hymn-stanza"><span>2</span><p>Second stanza line</p></div>')
   })
 })

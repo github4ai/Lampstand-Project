@@ -6,7 +6,6 @@ import type { BibleBook, BibleBookMatter, BibleChapter, BibleStudyNote, BibleVer
 import { formatVerseReading } from '../utils/bibleReading'
 import { bookMatchesSlug } from '../utils/bibleBooks'
 import { BIBLE_VOICE_STORAGE_KEY } from '../utils/bibleVoices'
-import { shortBibleBookName } from '../utils/bibleReferences'
 import { useReaderAnnotations } from '../hooks/useReaderAnnotations'
 import PresentOnDisplay from '../components/PresentOnDisplay'
 import '../styles/recovery-bible.css'
@@ -295,10 +294,8 @@ function RecoveryBiblePage() {
 
       <div className={`bible-toolbar${readingMode && !readingPanelVisible ? ' full-page-hidden' : ''}`} aria-label="Bible navigation">
         <button type="button" className="bible-nav-button" onClick={() => moveChapter(-1)} disabled={bookId === books[0]?.id && chapterNumber === 1} aria-label="Previous chapter"><ChevronLeft size={18} /></button>
-        <div className="bible-button-picker" aria-label="Choose Bible book and chapter">
-          <div className="bible-book-buttons" role="group" aria-label="Bible book">{books.map((book) => <button type="button" key={book.id} className={book.id === bookId ? 'active' : ''} onClick={() => changeBook(book.id)} title={book.name} aria-label={book.name}>{shortBibleBookName(book.name)}</button>)}</div>
-          <div className="bible-chapter-buttons" role="group" aria-label="Chapter">{Array.from({ length: selectedBook?.chapters || 0 }, (_, index) => index + 1).map((number) => <button type="button" key={number} className={number === chapterNumber ? 'active' : ''} onClick={() => setChapterNumber(number)}>{number}</button>)}</div>
-        </div>
+        <label>Book<select value={bookId} onChange={(event) => changeBook(event.target.value)} aria-label="Bible book">{books.map((book) => <option key={book.id} value={book.id}>{book.name}</option>)}</select></label>
+        <label>Chapter<select value={chapterNumber} onChange={(event) => setChapterNumber(Number(event.target.value))} aria-label="Chapter number">{Array.from({ length: selectedBook?.chapters || 0 }, (_, index) => index + 1).map((number) => <option key={number} value={number}>{number}</option>)}</select></label>
         <button type="button" className="bible-nav-button" onClick={() => moveChapter(1)} disabled={bookId === books.at(-1)?.id && chapterNumber === selectedBook?.chapters} aria-label="Next chapter"><ChevronRight size={18} /></button>
         <div className="bible-reference-search">
           <Search size={16} />

@@ -1,4 +1,4 @@
-import { BookOpen, Download, FileText, FolderPlus, Languages, MonitorUp, MousePointerClick, Search, UserRoundCheck, Wrench } from 'lucide-react'
+import { BookOpen, Clapperboard, Download, FileText, FolderPlus, Image, Languages, Layers, Map, Mic, MonitorUp, MousePointerClick, Search, UserRoundCheck, Wrench } from 'lucide-react'
 import { useState } from 'react'
 import MarkdownMessage from '../components/Message/MarkdownMessage'
 import installationGuide from '../../docs/INSTALLATION-GUIDE.md?raw'
@@ -18,6 +18,13 @@ const quickHelp = [
   { icon: MonitorUp, title: 'Scripture footnotes on screen', text: 'In Presentation Studio, set Footnotes to Show before adding verses to print their Recovery Bible notes underneath.' },
   { icon: MousePointerClick, title: 'Click a verse on the projector', text: 'Verse references are live links in the preview and on the audience screen. Clicking one projects that verse alone; Return to restores the slide.' },
   { icon: Search, title: 'Find a phrase', text: 'On the Recovery Bible and Ministry Books tabs, search the exact wording of a passage. Pick a result to load it into the slide picker.' },
+  { icon: Image, title: 'Project images and video', text: 'The Media tab keeps pictures, video, audio and PDFs on this computer and plays them on the projector. While one is live, the transport bar controls play, pause, restart, mute and level.' },
+  { icon: Layers, title: 'PowerPoint decks', text: 'Press Make slides on a .pptx in the Media tab to put one projected image per slide into the queue. If PowerPoint is not installed, save the deck as a PDF and step through its pages.' },
+  { icon: Map, title: 'Maps, streams and meetings', text: 'Web output fills the projector window with a Google Maps search, a YouTube video or live stream, a Meet, Zoom or Teams link, or any other web page.' },
+  { icon: MousePointerClick, title: 'Sign in once on the projector', text: 'Audience monitor and remote mirrors the projector window and forwards your clicks and keystrokes, so a login-protected webcast is already signed in next meeting.' },
+  { icon: Mic, title: 'Room audio', text: 'In Program Output choose the speaker the room uses; the microphone can be sent to that same output with a live level bar, and one button mutes the room.' },
+  { icon: Clapperboard, title: 'Video training', text: 'In Ministry, open Video Training to play stored training messages and add MP4, WebM, MOV, PDF, or text handouts from this computer.' },
+  { icon: BookOpen, title: 'Open a Bible chapter', text: 'The Recovery Bible opens with Book and Chapter lists, the same way Life-Study does. Type John 3:16 in the reference box to jump straight there.' },
   { icon: UserRoundCheck, title: 'Remembered profile', text: 'Lampstand restores the last selected profile on this computer. PIN protection and assigned permissions still apply.' },
   { icon: Languages, title: 'Translation fallback', text: 'Hybrid mode tries suitable local Ollama models first, then only the cloud providers configured in Settings.' },
 ]

@@ -260,6 +260,90 @@
   box-shadow: inset 0 0 0 1px rgba(57, 200, 238, 0.2);
 }
 
+/* The Testament choice spans the picker so both halves are one tap apart. */
+.presentation-builder .testament-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.presentation-builder .testament-switch button {
+  width: 100%;
+  padding: 0;
+}
+
+/* The projector is 16:9, so the preview keeps that shape instead of being capped short. */
+.presentation-console .presentation-preview > div {
+  max-height: none;
+  /* Projected media sizes itself to the viewport; the studio box is far smaller. */
+  --media-max: min(66vh, 300px);
+}
+
+.speaker-notes-panel {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.speaker-notes-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid #405a76;
+  border-radius: 9px;
+  background: #1c3048;
+  color: #dcecff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.speaker-notes-toggle svg {
+  transition: transform 0.15s ease;
+}
+
+.speaker-notes-toggle svg.open {
+  transform: rotate(180deg);
+}
+
+.speaker-notes-toggle small {
+  color: #6f879f;
+  font-size: 11px;
+}
+
+.speaker-notes-toggle em {
+  color: #8adfff;
+  font-size: 11px;
+  font-style: normal;
+}
+
+/* One tight band for the console header instead of three stacked rows. */
+.presentation-console .rack-label {
+  margin: -14px -14px 7px;
+  padding: 4px 12px;
+}
+
+.presentation-console .section-heading {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.presentation-console .section-heading h2 {
+  font-size: 15px;
+}
+
+.presentation-console .section-heading p {
+  margin-top: 1px;
+  font-size: 12px;
+}
+
+.presentation-console .meeting-timer {
+  flex: none;
+}
+
 @media (max-width: 720px) {
   .studio-ready {
     display: none;

@@ -1,16 +1,21 @@
-import { BookCopy, BookMarked, BookOpenText, Download, Highlighter, History, LibraryBig, Music2, Search, Upload, NotebookText } from 'lucide-react'
+import { BookCopy, BookMarked, BookOpenText, Clapperboard, Download, Highlighter, History, LibraryBig, Music2, Search, Upload, type LucideIcon, NotebookText } from 'lucide-react'
 import { type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getMinistryLibrary, importMinistryFiles, type MinistryLibraryStatus, type MinistrySection } from '../api/ministry'
 import '../styles/ministry-layout.css'
 
-const sections = [
+type MinistryCard = { id: string; title: string; description: string; path: string; Icon: LucideIcon; importSection?: MinistrySection }
+
+const sections: MinistryCard[] = [
   { id: 'hwmr', title: 'HWMR', description: 'Read uploaded Holy Word for Morning Revival documents.', path: '/ministry/hwmr', Icon: NotebookText },
   { id: 'hymnal', title: 'Hymns', description: 'Browse the complete local hymn collection, lyrics, chords, piano sheets, and tunes.', path: '/hymnal', Icon: Music2 },
-  { id: 'recovery-bible', title: 'Recovery Bible', description: 'Bible text, outlines, authorized footnotes, and cross-references.', path: '/recovery-bible', Icon: BookOpenText },
-  { id: 'life-study', title: 'Life-Study', description: 'Read locally stored Life-Study messages by Bible book.', path: '/life-study', Icon: BookMarked },
-  { id: 'ministry-books', title: 'Books', description: 'Browse all existing local ministry books by Watchman Nee and Witness Lee.', path: '/ministry-books', Icon: BookCopy },
-] as const
+  { id: 'video-training', title: 'Video Training', description: 'Watch and add training videos and ministry documents stored on this computer.', path: '/ministry/video-training', Icon: Clapperboard },
+  { id: 'recovery-bible', title: 'Recovery Bible', description: 'Bible text, outlines, authorized footnotes, and cross-references.', path: '/recovery-bible', Icon: BookOpenText, importSection: 'recovery-bible' },
+  { id: 'life-study', title: 'Life-Study', description: 'Read locally stored Life-Study messages by Bible book.', path: '/life-study', Icon: BookMarked, importSection: 'life-study' },
+  { id: 'ministry-books', title: 'Books', description: 'Browse all existing local ministry books by Watchman Nee and Witness Lee.', path: '/ministry-books', Icon: BookCopy, importSection: 'ministry-books' },
+]
+
+const importableSections = sections.flatMap((item) => item.importSection ? [{ id: item.id, title: item.title, section: item.importSection }] : [])
 
 const ministryProgressKeys = [
   'aios-hwmr-reading-progress-v1', 'aios-hwmr-annotations-v1', 'aios-hwmr-study-artifacts-v1',
@@ -87,7 +92,7 @@ export default function MinistryPage() {
   }
 
   return <div className="ministry-page">
-    <header className="ministry-header"><span><LibraryBig size={26} /></span><div><h1>Ministry</h1><p>HWMR, Hymnal, Recovery Bible, Life-Study, and Ministry Books in one local library.</p></div></header>
+    <header className="ministry-header"><span><LibraryBig size={26} /></span><div><h1>Ministry</h1><p>HWMR, Hymns, Video Training, Recovery Bible, Life-Study, and Ministry Books in one local library.</p></div></header>
     <form className="ministry-unified-search" onSubmit={(event) => { event.preventDefault(); if (searchQuery.trim()) navigate(`/knowledge/search?q=${encodeURIComponent(searchQuery.trim())}&category=Ministry&results=10&mode=semantic`) }}>
       <Search size={18} /><input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search across indexed Ministry resources…" aria-label="Search Ministry knowledge" /><button type="submit" disabled={!searchQuery.trim()}>Search Ministry</button>
     </form>
@@ -103,14 +108,14 @@ export default function MinistryPage() {
       <div className="ministry-progress-summary"><span><Highlighter size={15} /><strong>{dashboard.annotations}</strong> HWMR highlights and annotations</span><span><BookMarked size={15} /><strong>{dashboard.studies}</strong> saved weekly studies</span><span><Music2 size={15} /><strong>{dashboard.favoriteHymns.length}</strong> favorite hymns</span></div>
     </section>
     <section className="ministry-sections" aria-label="Ministry library sections">
-      {[sections.slice(0, 2), sections.slice(2)].map((row, rowIndex) => <div className="ministry-section-row" key={rowIndex}>{row.map(({ id, title, description, path, Icon }) => <Link to={path} className="ministry-section-card" key={id}>
-          <span><Icon size={24} /></span><div><h2>{title}</h2><p>{description}</p>{id !== 'hymnal' && id !== 'hwmr' && <small>{status?.sections[id].imports ?? 0} authorized imports</small>}</div>
+      {[sections.slice(0, 3), sections.slice(3)].map((row, rowIndex) => <div className="ministry-section-row" key={rowIndex}>{row.map(({ id, title, description, path, Icon, importSection }) => <Link to={path} className="ministry-section-card" key={id}>
+          <span><Icon size={24} /></span><div><h2>{title}</h2><p>{description}</p>{importSection && <small>{status?.sections[importSection].imports ?? 0} authorized imports</small>}</div>
         </Link>)}</div>)}
     </section>
     <section className="ministry-importer">
       <div><h2>Import authorized library export</h2><p>Add HTML, HTM, JSON, or XML files that you are permitted to store locally.</p></div>
       <div className="ministry-import-controls">
-        <label>Library section<select value={section} onChange={(event) => setSection(event.target.value as MinistrySection)}>{sections.filter((item) => item.id !== 'hymnal' && item.id !== 'hwmr').map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+        <label>Library section<select value={section} onChange={(event) => setSection(event.target.value as MinistrySection)}>{importableSections.map((item) => <option key={item.id} value={item.section}>{item.title}</option>)}</select></label>
         <label className="ministry-file-picker"><span>Export files</span><input type="file" multiple accept=".html,.htm,.json,.xml,text/html,application/json,application/xml,text/xml" onChange={(event) => setFiles(Array.from(event.target.files ?? []))} /><small>{files.length ? `${files.length} selected` : 'Choose one or more files'}</small></label>
         <button type="button" onClick={() => void upload()} disabled={busy || !files.length}><Upload size={17} />{busy ? 'Importing…' : 'Import files'}</button>
       </div>

@@ -3,27 +3,29 @@ import { linkedParagraphsHtml, verseLinkHtml } from './bibleLinks'
 import { repairHwmrReadingText } from './hwmrText'
 
 export type HwmrSlideDay = { morningVerses: Array<{ reference: string; text: string }>; morningNourishment: string; todaysReading: string }
+export type HwmrSlideHymn = { number?: string; text: string }
 
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]!))
 
-// A printed verse line is "Gen. 1:1" followed by the verse itself, so the reference keeps its own
-// line and the text sits under it in the reader's bold serif, exactly as the reading page does.
+// The reader prints the reference on its own line above the verse; the slide mirrors that order
+// and the same classes, so the projected page and the reading page are one design, not two.
 function morningVerseHtml(verse: { reference: string; text: string }) {
   const reference = linkBibleReferences(verse.reference)
     .map((segment) => (segment.type === 'text' ? escapeHtml(segment.text) : verseLinkHtml(segment)))
     .join('')
-  return `<p class="verse-reference">${reference}</p><p class="verse-text">${escapeHtml(verse.text).replace(/\n/g, '<br>')}</p>`
+  return `<div class="verse-block"><strong class="verse-reference">${reference}</strong><p class="verse-text">${escapeHtml(verse.text).replace(/\n/g, '<br>')}</p></div>`
 }
 
-const rules = `.hwmr-slide section{margin:0 0 1.1em}.hwmr-slide .slide-label{margin:0 0 .7em;padding-bottom:.25em;border-bottom:.08em solid #245fc7;color:#174f9e;font:italic 400 .74em/1.3 Georgia,'Times New Roman',serif;text-align:center}.hwmr-slide .verse-reference{margin:.75em 0 .1em;color:#174f9e;font:800 .62em/1.35 Inter,'Segoe UI',sans-serif}.hwmr-slide .verse-text{margin:0 0 .7em;padding-bottom:.7em;border-bottom:.06em solid #245fc722;font-weight:700;line-height:1.48}.hwmr-slide .verse-block:last-child .verse-text{border-bottom:0}.hwmr-slide .hwmr-commentary p{margin:0 0 .7em;font-size:.86em;line-height:1.55;text-align:justify;text-indent:1.2em}.hwmr-slide .verse-link{color:#165fbe;text-decoration:none;border-bottom:.06em solid currentColor;cursor:pointer}.hwmr-slide .verse-link:hover{color:#073d85;border-bottom-style:solid}.audience-dark .hwmr-slide .slide-label{color:#83dcfa;border-bottom-color:#83dcfa}.audience-dark .hwmr-slide .verse-reference{color:#83dcfa}.audience-dark .hwmr-slide .verse-text{border-bottom-color:#83dcfa33}.audience-dark .hwmr-slide .verse-link{color:#83dcfa}.audience-dark .hwmr-slide .verse-link:hover{color:#d9f3ff}`
+const rules = `.hwmr-slide section{margin:0 0 1.1em}.hwmr-slide h3{margin:0 0 .8em;color:#245fc7;font:italic 400 1.17em/1.3 Georgia,'Times New Roman',serif;text-align:center}.hwmr-slide .hwmr-nourishment{padding:1.2em 1.4em;border-radius:.35em;background:#19191914}.hwmr-slide .hwmr-morning-verses{margin:0 0 1em;padding-bottom:1em;border-bottom:.06em solid #1919192e}.hwmr-slide .hwmr-morning-verses .verse-block{margin:0 0 1em}.hwmr-slide .hwmr-morning-verses .verse-block:last-child{margin-bottom:0}.hwmr-slide .verse-reference{display:block;margin:0 0 .4em;color:#174f9e;font:800 .94em/1.35 Inter,'Segoe UI',sans-serif}.hwmr-slide .verse-text{margin:0;font-weight:800;line-height:1.48;letter-spacing:.005em;text-align:left}.hwmr-slide .hwmr-formatted-text p{margin:0 0 1.1em;line-height:1.55;text-align:justify;text-indent:1.4em}.hwmr-slide .hwmr-formatted-text p:last-child{margin-bottom:0}.hwmr-slide .hwmr-outline-content h3{margin:.8em 0 .3em;padding:.14em .65em;border:.06em solid #b9c2cc;border-radius:.25em;background:#19191914;color:#245fc7;font:italic 400 1em/1.35 Georgia,'Times New Roman',serif;text-align:center}.hwmr-slide .hwmr-outline-content p{margin:.2em 0;line-height:1.5;text-align:left}.hwmr-slide .hwmr-outline-content p.major{padding-left:1.4em;text-indent:-1.4em;font-weight:700}.hwmr-slide .hwmr-outline-content p.level-a{padding-left:3.3em;text-indent:-1.45em}.hwmr-slide .hwmr-outline-content p.level-1{padding-left:5.1em;text-indent:-1.45em}.hwmr-slide .hwmr-outline-content p.level-a-lower{padding-left:6.8em;text-indent:-1.45em}.hwmr-slide .hwmr-hymn{max-width:30em;margin:0 auto}.hwmr-slide .hymn-heading{margin:0 0 1em;color:#245fc7;font-size:1.17em;text-align:center}.hwmr-slide .hwmr-hymn-stanza{display:grid;grid-template-columns:1.7em minmax(0,1fr);gap:.5em;margin:0 0 1.1em;align-items:start}.hwmr-slide .hwmr-hymn-stanza>span{padding-top:.05em;color:#4a5a6a;font-weight:700;text-align:right}.hwmr-slide .hwmr-hymn-stanza p{margin:0;white-space:pre-line;line-height:1.45;text-align:left}.hwmr-slide .verse-link{color:#165fbe;text-decoration:none;border-bottom:.06em dotted currentColor;cursor:pointer}.hwmr-slide .verse-link:hover{color:#073d85;border-bottom-style:solid}.audience-dark .hwmr-slide h3,.audience-dark .hwmr-slide .verse-reference,.audience-dark .hwmr-slide .hymn-heading,.audience-dark .hwmr-slide .hwmr-outline-content h3{color:#83dcfa}.audience-dark .hwmr-slide .hwmr-nourishment,.audience-dark .hwmr-slide .hwmr-outline-content h3{border-color:#3a516c;background:#ffffff0f}.audience-dark .hwmr-slide .hwmr-morning-verses{border-bottom-color:#ffffff2b}.audience-dark .hwmr-slide .hwmr-hymn-stanza>span{color:#9fb6cc}.audience-dark .hwmr-slide .verse-link{color:#83dcfa}.audience-dark .hwmr-slide .verse-link:hover{color:#d9f3ff}`
+
+const versesHtml = (verses: HwmrSlideDay['morningVerses']) => verses.map(morningVerseHtml).join('')
 
 export function hwmrDaySlideHtml(day: HwmrSlideDay) {
-  const verses = (day.morningVerses ?? []).map((verse) => `<div class="verse-block">${morningVerseHtml(verse)}</div>`).join('')
   const commentary = linkedParagraphsHtml(repairHwmrReadingText(day.morningNourishment))
   const reading = linkedParagraphsHtml(repairHwmrReadingText(day.todaysReading))
   return `<style>${rules}</style><div class="hwmr-slide">`
-    + `<section><h3 class="slide-label">Morning Nourishment</h3><div class="verse-blocks">${verses}</div><div class="hwmr-commentary">${commentary}</div></section>`
-    + `<section><h3 class="slide-label">Today’s Reading</h3><div class="hwmr-commentary">${reading}</div></section>`
+    + `<section class="hwmr-nourishment"><h3>Morning Nourishment</h3><div class="hwmr-morning-verses">${versesHtml(day.morningVerses ?? [])}</div><div class="hwmr-formatted-text morning-commentary">${commentary}</div></section>`
+    + `<section class="hwmr-todays-reading"><h3>Today’s Reading</h3><div class="hwmr-formatted-text">${reading}</div></section>`
     + `</div>`
 }
 
@@ -37,7 +39,18 @@ export function hwmrOutlineSlideHtml(outline: string) {
       .map((segment) => (segment.type === 'text' ? escapeHtml(segment.text) : verseLinkHtml(segment)))
       .join('')
     bookContext = lastMentionedBibleBook(line, bookContext)
-    return dayHeading ? `<h4 class="outline-day">${escapeHtml(line.trim())}</h4>` : `<p class="${level}">${html}</p>`
+    return dayHeading ? `<h3>${escapeHtml(line.trim())}</h3>` : `<p class="${level}">${html}</p>`
   }).join('')
-  return `<style>${rules}.hwmr-slide .outline-day{margin:.8em 0 .3em;color:#174f9e;font:italic 400 .78em/1.3 Georgia,'Times New Roman',serif}.hwmr-slide p.major,.hwmr-slide p.level-a,.hwmr-slide p.level-1,.hwmr-slide p.level-a-lower{margin:.2em 0;font-size:.88em}.hwmr-slide p.major{font-weight:700;text-indent:-1.2em;padding-left:1.2em}.hwmr-slide p.level-a{text-indent:-1.2em;padding-left:2.6em}.hwmr-slide p.level-1{text-indent:-1.2em;padding-left:4.4em}.hwmr-slide p.level-a-lower{text-indent:-1.2em;padding-left:6em}</style><div class="hwmr-slide"><section>${lines}</section></div>`
+  return `<style>${rules}</style><div class="hwmr-slide"><section class="hwmr-outline"><div class="hwmr-outline-content">${lines}</div></section></div>`
+}
+
+/** Stanza numbers keep their own column, the way the hymn page prints them. */
+export function hwmrHymnSlideHtml(hymn: HwmrSlideHymn) {
+  const stanzas = String(hymn.text || '').split(/\n{2,}/).filter(Boolean).map((stanza) => {
+    const [first = '', ...rest] = stanza.split('\n')
+    const [number, opening = ''] = first.split('\t')
+    return `<div class="hwmr-hymn-stanza"><span>${escapeHtml(number)}</span><p>${escapeHtml([opening, ...rest].join('\n'))}</p></div>`
+  }).join('')
+  const heading = hymn.number ? `<h2 class="hymn-heading">Hymns, #${escapeHtml(String(hymn.number))}</h2>` : ''
+  return `<style>${rules}</style><div class="hwmr-slide"><section class="hwmr-hymn">${heading}<div class="hwmr-hymn-stanzas">${stanzas}</div></section></div>`
 }
