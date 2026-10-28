@@ -1,10 +1,24 @@
-import { ChevronLeft, ChevronRight, Clapperboard, Maximize2, Pause, Play, Radio, RotateCcw, Volume2, VolumeX } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clapperboard, FileImage, Maximize2, Pause, Play, Radio, RotateCcw, Volume2, VolumeX, ZoomIn, ZoomOut } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { readPresentationPrefs, writePresentationPrefs } from '../PresentOnDisplay'
 import type { AudienceMediaState } from '../../types/desktop'
-import type { MediaSlideSource } from '../../utils/mediaSlide'
+import { clampZoom, MAX_ZOOM, MIN_ZOOM, type MediaSlideSource } from '../../utils/mediaSlide'
 import { formatMediaTime } from '../../utils/mediaTime'
 import './StudioPanels.css'
+
+/** Each press is a quarter of the frame again, so four steps take a slide from fit to twice as big. */
+const ZOOM_STEP = 0.25
+
+/** A still frame is the one that can be enlarged while it is on air; a playing video would restart. */
+function ZoomCluster({ zoom, onZoom }: { zoom: number; onZoom: (zoom: number) => void }) {
+  const current = clampZoom(zoom)
+  return <span className="transport-zoom" role="group" aria-label="Zoom the projected frame">
+    <button type="button" title="Zoom out on the projected frame" disabled={current <= MIN_ZOOM} onClick={() => onZoom(clampZoom(current - ZOOM_STEP))}><ZoomOut size={15}/></button>
+    <span className="transport-time">{Math.round(current * 100)}%</span>
+    <button type="button" title="Zoom in on the projected frame" disabled={current >= MAX_ZOOM} onClick={() => onZoom(clampZoom(current + ZOOM_STEP))}><ZoomIn size={15}/></button>
+    {current > MIN_ZOOM && <button type="button" title="Stop zooming and show the whole frame again" onClick={() => onZoom(MIN_ZOOM)}>Whole frame</button>}
+  </span>
+}
 
 /** The projector window is the clock and the speaker, so the console asks it for its position twice a second. */
 const POLL_MS = 500
@@ -13,7 +27,7 @@ const POLL_MS = 500
  * The projector window is full-screen and has no controls of its own, so the operator drives the
  * player from here: the studio sends one command to the media already on air and reads its position back.
  */
-export default function MediaTransport({ media, onPage }: { media?: MediaSlideSource; onPage: (delta: -1 | 1) => void }) {
+export default function MediaTransport({ media, onPage, onZoom }: { media?: MediaSlideSource; onPage: (delta: -1 | 1) => void; onZoom: (zoom: number) => void }) {
   const desktop = window.lampstandDesktop?.presentation
   const [state, setState] = useState<AudienceMediaState | null>(null)
   const [level, setLevel] = useState(() => readPresentationPrefs().mediaLevel)
@@ -40,7 +54,11 @@ export default function MediaTransport({ media, onPage }: { media?: MediaSlideSo
     return () => { alive = false; clearInterval(timer) }
   }, [desktop, playable, media?.name])
 
-  if (!media || media.kind === 'image') return null
+  if (!media) return null
+  if (media.kind === 'image') return <div className="transport-bar">
+    <span className="transport-label"><FileImage size={13}/>Image</span>
+    <ZoomCluster zoom={media.zoom || MIN_ZOOM} onZoom={onZoom}/>
+  </div>
   if (!desktop) return <div className="transport-bar"><span className="transport-label"><Radio size={13}/>Media</span><span>The projector window plays this on its own - transport controls need the desktop app.</span></div>
 
   if (!playable && media.kind === 'deck') {
@@ -52,6 +70,7 @@ export default function MediaTransport({ media, onPage }: { media?: MediaSlideSo
       <span className="transport-time">{page} / {total}</span>
       <button type="button" title="Next slide" disabled={page >= total} onClick={() => onPage(1)}><ChevronRight size={15}/></button>
       <button type="button" title="Redraw this slide on the projector" onClick={() => void desktop.command('reload')}><RotateCcw size={15}/></button>
+      <ZoomCluster zoom={media.zoom || MIN_ZOOM} onZoom={onZoom}/>
     </div>
   }
 
@@ -61,6 +80,7 @@ export default function MediaTransport({ media, onPage }: { media?: MediaSlideSo
     <strong>Page {Math.max(1, Number(media.page) || 1)}</strong>
     <button type="button" title="Next page" onClick={() => onPage(1)}>Next ›</button>
     <button type="button" title="Reload this page on the projector" onClick={() => void desktop.command('reload')}><RotateCcw size={15}/></button>
+    <ZoomCluster zoom={media.zoom || MIN_ZOOM} onZoom={onZoom}/>
   </div>
 
   const duration = state?.duration || 0

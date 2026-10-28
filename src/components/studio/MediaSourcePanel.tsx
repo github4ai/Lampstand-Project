@@ -120,13 +120,16 @@ export default function MediaSourcePanel({ onAdd, onNotice }: { onAdd: (item: Ne
       {(['all', 'image', 'video', 'audio', 'document', 'deck'] as Filter[]).map((option) => <button type="button" key={option} className={filter === option ? 'active' : ''} onClick={() => setFilter(option)}>{kindLabel[option]} ({countFor(option)})</button>)}
     </div>
 
-    <div className="studio-toggles">
-      <label><input type="checkbox" checked={fillScreen} onChange={(event) => setFillScreen(event.target.checked)} /> Fill the whole screen</label>
-      <label><input type="checkbox" checked={autoStart} onChange={(event) => setAutoStart(event.target.checked)} /> Start playing on take-live</label>
-      <label><input type="checkbox" checked={repeat} onChange={(event) => setRepeat(event.target.checked)} /> Repeat</label>
-      <label><input type="checkbox" checked={silent} onChange={(event) => setSilent(event.target.checked)} /> Keep it silent</label>
-      <label>First page<input type="number" min={1} value={startPage} onChange={(event) => setStartPage(Number(event.target.value) || 1)} style={{ width: 64, marginLeft: 6 }} /></label>
-    </div>
+    {/* Each option shapes one kind of file only, so the row carries the ones that apply to what the filter is listing. */}
+    {filter !== 'deck' && <div className="studio-toggles">
+      {(filter === 'all' || filter === 'image' || filter === 'video') && <label><input type="checkbox" checked={fillScreen} onChange={(event) => setFillScreen(event.target.checked)} /> Fill the whole screen</label>}
+      {(filter === 'all' || filter === 'video' || filter === 'audio') && <>
+        <label><input type="checkbox" checked={autoStart} onChange={(event) => setAutoStart(event.target.checked)} /> Start playing on take-live</label>
+        <label><input type="checkbox" checked={repeat} onChange={(event) => setRepeat(event.target.checked)} /> Repeat</label>
+        <label><input type="checkbox" checked={silent} onChange={(event) => setSilent(event.target.checked)} /> Keep it silent</label>
+      </>}
+      {(filter === 'all' || filter === 'document') && <label>First page<input type="number" min={1} value={startPage} onChange={(event) => setStartPage(Number(event.target.value) || 1)} /></label>}
+    </div>}
 
     {nothingToShow && <p className="studio-note">{filter === 'deck'
       ? 'No PowerPoint here yet. Add a .pptx above and press Make slides - the deck is read by PowerPoint on this computer and stored here as one image per slide, so nothing goes to the internet.'

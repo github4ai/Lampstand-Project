@@ -48,6 +48,20 @@ describe('mediaSlideHtml', () => {
   it('escapes a title that carries markup', () => {
     expect(mediaSlideHtml({ kind: 'image', name: 'a.png', title: '<img src=x onerror=alert(1)>' })).toContain('&lt;img src=x onerror=alert(1)&gt;')
   })
+
+  it('enlarges a still frame on both the plain slide and the full-bleed stage', () => {
+    expect(mediaSlideHtml({ kind: 'image', name: 'a.png', title: 'A', zoom: 2 })).toContain('class="media-slide" style="--media-zoom:2"')
+    expect(mediaSlideHtml({ kind: 'document', name: 'a.pdf', title: 'A', zoom: 1.5 })).toContain('class="doc-stage" style="--media-zoom:1.5"')
+  })
+
+  it('prints no zoom at all for a frame that already fits, and never shrinks past it', () => {
+    expect(mediaSlideHtml({ kind: 'image', name: 'a.png', title: 'A' })).not.toContain('--media-zoom:')
+    expect(mediaSlideHtml({ kind: 'image', name: 'a.png', title: 'A', zoom: 0 })).not.toContain('--media-zoom:')
+  })
+
+  it('caps an enlargement so one press cannot blow the frame off the stage', () => {
+    expect(mediaSlideHtml({ kind: 'deck', name: 'a.png', title: 'A', pages: ['a.png'], zoom: 99 })).toContain('--media-zoom:4')
+  })
 })
 
 describe('announcementSlideHtml', () => {

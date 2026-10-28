@@ -35,7 +35,9 @@
   background: #0e1c2b;
 }
 
-.studio-toggles label {
+/* The rack styles every label as a caption stacked over its field, which would lift each box off its own caption
+   here. Two classes keep these pairs on one line however that rule is later restated. */
+.source-form .studio-toggles label {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -45,11 +47,22 @@
   cursor: pointer;
 }
 
-.studio-toggles input[type='checkbox'] {
+/* The rack gives every field a 40px floor, and a floor outranks a height - so these say the floor too. */
+.studio-toggles input[type='checkbox'],
+.studio-toggles input[type='number'] {
+  flex: none;
   width: 15px;
   height: 15px;
+  min-height: 15px;
   margin: 0;
   accent-color: #2fa8d8;
+}
+
+.studio-toggles input[type='number'] {
+  width: 56px;
+  height: auto;
+  min-height: 0;
+  padding: 3px 6px;
 }
 
 /* Media library */
@@ -228,6 +241,13 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+/* Zoom is two steps around a readout, so the three travel as one cluster rather than three loose controls. */
+.transport-bar .transport-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .transport-bar button {
