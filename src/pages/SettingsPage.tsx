@@ -381,7 +381,9 @@ function SettingsPage() {
         <div><h1>Settings</h1><p>Manage local preferences and verify AIOS services.</p></div>
         <button
           type="button"
-          className="settings-check-all"
+          className="settings-check-all icon-btn"
+          title={checking || refreshingServices ? 'Checking all services' : 'Check all services'}
+          aria-label={checking || refreshingServices ? 'Checking all services' : 'Check all services'}
           onClick={() =>
             void checkAllServices()
           }
@@ -400,16 +402,14 @@ function SettingsPage() {
                 : undefined
             }
           />
-          {checking || refreshingServices
-            ? 'Checking all'
-            : 'Check all services'}
         </button>
       </header>
 
       <div className="settings-grid">
-        {canManage && <AccessSettingsPanel />}
-        {canManage && <RemoteAccessPanel />}
-        <AppUpdatesPanel />
+        {canManage && <><h2 className="settings-section-title">Access and devices</h2>
+          <AccessSettingsPanel />
+          <RemoteAccessPanel /></>}
+        <h2 className="settings-section-title">Services and models</h2>
         {canManage && <section className="settings-panel settings-ai-services">
           <div className="settings-panel-title"><Activity size={19} /><div><h2>AI Services</h2>
             <p>One switch starts every local dependency. Large GPU models are managed automatically.</p></div></div>
@@ -423,17 +423,18 @@ function SettingsPage() {
                 </div>
               ) : null}
             </div>
-            <button className={services?.enabled ? 'enabled' : ''} type="button" role="switch"
+            <button className={(services?.enabled ? 'enabled ' : '') + 'icon-btn'} type="button" role="switch"
               aria-checked={services?.enabled ?? false} disabled={!services || managingServices}
+              title={services?.enabled ? 'AI services on - select to unload models' : 'AI services on standby - select to start them'}
+              aria-label="AI services master switch"
               onClick={() => void toggleServices()}>
               {managingServices ? <RefreshCw className="spin" size={17} /> : <Power size={17} />}
-              {services?.enabled ? 'On' : 'Off'}
             </button>
           </div>
           <div className="settings-provider-grid">
             {services ? [...services.providers].sort((left, right) => Number(left.available) - Number(right.available)).map((provider) => {
               const providerError = services.errors?.find((error) => error.id === provider.id)
-              return <div key={provider.id} className={providerError ? 'has-error' : undefined}>
+              return <div key={provider.id} className={providerError ? 'has-error' : undefined} title={providerError?.message}>
                 <span className={provider.available ? 'settings-service-dot online' : provider.configured === false ? 'settings-service-dot unconfigured' : 'settings-service-dot'} />
                 <p><strong>{provider.label}</strong><small>{provider.available ? 'Ready' : providerError?.message || (provider.configured === false ? 'Not configured' : services.enabled ? 'Starting' : 'Offline')}</small></p>
               </div>
@@ -443,14 +444,14 @@ function SettingsPage() {
           <div className="settings-services-refresh">
             <small>{lastServiceCheck ? `Last checked ${lastServiceCheck.toLocaleTimeString()}` : 'Status not checked yet'}</small>
             <div>
-              <button type="button" onClick={() => void copyDiagnostics()}>
-                {diagnosticsCopied ? <Check size={14} /> : <Clipboard size={14} />} {diagnosticsCopied ? 'Copied' : 'Copy diagnostics'}
+              <button type="button" className="icon-btn" title={diagnosticsCopied ? 'Diagnostics copied' : 'Copy service diagnostics'} aria-label="Copy service diagnostics" onClick={() => void copyDiagnostics()}>
+                {diagnosticsCopied ? <Check size={14} /> : <Clipboard size={14} />}
               </button>
-              <button type="button" onClick={() => void refreshServices()} disabled={managingServices || refreshingServices}>
-                <RefreshCw size={14} className={refreshingServices ? 'spin' : undefined} /> {refreshingServices ? 'Checking' : 'Refresh status'}
+              <button type="button" className="icon-btn" title={refreshingServices ? 'Checking service status' : 'Refresh service status'} aria-label="Refresh service status" onClick={() => void refreshServices()} disabled={managingServices || refreshingServices}>
+                <RefreshCw size={14} className={refreshingServices ? 'spin' : undefined} />
               </button>
-              <button type="button" onClick={() => void repairServices()} disabled={managingServices || refreshingServices}>
-                <Wrench size={14} /> {managingServices ? 'Repairing' : 'Repair services'}
+              <button type="button" className="icon-btn" title={managingServices ? 'Repairing services' : 'Repair services'} aria-label="Repair services" onClick={() => void repairServices()} disabled={managingServices || refreshingServices}>
+                <Wrench size={14} />
               </button>
             </div>
           </div>
@@ -479,11 +480,11 @@ function SettingsPage() {
                 <label className="settings-cloud-key"><span><KeyRound size={15} /><strong>{label}</strong><small>{configured ? `Configured securely. ${note}.` : note}</small></span>
                   <input type="password" autoComplete="off" value={value} onChange={(event) => setter(event.target.value)} placeholder={configured ? 'Enter a new key to replace it' : `Paste ${label}`} />
                 </label>
-                {configured ? <button type="button" className="settings-remove-provider" disabled={savingProviders} onClick={() => void updateProviderPreferences(id)}><Trash2 size={14} /> Remove</button> : null}
+                {configured ? <button type="button" className="settings-remove-provider remove icon-btn" title={`Remove the ${label}`} aria-label={`Remove the ${label}`} disabled={savingProviders} onClick={() => void updateProviderPreferences(id)}><Trash2 size={14} /></button> : null}
               </div>)}
               <div className="settings-cloud-provider-card">
                 <label className="settings-cloud-key"><span><KeyRound size={15} /><strong>Tavily web search key</strong><small>{services?.preferences?.webSearchConfigured ? 'Configured securely. Used only when Web search is selected in Chat.' : 'Optional search API; a free developer allowance may be available.'}</small></span><input type="password" autoComplete="off" value={tavilyApiKey} onChange={(event) => setTavilyApiKey(event.target.value)} placeholder={services?.preferences?.webSearchConfigured ? 'Enter a new key to replace it' : 'Paste Tavily API key'} /></label>
-                {services?.preferences?.webSearchConfigured ? <button type="button" className="settings-remove-provider" disabled={savingProviders} onClick={() => void updateProviderPreferences('tavily')}><Trash2 size={14} /> Remove</button> : null}
+                {services?.preferences?.webSearchConfigured ? <button type="button" className="settings-remove-provider remove icon-btn" title="Remove the Tavily web search key" aria-label="Remove the Tavily web search key" disabled={savingProviders} onClick={() => void updateProviderPreferences('tavily')}><Trash2 size={14} /></button> : null}
               </div>
             </div>
             <div className="settings-cloud-providers settings-model-options">
@@ -497,52 +498,56 @@ function SettingsPage() {
             <p className="settings-provider-privacy">In Automatic mode, requests stay local unless local AI cannot complete them. Only the needed request is sent to the selected cloud API.</p>
             {providerNotice ? <p className="settings-provider-notice" role="status">{providerNotice}</p> : null}
           </div>
-          {serviceError && <div className="settings-service-error" role="alert"><strong>AI Services need attention</strong><span>{serviceError}</span><button type="button" onClick={() => void refreshServices()} disabled={refreshingServices}><RefreshCw size={13} /> Try again</button></div>}
+          {serviceError && <div className="settings-service-error" role="alert"><strong>AI Services need attention</strong><span>{serviceError}</span><button type="button" className="icon-btn" title="Check service status again" aria-label="Check service status again" onClick={() => void refreshServices()} disabled={refreshingServices}><RefreshCw size={13} /></button></div>}
         </section>}
 
+        <section className="settings-panel settings-api-panel">
+          <div className="settings-panel-title"><Server size={19} /><div><h2>AIOS API</h2><p>Connection used by Chat and Knowledge.</p></div></div>
+          <div className="settings-service">
+            <span className={online ? 'settings-service-dot online' : 'settings-service-dot'} />
+            <div><strong>{checking ? 'Checking...' : status}</strong><code>{AIOS_API_BASE_URL}{online && apiLatencyMs !== null ? ` · ${apiLatencyMs} ms response` : ''}</code></div>
+            <button type="button" className="icon-btn" title="Check the gateway connection" aria-label="Check the gateway connection" onClick={() => void checkConnection()} disabled={checking}>
+              <RefreshCw size={15} className={checking ? 'spin' : ''} />
+            </button>
+          </div>
+          {lastApiCheck && <p className="settings-last-api-check">Last checked {lastApiCheck.toLocaleTimeString()}</p>}
+          {!checking && !online && <div className="settings-api-help" role="alert"><strong>Gateway connection unavailable</strong><span>Start Lampstand Project with the desktop launcher, wait for the Lampstand Gateway to report ready, and select Check again.</span></div>}
+        </section>
+
+        <h2 className="settings-section-title">Appearance and reading</h2>
         <section className="settings-panel settings-appearance-panel">
           <div className="settings-panel-title"><Palette size={19} /><div><h2>Appearance</h2><p>Choose a comfortable theme. Your selection is remembered on this device.</p></div></div>
           <label className="settings-appearance-choice"><span><strong>Colour mode</strong><small>Use the device setting automatically, or keep the app light or dark.</small></span><select value={preferences.theme} onChange={(event) => selectTheme(event.target.value as ThemePreference)}><option value="system">Use device setting</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
-          <div className="settings-accent-choice"><span><strong>Accent colour</strong><small>The selected colour is applied immediately throughout every workspace.</small></span><div>{(['cyan', 'blue', 'teal', 'purple', 'gold', 'green', 'burgundy'] as AccentPreference[]).map((accent) => <button key={accent} type="button" className={preferences.accent === accent ? 'active' : ''} data-accent-option={accent} onClick={() => selectAccent(accent)}><i />{accent[0].toUpperCase() + accent.slice(1)}</button>)}</div></div>
+          <div className="settings-accent-choice"><span><strong>Accent colour</strong><small>The selected colour is applied immediately throughout every workspace.</small></span><div>{(['cyan', 'blue', 'teal', 'purple', 'gold', 'green', 'burgundy'] as AccentPreference[]).map((accent) => { const name = accent[0].toUpperCase() + accent.slice(1); return <button key={accent} type="button" className={preferences.accent === accent ? 'active' : ''} data-accent-option={accent} title={`${name} accent`} aria-label={`${name} accent`} aria-pressed={preferences.accent === accent} onClick={() => selectAccent(accent)}><i /></button> })}</div></div>
           <label className="settings-row"><span><strong>Compact interface</strong><small>Reduce navigation and workspace spacing.</small></span>
             <input type="checkbox" checked={preferences.compactUi} onChange={() => toggle('compactUi')} /></label>
           <label className="settings-row"><span><strong>Reduce motion</strong><small>Disable non-essential transitions and animations.</small></span>
             <input type="checkbox" checked={preferences.reducedMotion} onChange={() => toggle('reducedMotion')} /></label>
           <label className="settings-row"><span><strong>High contrast</strong><small>Increase text, border, and keyboard-focus visibility.</small></span>
             <input type="checkbox" checked={preferences.highContrast} onChange={() => toggle('highContrast')} /></label>
-          <button className="settings-reset-appearance" type="button"
+          <button className="settings-reset-appearance icon-btn" type="button"
+            title="Reset appearance to defaults" aria-label="Reset appearance to defaults"
             disabled={!preferences.compactUi && !preferences.reducedMotion && !preferences.highContrast && preferences.theme === 'system' && preferences.accent === 'cyan'}
             onClick={() => setPreferences({ compactUi: false, reducedMotion: false, highContrast: false, theme: 'system', accent: 'cyan' })}>
-            <RotateCcw size={14} /> Reset appearance
+            <RotateCcw size={14} />
           </button>
-        </section>
-
-        <section className="settings-panel settings-backup-panel">
-          <div className="settings-panel-title"><Download size={19} /><div><h2>Backup and restore</h2><p>Protect locally saved AIOS progress, preferences, conversations, drafts, and history.</p></div></div>
-          <p className="settings-backup-explanation">The workspace backup contains browser-saved AIOS data. Large models, indexed libraries, uploaded source documents, and generated media remain in their configured local folders.</p>
-          <div className="settings-backup-actions"><button type="button" onClick={downloadWorkspaceBackup}><Download size={15} /> Download complete backup</button><button type="button" onClick={() => restoreInputRef.current?.click()}><Upload size={15} /> Restore backup</button><button className="settings-reset-data" type="button" onClick={resetPersonalWorkspace}><Trash2 size={15} /> Reset personal data</button><input ref={restoreInputRef} hidden type="file" accept=".json,application/json" onChange={restoreWorkspaceBackup} /></div>
-          {pendingBackup && <div className="settings-restore-preview"><strong>Validated AIOS backup</strong><span>{pendingBackup.storageEntries} entries · {(workspaceBackupSize(pendingBackup) / 1024).toFixed(1)} KB · exported {new Date(pendingBackup.exportedAt).toLocaleString()}</span><p><b>Merge</b> keeps other current AIOS data. <b>Replace</b> clears current AIOS browser data before restoring this backup.</p><div><button type="button" onClick={() => commitWorkspaceRestore('merge')}><Upload size={14} /> Merge safely</button><button className="replace" type="button" onClick={() => window.confirm('Replace all current AIOS browser data with this backup? Library files are not affected.') && commitWorkspaceRestore('replace')}><RotateCcw size={14} /> Replace workspace</button><button type="button" onClick={() => { setPendingBackup(null); setBackupNotice('Restore cancelled. No data was changed.') }}>Cancel</button></div></div>}
-          {backupNotice && <p className="settings-backup-notice" role="status">{backupNotice}</p>}
-        </section>
-
-        <section className="settings-panel settings-api-panel">
-          <div className="settings-panel-title"><Server size={19} /><div><h2>AIOS API</h2><p>Connection used by Chat and Knowledge.</p></div></div>
-          <div className="settings-service">
-            <span className={online ? 'settings-service-dot online' : 'settings-service-dot'} />
-            <div><strong>{checking ? 'Checking...' : status}</strong><code>{AIOS_API_BASE_URL}</code></div>
-            <button type="button" onClick={() => void checkConnection()} disabled={checking}>
-              <RefreshCw size={15} className={checking ? 'spin' : ''} /> Check
-            </button>
-          </div>
-          {online && <p className="settings-success"><CheckCircle2 size={15} /> API requests are available{apiLatencyMs === null ? '.' : ` · ${apiLatencyMs} ms response time.`}</p>}
-          {lastApiCheck && <p className="settings-last-api-check">Last checked {lastApiCheck.toLocaleTimeString()}</p>}
-          {!checking && !online && <div className="settings-api-help" role="alert"><strong>Gateway connection unavailable</strong><span>Start Lampstand Project with the desktop launcher, wait for the Lampstand Gateway to report ready, and select Check again.</span></div>}
         </section>
 
         <section className="settings-panel settings-voice-panel">
           <div className="settings-panel-title"><Volume2 size={19} /><div><h2>Reading voice</h2><p>Voice used when reading selected Recovery Bible verses.</p></div></div>
           <label className="settings-voice-row"><span><strong>Bible voice</strong><small>Indian voices installed in Windows and available Indian language profiles.</small></span><select value={bibleVoice} onChange={(event) => setBibleVoice(event.target.value)}><optgroup label="Indian voices">{voices.filter((voice) => /-IN$/i.test(voice.lang)).map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}{INDIA_VOICE_PROFILES.filter(([lang]) => !voices.some((voice) => voice.lang.toLowerCase() === lang.toLowerCase())).map(([lang, name]) => <option key={lang} value={`profile:${lang}`}>{name} — system profile</option>)}</optgroup></select></label>
         </section>
+
+        <h2 className="settings-section-title">Data and updates</h2>
+        <section className="settings-panel settings-backup-panel">
+          <div className="settings-panel-title"><Download size={19} /><div><h2>Backup and restore</h2><p>Protect locally saved AIOS progress, preferences, conversations, drafts, and history.</p></div></div>
+          <p className="settings-backup-explanation">The workspace backup contains browser-saved AIOS data. Large models, indexed libraries, uploaded source documents, and generated media remain in their configured local folders.</p>
+          <div className="settings-backup-actions"><button type="button" className="icon-btn" title="Download complete backup" aria-label="Download complete backup" onClick={downloadWorkspaceBackup}><Download size={15} /></button><button type="button" className="icon-btn" title="Restore from a backup file" aria-label="Restore from a backup file" onClick={() => restoreInputRef.current?.click()}><Upload size={15} /></button><button className="settings-reset-data" type="button" onClick={resetPersonalWorkspace}><Trash2 size={15} /> Reset personal data</button><input ref={restoreInputRef} hidden type="file" accept=".json,application/json" onChange={restoreWorkspaceBackup} /></div>
+          {pendingBackup && <div className="settings-restore-preview"><strong>Validated AIOS backup</strong><span>{pendingBackup.storageEntries} entries · {(workspaceBackupSize(pendingBackup) / 1024).toFixed(1)} KB · exported {new Date(pendingBackup.exportedAt).toLocaleString()}</span><p><b>Merge</b> keeps other current AIOS data. <b>Replace</b> clears current AIOS browser data before restoring this backup.</p><div><button type="button" onClick={() => commitWorkspaceRestore('merge')}><Upload size={14} /> Merge safely</button><button className="replace" type="button" onClick={() => window.confirm('Replace all current AIOS browser data with this backup? Library files are not affected.') && commitWorkspaceRestore('replace')}><RotateCcw size={14} /> Replace workspace</button><button type="button" onClick={() => { setPendingBackup(null); setBackupNotice('Restore cancelled. No data was changed.') }}>Cancel</button></div></div>}
+          {backupNotice && <p className="settings-backup-notice" role="status">{backupNotice}</p>}
+        </section>
+
+        <AppUpdatesPanel />
       </div>
     </section>
   )

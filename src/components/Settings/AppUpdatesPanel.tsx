@@ -105,13 +105,13 @@ export default function AppUpdatesPanel({
     </div>
     {state.status === 'downloading' && <div className="settings-update-progress"><progress value={state.percent} max="100" /><span>{state.percent}%</span></div>}
     <div className="settings-update-actions">
-      <button type="button" disabled={!updates || checking || state.status === 'downloading'} onClick={() => void run('check')}><RefreshCw size={14} className={checking ? 'spin' : undefined} /> Check for updates</button>
+      <button type="button" className="icon-btn" title="Check for app updates" aria-label="Check for app updates" disabled={!updates || checking || state.status === 'downloading'} onClick={() => void run('check')}><RefreshCw size={14} className={checking ? 'spin' : undefined} /></button>
       {state.status === 'available' && <button type="button" disabled={busy} onClick={() => void run('download')}><Download size={14} /> Download version {state.availableVersion}</button>}
       {state.status === 'ready' && <button type="button" className="primary" onClick={() => void run('install')}><RotateCcw size={14} /> Restart and install</button>}
       {state.status === 'current' && <span><CheckCircle2 size={14} /> Up to date</span>}
       {updates && state.status !== 'development' && <button type="button" disabled={busy || state.status === 'downloading'} onClick={() => void reinstallCurrentVersion()}><RotateCcw size={14} /> Reinstall this version</button>}
     </div>
-    <p className="settings-update-note">App updates and reinstalls replace program files only. Your profiles, sign-in identity, reading progress, annotations, conversations, and other personal data remain in the Lampstand data folder.</p>
+    <p className="settings-update-note">Updates replace program files only. Profiles, sign-in identity, reading progress, annotations and conversations stay in the Lampstand data folder.</p>
 
     <div className="settings-library-update">
       <div className="settings-panel-title"><Download size={18} /><div><h3>Library updates</h3><p>Update authorized School, Ministry, Church, and other library content without reinstalling the app.</p></div></div>
@@ -121,16 +121,16 @@ export default function AppUpdatesPanel({
       <div className="settings-update-summary"><span className={libraryState.status === 'error' ? 'settings-service-dot' : 'settings-service-dot online'} /><div><strong>{libraryState.installedVersion ? `Library ${libraryState.installedVersion}` : 'Bundled library'}</strong><small>{libraryState.message}</small></div></div>
       {libraryState.status === 'downloading' && <div className="settings-update-progress"><progress value={libraryState.percent} max="100" /><span>{libraryState.percent}%</span></div>}
       <div className="settings-update-actions">
-        <button type="button" disabled={!libraries || libraryBusy || libraryState.status === 'downloading'} onClick={async () => { if (!libraries) return; setLibraryBusy(true); try { await libraries.setManifestUrl(manifestUrl.trim()); setLibraryState(await libraries.check()) } finally { setLibraryBusy(false) } }}><RefreshCw size={14} className={libraryBusy ? 'spin' : undefined} /> Check library</button>
+        <button type="button" className="icon-btn" title="Check for library updates" aria-label="Check for library updates" disabled={!libraries || libraryBusy || libraryState.status === 'downloading'} onClick={async () => { if (!libraries) return; setLibraryBusy(true); try { await libraries.setManifestUrl(manifestUrl.trim()); setLibraryState(await libraries.check()) } finally { setLibraryBusy(false) } }}><RefreshCw size={14} className={libraryBusy ? 'spin' : undefined} /></button>
         {libraryState.status === 'available' && <button type="button" className="primary" disabled={libraryBusy} onClick={() => void installLibraryUpdate()}><Download size={14} /> Download library only</button>}
         {libraryState.status === 'ready' && libraryState.knowledgeChanged && indexState?.state !== 'running' && indexState?.state !== 'completed' && <button type="button" className="primary" disabled={libraryBusy} onClick={() => void prepareSearch()}><RefreshCw size={14} /> Retry search preparation</button>}
-        {libraryState.status === 'ready' && <button type="button" onClick={() => window.location.reload()}><RotateCcw size={14} /> Reload Lampstand</button>}
+        {libraryState.status === 'ready' && <button type="button" className="icon-btn" title="Reload Lampstand" aria-label="Reload Lampstand" onClick={() => window.location.reload()}><RotateCcw size={14} /></button>}
       </div>
       {indexState?.state === 'running' && <div className="settings-update-progress"><progress value={indexState.processed || 0} max={indexState.total || 1} /><span>{indexState.processed || 0} / {indexState.total || 0}</span></div>}
       {indexState && indexState.state !== 'idle' && indexState.state !== 'running' && <p className="settings-update-note">Search preparation: {indexState.state === 'completed' ? 'complete' : indexState.state === 'completed_with_errors' ? 'completed with some files needing attention' : 'not completed'}.</p>}
-      <p className="settings-update-note">Only files listed in the HTTPS manifest are installed, and SHA-256 checksums are verified when supplied. Owners publish library manifests separately from GitHub releases.</p>
+      <p className="settings-update-note">Only files listed in the HTTPS manifest are installed, and SHA-256 checksums are verified when supplied.</p>
       {allowPublishing && <LibraryPublisherPanel />}
     </div>
-    <p className="settings-update-note">Ollama, Whisper, image, audio, and video engines remain optional because they can require many gigabytes. Lampstand prefers local providers and can use configured cloud providers when local models are unavailable.</p>
+    <p className="settings-update-note">Ollama, Whisper, image, audio and video engines stay optional because each can need many gigabytes.</p>
   </section>
 }

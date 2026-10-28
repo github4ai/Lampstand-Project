@@ -160,13 +160,13 @@ Lampstand remembers the most recently selected local profile on that computer an
 
 ## Backups and updates
 
-Use **Settings** to check services, create backups, install optional dependencies, and check for app updates. App updates do not remove local user data unless **Reset personal data after update** is explicitly selected before installing an update.
+Use **Settings** to check services, create backups, install optional dependencies, and check for app updates. The page is grouped into four labelled blocks: **Access and devices**, **Services and models**, **Appearance and reading**, and **Data and updates**. Most Settings controls show only an icon to keep each decision on one row - hover the pointer over one, or tab to it, to read what it does. App updates and reinstalls replace program files only; your profiles, sign-in, reading progress, annotations and conversations stay in the Lampstand data folder unless you deliberately choose **Reset personal data** under Backup and restore.
 
 Every install — the downloaded Setup file or an update the app starts for you — shows an **Existing data on this computer** page. **Keep my data (recommended)** is selected and nothing is removed. Choosing **Erase all Lampstand data on this computer and start fresh** asks you to confirm once more, then clears the personal data folder for every profile on that computer, including files added to the local library. Downloaded and generated media are not stored there and are left where they are. Back up from **Settings** first if you may want any of it later.
 
 ## Common problems
 
-- **Backend unavailable:** reopen the app, then use **Settings → Repair services**.
+- **Backend unavailable:** reopen the app, then use **Settings → AI Services** and select the wrench (Repair services).
 - **No search results:** verify that the document is indexed and that the correct category, subcollection, and subject were selected.
 - **Scanned PDF has no answers:** run OCR and re-index it.
 - **Ollama or Whisper offline:** install or start the optional service in Settings.

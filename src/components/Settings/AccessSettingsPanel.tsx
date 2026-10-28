@@ -1,4 +1,4 @@
-import { Check, KeyRound, Plus, ShieldCheck, Trash2, UserRoundCog } from 'lucide-react'
+import { Check, KeyRound, Plus, ShieldCheck, Trash2, Unlock, UserRoundCog } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
   ACCESS_CONTROL_STORAGE_KEY,
@@ -190,12 +190,12 @@ export default function AccessSettingsPanel() {
           <label><span>Role name</span><input value={customRoleName} onChange={(event) => setCustomRoleName(event.target.value)} placeholder="For example, Teacher" maxLength={40} /></label>
           <label><span>Start with</span><select value={customRoleBase} onChange={(event) => { const baseRole = event.target.value as Exclude<UserRole, 'owner'>; setCustomRoleBase(baseRole); setCustomRolePermissions(defaultPermissions(baseRole)) }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={role.id}>{role.label}</option>)}</select></label>
           <fieldset><legend>Default workspace access</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={customRolePermissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleCustomRoleWorkspace(workspace.id)} />{workspace.label}</label>)}</div></fieldset>
-          <button type="button" onClick={createCustomRole} disabled={!customRoleName.trim()}><Plus size={15} /> Create role</button>
+          <button type="button" className="icon-btn" title="Create this role template" aria-label="Create this role template" onClick={createCustomRole} disabled={!customRoleName.trim()}><Plus size={15} /></button>
         </div>
         {customRoles.length > 0 && <div className="settings-custom-role-list">{customRoles.map((role) => <article key={role.id}>
           <header><label><span>Role name</span><input value={role.name} onChange={(event) => updateCustomRole(role.id, { name: event.target.value.trimStart() })} maxLength={40} /></label><small>Based on {roles.find((item) => item.id === role.baseRole)?.label}</small></header>
           <fieldset><legend>Default workspace access</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={role.permissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleSavedRoleWorkspace(role, workspace.id)} />{workspace.label}</label>)}</div></fieldset>
-          <div className="settings-custom-role-actions"><button type="button" onClick={() => applyRoleToAssignedUsers(role)}>Apply to assigned users</button><button className="remove" type="button" onClick={() => removeCustomRole(role)}><Trash2 size={14} /> Delete template</button></div>
+          <div className="settings-custom-role-actions"><button type="button" onClick={() => applyRoleToAssignedUsers(role)}>Apply to assigned users</button><button className="remove icon-btn" type="button" title={`Delete the ${role.name} template`} aria-label={`Delete the ${role.name} template`} onClick={() => removeCustomRole(role)}><Trash2 size={14} /></button></div>
         </article>)}</div>}
       </div>}
 
@@ -203,7 +203,7 @@ export default function AccessSettingsPanel() {
         <label><span>Name</span><input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Family member name" /></label>
         <label><span>Role</span><select value={newCustomRoleId ? `custom:${newCustomRoleId}` : `base:${newRole}`} onChange={(event) => { const [kind, value] = event.target.value.split(':'); if (kind === 'custom') setNewCustomRoleId(value); else { setNewCustomRoleId(''); setNewRole(value as UserRole) } }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={`base:${role.id}`}>{role.label}</option>)}{customRoles.length > 0 && <optgroup label="Custom roles">{customRoles.map((role) => <option key={role.id} value={`custom:${role.id}`}>{role.name}</option>)}</optgroup>}</select></label>
         <label><span>Individual title</span><input value={newRoleLabel} onChange={(event) => setNewRoleLabel(event.target.value)} placeholder="Optional" maxLength={40} disabled={Boolean(newCustomRoleId)} /></label>
-        <button type="button" onClick={addProfile} disabled={!newName.trim()}><Plus size={15} /> Add user</button>
+        <button type="button" className="icon-btn" title="Add this user" aria-label="Add this user" onClick={addProfile} disabled={!newName.trim()}><Plus size={15} /></button>
       </div>}
 
       <div className="settings-user-list">
@@ -213,9 +213,9 @@ export default function AccessSettingsPanel() {
             <label className="settings-role-select"><span>Role</span><select value={profile.customRoleId ? `custom:${profile.customRoleId}` : `base:${profile.role}`} onChange={(event) => { const [kind, value] = event.target.value.split(':'); if (kind === 'custom') assignCustomRole(profile, value); else changeRole(profile, value as UserRole) }}>{roles.filter((role) => role.id !== 'owner').map((role) => <option key={role.id} value={`base:${role.id}`}>{role.label}</option>)}{customRoles.length > 0 && <optgroup label="Custom roles">{customRoles.map((role) => <option key={role.id} value={`custom:${role.id}`}>{role.name}</option>)}</optgroup>}</select></label>
             <label className="settings-role-select"><span>Individual title</span><input value={profile.roleLabel || ''} onChange={(event) => updateProfile(profile.id, { roleLabel: event.target.value.trimStart() || undefined, customRoleId: undefined })} placeholder="Optional" maxLength={40} /></label>
             <fieldset><legend>Allowed workspaces</legend><div>{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={profile.permissions.some((permission) => permission.workspace === workspace.id)} onChange={() => toggleWorkspace(profile, workspace.id)} />{workspace.label}</label>)}</div></fieldset>
-            <div className="settings-user-actions"><label><input type="checkbox" checked={profile.suspended === true} onChange={(event) => updateProfile(profile.id, { suspended: event.target.checked })} /> Suspend access</label><button type="button" onClick={() => removeProfile(profile)}><Trash2 size={14} /> Remove</button></div>
+            <div className="settings-user-actions"><label><input type="checkbox" checked={profile.suspended === true} onChange={(event) => updateProfile(profile.id, { suspended: event.target.checked })} /> Suspend access</label><button type="button" className="icon-btn" title={`Remove ${profile.name}`} aria-label={`Remove ${profile.name}`} onClick={() => removeProfile(profile)}><Trash2 size={14} /></button></div>
           </>}
-          {canManage && <div className="settings-pin-actions"><span><KeyRound size={14} /> {profile.pinHash ? 'PIN protected' : 'No PIN set'}</span><button type="button" onClick={() => void setProfilePin(profile)}>{profile.pinHash ? 'Change PIN' : 'Set PIN'}</button>{profile.pinHash && <button type="button" className="remove" onClick={() => removeProfilePin(profile)}>Remove PIN</button>}</div>}
+          {canManage && <div className="settings-pin-actions"><span><KeyRound size={14} /> {profile.pinHash ? 'PIN protected' : 'No PIN set'}</span><button type="button" className="icon-btn" title={profile.pinHash ? `Change the PIN for ${profile.name}` : `Set a PIN for ${profile.name}`} aria-label={profile.pinHash ? `Change the PIN for ${profile.name}` : `Set a PIN for ${profile.name}`} onClick={() => void setProfilePin(profile)}><KeyRound size={14} /></button>{profile.pinHash && <button type="button" className="remove icon-btn" title={`Remove the PIN for ${profile.name}`} aria-label={`Remove the PIN for ${profile.name}`} onClick={() => removeProfilePin(profile)}><Unlock size={14} /></button>}</div>}
           {profile.id !== state.activeProfileId && !profile.suspended && <button className="settings-switch-profile" type="button" onClick={() => void switchProfile(profile)}>Switch to {profile.name}</button>}
         </article>)}
       </div>

@@ -55,19 +55,19 @@ An installer run without interaction — for example a deployment script that pa
 ## First-run checks
 
 1. Open **Settings**.
-2. Choose **Check all services**.
+2. Choose **Check all services** — the circular-arrow button at the top right of the page. Every Settings control that shows only an icon names itself on hover or keyboard focus.
 3. Confirm the Lampstand backend is connected.
 4. Install optional services only when their features are required.
 5. Open Ministry and verify that the bundled library cards appear.
 
 ## Updates
 
-Open **Settings → App updates → Check for updates**. Downloaded updates install after Lampstand restarts. Locally stored profiles, annotations, progress, and preferences are retained.
+Open **Settings → App updates** and select **Check for app updates** (the circular-arrow button). Downloaded updates install after Lampstand restarts. Locally stored profiles, annotations, progress, and preferences are retained.
 
 ## Troubleshooting
 
 - If the window is blank, close Lampstand completely and reopen it. If necessary, use the installed repair option.
-- If `127.0.0.1:9656` is unavailable, use **Repair services** and review the desktop startup log from Settings.
+- If `127.0.0.1:9656` is unavailable, use **Repair services** (the wrench in **Settings → AI Services**) and review the desktop startup log from Settings.
 - If sign-in says the email is not invited, the owner must add that exact email in remote access control.
 - If a JWT has expired, choose **Use another email** and sign in again.
 - If Windows blocks an unsigned installer, confirm it came from the approved Lampstand release before continuing.

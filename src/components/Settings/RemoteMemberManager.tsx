@@ -68,14 +68,14 @@ export default function RemoteMemberManager({ session, family }: { session: Clou
       <label><span>Verified email</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="member@example.com" /></label>
       <label><span>Role</span><select value={role} onChange={(event) => changeRole(event.target.value as UserRole)}>{roles.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
       <div className="settings-member-workspaces">{workspaces.map((workspace) => <label key={workspace.id}><input type="checkbox" checked={selected.has(workspace.id)} onChange={() => toggle(workspace.id)} /> {workspace.label}</label>)}</div>
-      <button type="button" disabled={busy} onClick={() => void invite()}><UserPlus size={15} /> Add member access</button>
+      <button type="button" className="icon-btn" title="Add member access" aria-label="Add member access" disabled={busy} onClick={() => void invite()}><UserPlus size={15} /></button>
     </div>
     <div className="settings-member-list">{members.map((member) => <article key={member.id}>
       <div className="settings-member-identity"><strong>{member.display_name}</strong><small>{member.invited_email} · {member.user_id ? 'Email account connected' : 'Awaiting sign-up'}</small></div>
       <select value={member.role} disabled={busy} onChange={(event) => { const nextRole = event.target.value as UserRole; void save(member, { role: nextRole, permissions: defaultPermissions(nextRole) }) }}>{roles.map((item) => <option key={item} value={item}>{item}</option>)}</select>
       <label><input type="checkbox" checked={!member.suspended} disabled={busy} onChange={(event) => void save(member, { suspended: !event.target.checked })} /> Active</label>
-      <button type="button" title="Save current access" disabled={busy} onClick={() => void save(member, {})}><Save size={14} /></button>
-      <button type="button" title="Remove member" disabled={busy} onClick={() => void remove(member)}><Trash2 size={14} /></button>
+      <button type="button" title="Save current access" aria-label="Save current access" disabled={busy} onClick={() => void save(member, {})}><Save size={14} /></button>
+      <button type="button" title="Remove member" aria-label={`Remove ${member.display_name}`} disabled={busy} onClick={() => void remove(member)}><Trash2 size={14} /></button>
       <fieldset className="settings-member-workspace-editor">
         <legend>Allowed parts of Lampstand</legend>
         {workspaces.map((workspace) => <label key={workspace.id}>

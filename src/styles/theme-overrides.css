@@ -116,7 +116,7 @@ body{overflow-x:hidden}
 .settings-row{padding:14px 0}
 :root[data-theme="light"] .settings-grid{gap:14px}
 :root[data-theme="light"] :where(.settings-provider-grid>div,.settings-cloud-provider-card,.settings-model-options label){background:var(--panel-light);color:var(--text)}
-:root[data-theme="light"] :where(.settings-success,.settings-active-user,.settings-policy-status){color:#13734f}
+:root[data-theme="light"] :where(.settings-active-user,.settings-policy-status){color:#13734f}
 :root[data-theme="light"] :where(.settings-provider-notice,.settings-backup-notice){color:var(--text);background:color-mix(in srgb,var(--primary) 7%,var(--panel))}
 
 /* Command palette follows the selected theme while retaining a clear overlay. */

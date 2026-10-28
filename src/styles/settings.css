@@ -1,4 +1,4 @@
-.settings-page{min-height:100%;padding:30px}.settings-header{display:flex;align-items:center;gap:15px}.settings-header>span{display:grid;width:50px;height:50px;place-items:center;border:1px solid rgba(56,189,248,.3);border-radius:14px;background:rgba(56,189,248,.12);color:#bae6fd}.settings-header>div{min-width:0;flex:1}.settings-header h1{margin:0;color:#fff;font-size:27px}.settings-header p{margin:5px 0 0;color:var(--text-muted);font-size:13px}.settings-check-all{display:flex;min-height:38px;align-items:center;gap:7px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:rgba(56,189,248,.08);color:#bae6fd;font-size:11px;cursor:pointer}.settings-check-all:hover{background:rgba(56,189,248,.14)}.settings-check-all:disabled{cursor:wait;opacity:.65}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:25px}.settings-panel{padding:20px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.025)}.settings-panel-title{display:flex;align-items:flex-start;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);color:#bae6fd}.settings-panel-title h2,.settings-panel-title p{margin:0}.settings-panel-title h2{color:#fff;font-size:16px}.settings-panel-title p{margin-top:4px;color:var(--text-muted);font-size:12px}.settings-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0;border-bottom:1px solid var(--border)}.settings-row:last-child{border-bottom:0}.settings-row span,.settings-row strong,.settings-row small{display:block}.settings-row strong{color:#e5eaf5;font-size:13px}.settings-row small{margin-top:4px;color:var(--text-muted);font-size:11px}.settings-row input{width:18px;height:18px;accent-color:#38bdf8}.settings-service{display:flex;align-items:center;gap:10px;padding-top:18px}.settings-service-dot{width:9px;height:9px;border-radius:50%;background:#ff7272;box-shadow:0 0 12px rgba(255,80,80,.45)}.settings-service-dot.online{background:#59d391;box-shadow:0 0 12px rgba(89,211,145,.45)}.settings-service div{min-width:0;flex:1}.settings-service strong,.settings-service code{display:block}.settings-service strong{color:#fff;font-size:13px}.settings-service code{margin-top:4px;color:var(--text-muted);font-size:11px}.settings-service button{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 11px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer}.settings-success{display:flex;align-items:center;gap:6px;margin:16px 0 0;color:#8ee0b2;font-size:12px}.reduced-motion *{scroll-behavior:auto!important;animation:none!important;transition:none!important}.compact-ui .sidebar{padding:14px}.compact-ui .workspace-navigation{gap:3px}.compact-ui .history-page,.compact-ui .documents-page,.compact-ui .agents-page,.compact-ui .settings-page{padding:20px}@media(max-width:800px){.settings-grid{grid-template-columns:1fr}.settings-page{padding:22px 18px}.settings-header{align-items:flex-start;flex-wrap:wrap}.settings-check-all{width:100%;justify-content:center}}
+.settings-page{min-height:100%;padding:30px}.settings-header{display:flex;align-items:center;gap:15px}.settings-header>span{display:grid;width:50px;height:50px;place-items:center;border:1px solid rgba(56,189,248,.3);border-radius:14px;background:rgba(56,189,248,.12);color:#bae6fd}.settings-header>div{min-width:0;flex:1}.settings-header h1{margin:0;color:#fff;font-size:27px}.settings-header p{margin:5px 0 0;color:var(--text-muted);font-size:13px}.settings-check-all{display:flex;min-height:38px;align-items:center;gap:7px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:rgba(56,189,248,.08);color:#bae6fd;font-size:11px;cursor:pointer}.settings-check-all:hover{background:rgba(56,189,248,.14)}.settings-check-all:disabled{cursor:wait;opacity:.65}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:25px}.settings-panel{padding:20px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.025)}.settings-panel-title{display:flex;align-items:flex-start;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--border);color:#bae6fd}.settings-panel-title h2,.settings-panel-title p{margin:0}.settings-panel-title h2{color:#fff;font-size:16px}.settings-panel-title p{margin-top:4px;color:var(--text-muted);font-size:12px}.settings-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0;border-bottom:1px solid var(--border)}.settings-row:last-child{border-bottom:0}.settings-row span,.settings-row strong,.settings-row small{display:block}.settings-row strong{color:#e5eaf5;font-size:13px}.settings-row small{margin-top:4px;color:var(--text-muted);font-size:11px}.settings-row input{width:18px;height:18px;accent-color:#38bdf8}.settings-service{display:flex;align-items:center;gap:10px;padding-top:18px}.settings-service-dot{width:9px;height:9px;border-radius:50%;background:#ff7272;box-shadow:0 0 12px rgba(255,80,80,.45)}.settings-service-dot.online{background:#59d391;box-shadow:0 0 12px rgba(89,211,145,.45)}.settings-service div{min-width:0;flex:1}.settings-service strong,.settings-service code{display:block}.settings-service strong{color:#fff;font-size:13px}.settings-service code{margin-top:4px;color:var(--text-muted);font-size:11px}.settings-service button{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 11px;border:1px solid var(--border);border-radius:9px;background:rgba(255,255,255,.04);color:var(--text);cursor:pointer}.reduced-motion *{scroll-behavior:auto!important;animation:none!important;transition:none!important}.compact-ui .sidebar{padding:14px}.compact-ui .workspace-navigation{gap:3px}.compact-ui .history-page,.compact-ui .documents-page,.compact-ui .agents-page,.compact-ui .settings-page{padding:20px}@media(max-width:800px){.settings-grid{grid-template-columns:1fr}.settings-page{padding:22px 18px}.settings-header{align-items:flex-start;flex-wrap:wrap}.settings-check-all{width:100%;justify-content:center}}
 
 .settings-ai-services{grid-column:1/-1}.settings-master-control{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0}.settings-master-control strong,.settings-master-control small{display:block}.settings-master-control strong{color:#fff;font-size:15px}.settings-master-control small{margin-top:5px;color:var(--text-muted);font-size:12px}.settings-master-control button{display:flex;align-items:center;justify-content:center;gap:7px;min-width:86px;min-height:40px;border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,.04);color:var(--text-muted);cursor:pointer}.settings-master-control button.enabled{border-color:rgba(89,211,145,.5);background:rgba(89,211,145,.13);color:#8ee0b2}.settings-master-control button:disabled{cursor:wait;opacity:.65}.settings-provider-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.settings-provider-grid>div{display:flex;align-items:center;gap:9px;padding:11px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.02)}.settings-provider-grid p,.settings-provider-grid strong,.settings-provider-grid small{display:block;margin:0}.settings-provider-grid strong{color:#e5eaf5;font-size:12px}.settings-provider-grid small{margin-top:3px;color:var(--text-muted);font-size:10px}.settings-provider-grid .settings-service-dot{flex:0 0 auto}.settings-auto-manage{display:flex;align-items:center;gap:10px;margin-top:16px;padding-top:15px;border-top:1px solid var(--border)}.settings-auto-manage>svg{flex:0 0 auto;color:#59d391}.settings-auto-manage strong,.settings-auto-manage small{display:block}.settings-auto-manage strong{color:#e5eaf5;font-size:12px}.settings-auto-manage small{margin-top:3px;color:var(--text-muted);font-size:10px}.settings-service-error{margin:13px 0 0;color:#ff9b9b;font-size:11px}.settings-service-placeholder{color:var(--text-muted);font-size:12px}@media(max-width:800px){.settings-provider-grid{grid-template-columns:1fr}.settings-master-control{align-items:flex-start}}
 .settings-readiness{display:flex;max-width:360px;align-items:center;gap:10px;margin-top:10px}.settings-readiness span{flex:0 0 auto;color:#a7b4c8;font-size:10px}.settings-readiness progress{width:150px;height:6px;overflow:hidden;border:0;border-radius:999px;background:rgba(255,255,255,.08);accent-color:#59d391}.settings-readiness progress::-webkit-progress-bar{border-radius:999px;background:rgba(255,255,255,.08)}.settings-readiness progress::-webkit-progress-value{border-radius:999px;background:#59d391}
@@ -84,3 +84,103 @@
 .settings-role-builder>button,.settings-custom-role-actions button{min-height:38px;padding:0 12px;border:1px solid rgba(56,189,248,.35);border-radius:8px;background:rgba(56,189,248,.1);color:var(--text);cursor:pointer}.settings-role-builder>button:disabled{opacity:.45}
 .settings-custom-role-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.settings-custom-role-list article{padding:12px;border:1px solid var(--border);border-radius:9px;background:var(--panel)}.settings-custom-role-list header{display:flex;align-items:end;gap:10px}.settings-custom-role-list header label{flex:1}.settings-custom-role-list header small{padding-bottom:10px;color:var(--text-muted)}.settings-custom-role-list fieldset{margin-top:10px}.settings-custom-role-actions{display:flex;justify-content:space-between;gap:8px;margin-top:10px}.settings-custom-role-actions button.remove{border-color:rgba(248,113,113,.3);color:#fca5a5}
 @media(max-width:800px){.settings-role-builder,.settings-add-user{grid-template-columns:1fr}.settings-custom-role-list{grid-template-columns:1fr}}
+
+/* Compact Settings. One tight row per decision, and a glyph wherever the glyph is unambiguous.
+   The glyph-only buttons need two classes: the theme gives every button inside .workspace-panel a 36px floor
+   and 13px of side padding, which stretches a square icon control into a wide rectangle. */
+.settings-page{padding:20px 24px}
+.settings-header{gap:12px}.settings-header>span{width:38px;height:38px;border-radius:11px}.settings-header h1{font-size:21px}.settings-header p{margin:3px 0 0;font-size:12px}
+.settings-grid{gap:12px;margin-top:16px}.settings-panel{padding:14px 16px;border-radius:12px}
+.settings-panel-title{align-items:center;gap:9px;padding-bottom:10px}.settings-panel-title h2{font-size:15px}.settings-panel-title p{margin-top:2px;font-size:11px}
+.settings-row{padding:9px 0}.settings-row small{margin-top:2px}
+.settings-page .icon-btn{display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;width:30px;min-width:30px;min-height:30px;padding:0;border:1px solid var(--border);border-radius:8px;background:rgba(255,255,255,.04);color:var(--text-muted);cursor:pointer}
+.settings-page .icon-btn:hover:not(:disabled){border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.12);color:#bae6fd}
+.settings-page .icon-btn:disabled{cursor:wait;opacity:.45}
+.settings-page .icon-btn.enabled{border-color:rgba(89,211,145,.5);background:rgba(89,211,145,.13);color:#8ee0b2}
+.settings-page .icon-btn.remove,.settings-page .settings-user-actions .icon-btn{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.05);color:#fca5a5}
+.settings-page .settings-check-all.icon-btn,.settings-page .settings-backup-actions .icon-btn,.settings-page .settings-device-identity .icon-btn,.settings-page .settings-enrollment .icon-btn,.settings-page .settings-add-user .icon-btn,.settings-page .settings-role-builder .icon-btn{border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#bae6fd}
+.settings-page .settings-service-error .icon-btn{border-color:rgba(255,114,114,.35);background:rgba(255,255,255,.04);color:#ffd0d0}
+.settings-page .settings-member-invite>button.icon-btn{grid-column:1/-1;justify-self:start}
+@media(max-width:800px){.settings-page .settings-check-all.icon-btn{width:30px}}
+
+.settings-master-control{padding:11px 0}.settings-master-control strong{font-size:14px}.settings-readiness{margin-top:7px;max-width:300px}
+.settings-provider-grid{display:flex;flex-wrap:wrap;gap:6px}
+.settings-provider-grid>div{align-items:center;padding:5px 10px;border-radius:8px}
+.settings-provider-grid p{display:flex;align-items:baseline;gap:7px}
+.settings-provider-grid strong,.settings-provider-grid small{display:inline;margin-top:0}
+.settings-provider-grid small{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settings-auto-manage{margin-top:10px;padding-top:10px}
+.settings-services-refresh{margin-top:8px}
+.settings-provider-mode{gap:8px;margin-top:11px;padding-top:11px}
+.settings-provider-mode-options label{align-items:center;padding:7px 10px}
+.settings-provider-mode-options span{display:flex;align-items:baseline;gap:7px}
+.settings-provider-mode-options strong,.settings-provider-mode-options small{display:inline;margin-top:0}
+.settings-cloud-providers{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.settings-cloud-provider-card{padding:8px 10px}
+.settings-cloud-key{grid-template-columns:minmax(140px,.85fr) minmax(170px,1.15fr);gap:8px}
+.settings-cloud-key input{min-height:34px}
+.settings-model-options{grid-template-columns:repeat(3,minmax(0,1fr))}
+.settings-model-options>label>span{display:flex;align-items:baseline;gap:6px}
+.settings-model-options strong,.settings-model-options small{display:inline;margin-top:0}
+
+.settings-update-summary{align-items:center;padding:10px 0 8px}.settings-update-summary>div{display:flex;align-items:baseline;gap:8px}.settings-update-summary strong{font-size:13px}
+.settings-update-actions{gap:7px;margin-top:8px}.settings-update-note{margin:10px 0 0;line-height:1.5}
+.settings-library-update{gap:8px;margin-top:12px;padding-top:12px}
+.settings-library-update input{min-height:34px}
+
+.settings-active-user{padding:10px 0}.settings-active-user span{display:flex;align-items:baseline;gap:9px}.settings-active-user small{margin-top:0}
+.settings-page .settings-role-builder fieldset{grid-column:1/3}
+.settings-page .settings-role-builder>button.icon-btn{grid-column:3;align-self:end}
+.settings-page .settings-custom-roles{margin:0 0 10px;padding:10px}.settings-role-builder{gap:8px;margin-top:9px}
+.settings-role-builder fieldset,.settings-custom-role-list fieldset{padding:8px}
+.settings-user-list{gap:10px;margin-top:10px}.settings-user-list article{padding:10px}.settings-user-list fieldset{margin:9px 0 0;padding:8px}.settings-user-actions{margin-top:9px}.settings-pin-actions{margin-top:9px;padding-top:8px}
+.settings-switch-profile{min-height:34px;margin-top:9px}
+.settings-cloud-state{padding:10px 0}.settings-cloud-state small{margin-top:2px}
+.settings-device-identity,.settings-enrollment{margin-top:8px;padding:8px 10px}.settings-policy-status{margin-top:9px}.settings-policy-status small{margin-top:2px}
+.settings-cloud-login,.settings-cloud-account{gap:9px;padding:11px}
+.settings-cloud-login input,.settings-cloud-login button,.settings-cloud-account button{min-height:34px}
+
+.settings-appearance-choice{padding:10px 0;gap:12px}.settings-appearance-choice select{min-height:34px}
+.settings-accent-choice{padding:10px 0}
+.settings-page .settings-accent-choice button{width:26px;min-width:26px;min-height:26px;height:26px;padding:0;border-radius:50%;justify-content:center}
+.settings-accent-choice>div{gap:6px;margin-top:8px}
+.settings-accent-choice i{width:13px;height:13px}
+.settings-backup-explanation{font-size:11px;line-height:1.5}.settings-backup-actions{align-items:center;gap:7px;margin-top:9px}
+.settings-service{padding-top:10px}.settings-last-api-check{margin:6px 0 0 19px}
+.settings-voice-row{gap:8px;padding-top:10px}.settings-voice-row select{min-height:36px}
+@media(max-width:800px){.settings-cloud-providers,.settings-model-options{grid-template-columns:1fr}}
+
+/* The four groups, tiled. Panels follow the page's DOM order now, so only spans are declared: the panels
+   whose contents are themselves multi-column grids take a whole row, and each paired group splits a wide
+   screen in half. Below 1800px the same pairs simply become the two-column layout. */
+.settings-page .settings-access-panel,.settings-page .settings-ai-services,.settings-page .settings-api-panel{grid-column:1/-1}
+@media(min-width:1800px){
+  .settings-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .settings-page .settings-appearance-panel,.settings-page .settings-voice-panel,
+  .settings-page .settings-backup-panel,.settings-page .settings-updates-panel{grid-column:span 3}
+}
+
+/* Readable type. The theme pins every <small> inside a workspace panel to 12px and every control to 13px
+   with !important, so the page lifts its own floor with rules that are both !important and more specific. */
+.settings-section-title{display:flex;align-items:center;gap:14px;grid-column:1/-1;margin:26px 0 0;color:var(--text-muted);font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.settings-section-title::after{content:"";flex:1;height:1px;background:var(--border)}
+.settings-page .settings-grid>.settings-section-title:first-child{margin-top:0}
+.settings-page p{font-size:13.5px}
+.settings-page small{font-size:13px!important}
+.settings-page label,.settings-page code{font-size:13px}
+.settings-page .settings-panel label,.settings-page .settings-panel legend,.settings-page .settings-panel span,.settings-page .settings-current-badge{font-size:13px}
+.settings-page button,.settings-page select,.settings-page input,.settings-page textarea{font-size:14px!important}
+.settings-page .settings-panel-title h2{font-size:17px}
+.settings-page .settings-panel-title p{font-size:13px}
+.settings-page .settings-row strong,.settings-page .settings-service strong,.settings-page .settings-master-control strong,
+.settings-page .settings-active-user strong,.settings-page .settings-update-summary strong,.settings-page .settings-model-options strong,
+.settings-page .settings-provider-mode-options strong,.settings-page .settings-appearance-choice strong,.settings-page .settings-accent-choice strong,
+.settings-page .settings-voice-row strong,.settings-page .settings-device-identity strong,.settings-page .settings-enrollment strong,
+.settings-page .settings-policy-status strong,.settings-page .settings-user-list strong,.settings-page .settings-member-list strong,
+.settings-page .settings-cloud-state strong,.settings-page .settings-service-error strong,.settings-page .settings-api-help strong,
+.settings-page .settings-auto-manage strong,.settings-page .settings-provider-mode-heading strong{font-size:15px}
+.settings-page .settings-provider-grid strong{font-size:14px}
+.settings-page .settings-enrollment code{font-size:19px}
+.settings-page .settings-panel{padding:16px 18px}
+.settings-page .settings-row{padding:12px 0}
+.settings-page .settings-panel-title{padding-bottom:12px}
