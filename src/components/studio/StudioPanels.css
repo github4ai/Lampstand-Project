@@ -499,6 +499,27 @@
   font-weight: 700;
 }
 
+/* A staged page belongs to the operator's own screen, so this block reads as an inset and not as
+   the on-air strip it becomes once it is taken live. */
+.web-stage {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 10px;
+  padding: 10px 12px;
+  border: 1px dashed #2b4d66;
+  border-left: 3px solid #2fa8d8;
+  border-radius: 10px;
+  background: #0d1f2c;
+}
+
+.web-stage-address {
+  margin: 0;
+  color: #7f9db2;
+  font-size: 0.72rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+
 /* A portion is written in a window that reads the way the projector will. It opens compact and the operator
    drags its bottom edge to grow it - a long list of announcements should not have to be read a screenful at a
    time - and past seven tenths of the viewport it scrolls instead of pushing the rest of the panel away. */

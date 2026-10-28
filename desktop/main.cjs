@@ -195,8 +195,43 @@ function configurePresentationWindows() {
     }
     presentationWindow = new BrowserWindow({ ...audienceBounds(payload), title: String(payload.title || 'Lampstand presentation'), backgroundColor: '#f5f1e8', frame: false, fullscreen: true, autoHideMenuBar: true, webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, partition: AUDIENCE_PARTITION, preload: join(__dirname, 'presentation-preload.cjs') } })
     presentationWindow.setMenuBarVisibility(false)
-    presentationWindow.on('closed', () => { presentationWindow = undefined; audienceHasContent = false })
+    presentationWindow.on('closed', () => {
+      presentationWindow = undefined
+      audienceHasContent = false
+      // The console says what the room is seeing, so when someone shuts the projector window the console has to stop claiming anything is live.
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('lampstand:audience-closed')
+    })
     return presentationWindow
+  }
+  // The studio and the projector keep separate browsing sessions, and Chromium numbers a sound device
+  // differently in each one, so the id chosen in the studio means nothing to the projector. The device's
+  // name is what both agree on; 'default' and 'communications' are the two ids every session shares.
+  const sharedAudienceSinkId = (id) => (id === 'default' || id === 'communications' ? id : '')
+  const audienceSinkScript = (payload) => {
+    const shared = sharedAudienceSinkId(String(payload.audioSinkId || ''))
+    const name = String(payload.audioSinkName || '')
+    return `(async () => {
+      let sink = ${JSON.stringify(shared)}
+      if (!sink) {
+        try {
+          const hit = (await navigator.mediaDevices.enumerateDevices()).find((d) => d.kind === 'audiooutput' && d.label === ${JSON.stringify(name)})
+          if (!hit) return
+          sink = hit.deviceId
+        } catch { return }
+      }
+      const apply = () => document.querySelectorAll('video,audio').forEach((m) => { if (m.setSinkId) m.setSinkId(sink).catch(() => {}) })
+      apply()
+      new MutationObserver(apply).observe(document.documentElement, { childList: true, subtree: true })
+    })()`
+  }
+  // Projected sound is the room's sound: it leaves through the speaker chosen in the studio, at the
+  // level the console last set. A page builds its players after it loads, so the observer keeps routing.
+  // Only a real web page carries a speaker name; a slide document cannot be steered to a device at all.
+  const applyAudienceAudio = (output, payload) => {
+    if (output.isDestroyed()) return
+    const level = Math.min(1, Math.max(0, Number(payload.mediaLevel))) || DEFAULT_MEDIA_LEVEL
+    void output.webContents.executeJavaScript(`document.querySelectorAll("video,audio").forEach((m)=>{m.volume=${level}})`, true).catch(() => undefined)
+    if (payload.audioSinkName || sharedAudienceSinkId(String(payload.audioSinkId || ''))) void output.webContents.executeJavaScript(audienceSinkScript(payload), true).catch(() => undefined)
   }
   // A web source keeps its own signed-in session, so a login done once here is still valid next meeting.
   ipcMain.handle('lampstand:open-presentation-web', (_event, payload = {}) => {
@@ -206,6 +241,9 @@ function configurePresentationWindows() {
     void output.loadURL(target).then(() => {
       if (output.isDestroyed()) return
       output.show(); output.setFullScreen(true); output.focus()
+      // A stream on the wall is on air, so the next slide fades it out like any other.
+      audienceHasContent = true
+      applyAudienceAudio(output, payload)
     })
     return true
   })
@@ -221,18 +259,19 @@ function configurePresentationWindows() {
     })
     stagingWindow.setMenuBarVisibility(false)
     // Sign-in flows pop their own window; the child keeps this partition, so the session lands here.
-    stagingWindow.setWindowOpenHandler(({ url }) => (/^https?:\/\//i.test(url) ? { action: 'allow', overrideBrowserWindowOptions: { width: 900, height: 700, autoHideMenuBar: true } } : { action: 'deny' }))
+    stagingWindow.webContents.setWindowOpenHandler(({ url }) => (/^https?:\/\//i.test(url) ? { action: 'allow', overrideBrowserWindowOptions: { width: 900, height: 700, autoHideMenuBar: true } } : { action: 'deny' }))
     stagingWindow.on('page-title-updated', (event, title) => { event.preventDefault(); stagingWindow?.setTitle(`Lampstand - ${title}`) })
     stagingWindow.on('closed', () => { stagingWindow = undefined })
     return stagingWindow
   }
-  ipcMain.handle('lampstand:stage-web', (_event, payload = {}) => {
+  ipcMain.handle('lampstand:stage-web', async (_event, payload = {}) => {
     const target = /^https?:\/\/\S+$/i.test(String(payload.url || '').trim()) ? String(payload.url).trim() : ''
     if (!target) return false
     const stage = stagingWindowFor()
-    void stage.loadURL(target)
     stage.show(); stage.focus()
-    return true
+    // Answer once the page has committed, so the console can name it straight away instead of a beat later.
+    await stage.webContents.loadURL(target).catch(() => undefined)
+    return !stage.isDestroyed()
   })
   ipcMain.handle('lampstand:stage-state', () => {
     if (!stagingWindow || stagingWindow.isDestroyed()) return { open: false, url: '', title: '', loading: false, canGoBack: false, canGoForward: false }
@@ -335,8 +374,6 @@ function configurePresentationWindows() {
     const document = payload.blank
       ? '<!doctype html><html><head><meta charset="utf-8"><style>html,body{width:100%;height:100%;margin:0;background:#000}</style></head><body></body></html>'
       : `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${clean(payload.title || 'Presentation')}</title><style>html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#132238}body{display:grid;place-items:center;color:#172033}main{box-sizing:border-box;display:grid;grid-template-rows:auto minmax(0,1fr);width:min(100vw,177.7778vh);height:min(100vh,56.25vw);aspect-ratio:16/9;overflow:hidden;background:#f7f3ea;box-shadow:0 0 50px #0006}.slide-header{box-sizing:border-box;padding:clamp(18px,2.2vw,38px) clamp(34px,5vw,90px) clamp(14px,1.6vw,28px);border-bottom:clamp(2px,.18vw,4px) solid #35bdec;text-align:center;font-family:Inter,Segoe UI,sans-serif}.slide-header h1{margin:0;color:#172033;font-size:clamp(28px,3vw,58px);line-height:1.12}.slide-content{box-sizing:border-box;min-height:0;overflow-y:auto;scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:#0c547488 transparent;display:grid;justify-items:start;align-content:safe center;padding:clamp(26px,3.2vw,58px) clamp(46px,7vw,128px) clamp(42px,5vw,90px);font-family:Georgia,'Times New Roman',serif;font-size:calc(clamp(20px,1.75vw,34px) * ${fontScale});line-height:1.55;text-align:left}.slide-content>*{box-sizing:border-box;width:100%;max-width:44em}.slide-content h2,.slide-content h3{color:#0c5474;font-family:Inter,Segoe UI,sans-serif}.slide-content strong{color:#0c3853}.slide-content a{color:#047bad}.slide-content a[data-book]{text-decoration:none;border-bottom:.06em solid currentColor;cursor:pointer}body.audience-dark{background:#05070a;color:#f4f7fb}body.audience-dark main{background:#101722;box-shadow:0 0 50px #000}.audience-dark .slide-header{border-color:#58d4ff}.audience-dark .slide-header h1,.audience-dark .slide-content{color:#f4f7fb;scrollbar-color:#83dcfa66 transparent}.audience-dark .slide-content h2,.audience-dark .slide-content h3{color:#83dcfa}.audience-dark .slide-content strong{color:#d9f3ff}.audience-dark .slide-content a{color:#83dcfa}@keyframes audienceFadeIn{from{opacity:0}to{opacity:1}}main.audience-fade{animation:audienceFadeIn var(--audience-fade,0.3s) ease-out both}mark{padding:0 .08em;border-radius:3px;color:#171717;box-decoration-break:clone;-webkit-box-decoration-break:clone;cursor:pointer}#highlight-tools{position:fixed;z-index:20;font:600 14px/1.2 Inter,Segoe UI,sans-serif;box-shadow:0 8px 28px #0005;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #ffffff66;border-radius:14px;background:#132238f5;color:#fff}#highlight-tools[hidden]{display:none}.highlight-swatch{width:30px;height:30px;padding:0;border:2px solid #fff;border-radius:50%;cursor:pointer}.highlight-remove{min-height:32px;padding:0 12px;border:1px solid #ff9b9b;border-radius:8px;background:transparent;color:#ffd0d0;cursor:pointer}.highlight-close{width:30px;height:30px;padding:0;border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer}${titleStyle}</style></head><body class="audience-${projectionTheme}"><main class="${transitionClass.trim()}"${transitionStyle}><header class="slide-header"><h1>${clean(payload.title || 'Presentation')}</h1></header><section class="slide-content">${String(payload.html || '')}</section></main>${highlightUi}${audienceScrollUi}${audienceVerseUi}</body></html>`
-    // The console carries the level the operator last set; a first run gets the low starting level.
-    const mediaLevel = Math.min(1, Math.max(0, Number(payload.mediaLevel))) || DEFAULT_MEDIA_LEVEL
     const fadeMs = Math.round(fadeSeconds * 1000)
     const fadeOut = async () => {
       if (!audienceHasContent || payload.transition === 'none' || output.webContents.isDestroyed()) return
@@ -352,11 +389,7 @@ function configurePresentationWindows() {
       output.show()
       output.setFullScreen(true)
       output.focus()
-      const sink = String(payload.audioSinkId || '')
-      // Projected media opens at the console's level, never at full blast.
-      void output.webContents.executeJavaScript(`document.querySelectorAll("video,audio").forEach((m)=>{m.volume=${mediaLevel}})`, true).catch(() => undefined)
-      // Projected video and audio leave through the speaker output chosen in the studio.
-      if (sink) void output.webContents.executeJavaScript(`(()=>{const sink=${JSON.stringify(sink)};const apply=()=>document.querySelectorAll("video,audio").forEach((m)=>{if(m.setSinkId)m.setSinkId(sink).catch(()=>{})});apply();new MutationObserver(apply).observe(document.documentElement,{childList:true,subtree:true})})()`, true).catch(() => undefined)
+      applyAudienceAudio(output, payload)
     }
     void showSlide().catch(() => undefined)
     return true

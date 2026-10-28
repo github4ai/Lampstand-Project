@@ -17,6 +17,16 @@ export async function setElementSink(element: HTMLMediaElement, deviceId: string
   try { await element.setSinkId(deviceId); return true } catch { return false }
 }
 
+/**
+ * Chromium numbers the same speaker differently in each browsing session, so an id chosen here is meaningless
+ * in the projector window. A device's name is the one thing both sessions agree on, and the projector looks it up there.
+ */
+export async function audioOutputName(deviceId: string): Promise<string> {
+  if (!deviceId) return ''
+  const devices = await navigator.mediaDevices.enumerateDevices()
+  return devices.find((device) => device.kind === 'audiooutput' && device.deviceId === deviceId)?.label ?? ''
+}
+
 /** 0 to 1 loudness of one analyser frame — the meter the operator watches to trust the microphone is live. */
 export function levelFromSamples(samples: Uint8Array) {
   if (!samples.length) return 0

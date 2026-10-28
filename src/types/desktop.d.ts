@@ -46,7 +46,7 @@ declare global {
       presentation: {
         getDisplays(): Promise<Array<{ id: string; label: string; primary: boolean }>>
         open(payload: { title: string; subtitle?: string; html: string; displayId?: string; blank?: boolean; showTitle?: boolean; fontScale?: number; theme?: 'light' | 'dark'; transition?: 'none' | 'fade'; transitionSpeed?: string; audioSinkId?: string; mediaLevel?: number }): Promise<boolean>
-        openWeb(payload: { url: string; title?: string; displayId?: string }): Promise<boolean>
+        openWeb(payload: { url: string; title?: string; displayId?: string; audioSinkId?: string; audioSinkName?: string; mediaLevel?: number }): Promise<boolean>
         command(action: AudienceCommand, value?: number): Promise<boolean>
         mediaState(): Promise<AudienceMediaState | null>
         capture(): Promise<string>
@@ -56,6 +56,7 @@ declare global {
         stageCommand(action: 'reload' | 'back' | 'forward' | 'close'): Promise<boolean>
         sendToAudience(event: AudienceInputEvent): Promise<boolean>
         subscribeVerseRequest(listener: (request: LampstandVerseRequest) => void): () => void
+        subscribeAudienceClosed(listener: () => void): () => void
       }
     }
   }

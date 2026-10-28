@@ -41,5 +41,10 @@ contextBridge.exposeInMainWorld('lampstandDesktop', {
       ipcRenderer.on('lampstand:audience-verse', handler)
       return () => ipcRenderer.removeListener('lampstand:audience-verse', handler)
     },
+    subscribeAudienceClosed: (listener) => {
+      const handler = () => listener()
+      ipcRenderer.on('lampstand:audience-closed', handler)
+      return () => ipcRenderer.removeListener('lampstand:audience-closed', handler)
+    },
   },
 })

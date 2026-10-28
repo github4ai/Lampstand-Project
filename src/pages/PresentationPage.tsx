@@ -108,6 +108,9 @@ export default function PresentationPage() {
   const [message, setMessage] = useState('')
   const [liveId, setLiveId] = useState<string | null>(null)
   const [interlude, setInterlude] = useState<{ label: string; slideId: string | null } | null>(null)
+  // A web page put on the wall from the panel is not in the order, so it is held apart from liveId
+  // and the run of show stays exactly where it was.
+  const [webOnAir, setWebOnAir] = useState<{ title: string; url: string } | null>(null)
   const [savedPresentationPrefs] = useState(readPresentationPrefs)
   const [showTitle, setShowTitle] = useState(savedPresentationPrefs.showTitle)
   const [fontScale, setFontScale] = useState(savedPresentationPrefs.fontScale)
@@ -193,7 +196,17 @@ export default function PresentationPage() {
     const opened = item.url
       ? await presentWebSource({ url: item.url, title: item.title })
       : await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html: item.html, showTitle, fontScale, theme: projectionTheme, transition: liveTransition, transitionSpeed: fadeSpeed, audioSinkId: audioOutput })
-    if (opened) { setLiveId(item.id); setInterlude(null); setMessage(warning || `Live: ${item.title}`) }
+    if (opened) { setLiveId(item.id); setInterlude(null); setWebOnAir(null); setMessage(warning || `Live: ${item.title}`) }
+  }
+  /** A page put straight on the wall from the panel is off the order: the console says so instead of naming the last slide. */
+  async function projectWeb(url: string, title: string) {
+    if (!await presentWebSource({ url, title })) { setMessage('The audience screen would not open this page.'); return false }
+    setWebOnAir({ title, url }); setInterlude(null)
+    setMessage(`Live: ${title}`)
+    return true
+  }
+  async function returnFromWeb() {
+    await takeLive(liveIndex >= 0 ? liveIndex : current)
   }
   async function stepLive(direction: -1 | 1) {
     const base = liveIndex >= 0 ? liveIndex : current
@@ -227,7 +240,7 @@ export default function PresentationPage() {
     await presentOnSavedDisplay({ title: item.title, subtitle: item.subtitle, html, showTitle, fontScale, theme: projectionTheme, transition: 'none', audioSinkId: audioOutput })
   }
   async function blankOutput() {
-    if (await presentOnSavedDisplay({ title: 'Lampstand Project', html: '', blank: true })) { setLiveId(null); setInterlude(null); setMessage('Audience screen blanked.') }
+    if (await presentOnSavedDisplay({ title: 'Lampstand Project', html: '', blank: true })) { setLiveId(null); setInterlude(null); setWebOnAir(null); setMessage('Audience screen blanked.') }
   }
   // A projected reference carries only its coordinates, so the verse text is read from the
   // local Bible and sent to the same window; the slide that was on air is kept for the return.
@@ -284,6 +297,15 @@ export default function PresentationPage() {
     window.addEventListener('message', onMessage)
     return () => { unsubscribe?.(); window.removeEventListener('message', onMessage) }
   })
+
+  // The projector window can be shut from outside the console, and the console must not go on naming
+  // a slide or a page that a dark audience screen is no longer showing.
+  useEffect(() => {
+    const unsubscribe = window.lampstandDesktop?.presentation.subscribeAudienceClosed(() => {
+      setLiveId(null); setInterlude(null); setWebOnAir(null); setMessage('The audience screen closed - nothing is on it now.')
+    })
+    return () => unsubscribe?.()
+  }, [])
 
   function addBible() {
     if (!selectedVerses.length) return
@@ -349,7 +371,7 @@ export default function PresentationPage() {
         {source === 'ministry' && <div className="source-form"><label>Find a phrase<input type="search" value={ministryPhrase} onChange={(event) => setMinistryPhrase(event.target.value)} placeholder="Search inside the ministry books — e.g. the word of God" /></label>{ministryPhraseQuery.length >= 3 && <div className="source-search-results" aria-label="Ministry book search results"><header><strong>Sections containing “{ministryPhraseQuery}”</strong><span>{ministrySearching ? 'Searching…' : `${ministryMatches.length} shown`}</span></header>{ministryMatches.map((result) => <button type="button" key={`${result.book.id}-${result.chapter.number}-${result.block}`} onClick={() => pickMinistryMatch(result)} title="Open this section in the picker below"><strong>{result.book.title}</strong><span>{result.chapter.displayTitle || result.chapter.title || `Section ${result.chapter.number}`}</span><p>{markPhrase(result.excerpt, ministryPhraseQuery)}</p></button>)}{!ministrySearching && !ministryMatches.length && <p>No ministry book uses that exact phrase. Try fewer words.</p>}</div>}<label>Book<select value={ministryBookId} onChange={(e) => setMinistryBookId(e.target.value)}>{ministryBooks.map((book) => <option key={book.id} value={book.id}>{book.title}</option>)}</select></label><label>Section<select value={ministrySection} onChange={(e) => setMinistrySection(Number(e.target.value))}>{ministrySections.map((section) => <option key={section.number} value={section.number}>{section.displayTitle || section.title}</option>)}</select></label><button className="primary-action" onClick={() => void addMinistry()}><Plus size={17}/> Add ministry section</button></div>}
         {source === 'media' && <MediaSourcePanel onAdd={addItem} onNotice={setMessage} />}
         {source === 'announcement' && <AnnouncementSourcePanel onAdd={addItem} onNotice={setMessage} />}
-        {source === 'web' && <WebSourcePanel onAdd={addItem} onNotice={setMessage} />}
+        {source === 'web' && <WebSourcePanel onAdd={addItem} onNotice={setMessage} onProject={projectWeb} />}
         {source === 'custom' && <CustomSourcePanel onAdd={addItem} onNotice={setMessage} />}
       </section>
 
@@ -358,9 +380,10 @@ export default function PresentationPage() {
         {active ? <>
           <div className="program-status">
             <div className="status-channel preview-channel"><small>PREVIEW</small><strong>{active.title}</strong><span>{active.kind.replace('-', ' ')} · {current + 1} of {queue.length}</span></div>
-            <div className={`status-channel live-channel ${liveItem ? 'on-air' : ''}`}><small>{liveItem ? 'LIVE' : 'AUDIENCE'}</small><strong>{interlude ? `Verse: ${interlude.label}` : liveItem?.title ?? 'Blank output'}</strong><span>{liveItem ? `${liveIndex + 1} of ${queue.length}` : 'Projector is blank'}</span></div>
+            <div className={`status-channel live-channel ${liveItem || webOnAir ? 'on-air' : ''}`}><small>{liveItem || webOnAir ? 'LIVE' : 'AUDIENCE'}</small><strong>{interlude ? `Verse: ${interlude.label}` : webOnAir ? `Web: ${webOnAir.title}` : liveItem?.title ?? 'Blank output'}</strong><span>{webOnAir ? 'Web page - off the run of show' : liveItem ? `${liveIndex + 1} of ${queue.length}` : 'Projector is blank'}</span></div>
           </div>
           {interlude && <div className="verse-interlude"><span><Radio size={13} /> A verse clicked on the audience screen is live now.</span><button type="button" onClick={() => void returnToSlide()}><ArrowLeft size={14} /> Return to {queue.find((item) => item.id === interlude.slideId)?.title ?? 'the previous slide'}</button></div>}
+          {webOnAir && <div className="verse-interlude"><span><Radio size={13} /> A web page is on the audience screen, outside the run of show.</span><button type="button" onClick={() => void returnFromWeb()}><ArrowLeft size={14} /> Return to {liveItem?.title ?? active.title}</button></div>}
           <div className="console-bar"><div className="console-group"><small className="console-group-label">Preview</small><button className="icon-action" disabled={current === 0} onClick={() => { setCurrent((value) => value - 1); setNotes(queue[current - 1]?.notes ?? '') }} title="Cue the previous item in the private preview" aria-label="Previous preview"><ArrowLeft size={16}/></button><AudienceScreenPicker/><button className="icon-action" disabled={current === queue.length - 1} onClick={() => { setCurrent((value) => value + 1); setNotes(queue[current + 1]?.notes ?? '') }} title="Cue the next item in the private preview" aria-label="Next preview"><ArrowRight size={16}/></button></div><div className="console-group"><small className="console-group-label">Live</small><button className="icon-action" disabled={liveIndex <= 0} onClick={() => void stepLive(-1)} title="Project the item before the one the audience sees" aria-label="Previous live"><SkipBack size={16}/></button><button className="take-live" onClick={() => void takeLive()} aria-label="Put the previewed slide on the audience screen" title="Put the previewed slide on the audience screen"><Radio size={16}/> Take live</button><button className="icon-action" disabled={liveIndex < 0 || liveIndex >= queue.length - 1} onClick={() => void stepLive(1)} title="Project the item after the one the audience sees" aria-label="Next live"><SkipForward size={16}/></button><button className="icon-action" onClick={() => void blankOutput()} title="Blank the audience screen" aria-label="Blank the audience screen"><MonitorOff size={16}/></button></div><div className="console-group"><small className="console-group-label">Output</small><button type="button" className={`icon-toggle${showTitle ? ' active' : ''}`} onClick={() => setShowTitle(!showTitle)} aria-pressed={showTitle} title={showTitle ? 'The slide title shows on the audience screen - click to hide it' : 'The slide title is hidden from the audience - click to show it'}>{showTitle ? <Eye size={16}/> : <EyeOff size={16}/>}</button><span className="console-field"><ALargeSmall size={16} aria-hidden="true"/><select aria-label="Audience text size" title="How large the words read on the audience screen" value={fontScale} onChange={(event) => setFontScale(Number(event.target.value))}><option value={0.9}>Small</option><option value={1}>Normal</option><option value={1.15}>Large</option><option value={1.3}>Extra large</option><option value={1.45}>Very large</option><option value={1.6}>Huge</option><option value={1.8}>Extra huge</option><option value={2}>Maximum</option></select></span><span className="console-switch" role="group" aria-label="Projection theme"><button type="button" className={`icon-toggle${projectionTheme === 'light' ? ' active' : ''}`} onClick={() => setProjectionTheme('light')} aria-pressed={projectionTheme === 'light'} aria-label="Project dark words on a light background" title="Project dark words on a light background"><Sun size={15}/></button><button type="button" className={`icon-toggle${projectionTheme === 'dark' ? ' active' : ''}`} onClick={() => setProjectionTheme('dark')} aria-pressed={projectionTheme === 'dark'} aria-label="Project light words on a dark background" title="Project light words on a dark background"><Moon size={15}/></button></span><span className="console-switch" role="group" aria-label="Live transition"><button type="button" className={`icon-toggle${liveTransition === 'fade' ? ' active' : ''}`} onClick={() => setLiveTransition('fade')} aria-pressed={liveTransition === 'fade'} aria-label="Fade the new slide in when it goes live" title="Fade the new slide in when it goes live"><Blend size={15}/></button><button type="button" className={`icon-toggle${liveTransition === 'none' ? ' active' : ''}`} onClick={() => setLiveTransition('none')} aria-pressed={liveTransition === 'none'} aria-label="Change slides with no fade" title="Change slides with no fade"><Ban size={15}/></button></span><span className="console-field"><Gauge size={16} aria-hidden="true"/><select aria-label="Fade speed" title={`How long the fade takes - ${(Object.keys(FADE_SPEEDS) as TransitionSpeed[]).map((speed) => `${speed} ${FADE_SPEEDS[speed]}s`).join(', ')}`} disabled={liveTransition !== 'fade'} value={fadeSpeed} onChange={(event) => setFadeSpeed(event.target.value as TransitionSpeed)}>{(Object.keys(FADE_SPEEDS) as TransitionSpeed[]).map((speed) => <option key={speed} value={speed}>{speed[0].toUpperCase() + speed.slice(1)}</option>)}</select></span></div></div>
           {liveItem?.media && <MediaTransport media={liveItem.media} onPage={(delta) => void stepMediaPage(delta)} onZoom={(zoom) => void setMediaZoom(zoom)} />}
           <AudioRoutingPanel outputDeviceId={audioOutput} onOutputDevice={setAudioOutput} onNotice={setMessage} />

@@ -1,7 +1,7 @@
 import { MonitorUp, RotateCcw } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { presentationMediaFileIsMissing } from '../api/presentationMedia'
-import { setElementSink } from '../utils/audioRouting'
+import { audioOutputName, setElementSink } from '../utils/audioRouting'
 import { deckSlidePath, type MediaSlideSource } from '../utils/mediaSlide'
 import './PresentOnDisplay.css'
 
@@ -117,10 +117,15 @@ export async function presentOnSavedDisplay(payload: PresentationPayload) {
 /**
  * Projects a live web page - a map, a YouTube stream, a meeting - on the audience display. The desktop
  * build reuses the one persistent audience window, which keeps its own sign-in session between meetings.
+ * A stream is sound in the room like any other, so it carries the chosen speaker and the console's level.
  */
 export async function presentWebSource({ url, title, displayId }: { url: string; title: string; displayId?: string }) {
   const selectedDisplayId = displayId ?? window.localStorage.getItem(PRESENTATION_DISPLAY_KEY) ?? ''
-  if (window.lampstandDesktop?.presentation) return window.lampstandDesktop.presentation.openWeb({ url, title, displayId: selectedDisplayId })
+  const prefs = readPresentationPrefs()
+  if (window.lampstandDesktop?.presentation) {
+    const audioSinkName = await audioOutputName(prefs.audioOutput).catch(() => '')
+    return window.lampstandDesktop.presentation.openWeb({ url, title, displayId: selectedDisplayId, audioSinkId: prefs.audioOutput, audioSinkName, mediaLevel: prefs.mediaLevel })
+  }
   const opened = window.open(url, 'lampstand-presentation', 'popup,width=1600,height=900')
   if (!opened) return false
   browserPresentationWindow = opened
