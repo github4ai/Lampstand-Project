@@ -123,6 +123,8 @@ The School Assistant should answer only from the selected or indexed School mate
 
 ### Church
 
+The Church home page is grouped into three blocks. **Status** shows the next prayer meeting, any drafts still open, how many records are saved, reminders due, the groups on file, and how many records still need a valid group. **Tools** holds the four destinations below it. **Recent activity** lists the last few items saved or posted, with **View all** at the right end of the heading to open the full history.
+
 Prepare Prayer Points and Announcements, select an approved WhatsApp group, and save publishing history. WhatsApp-ready text is created for review; confirm the final message before posting it.
 
 ### Language Tools

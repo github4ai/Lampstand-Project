@@ -1,15 +1,33 @@
+/* The hub reads as three labelled groups: what is due, where to go, what happened. The title is a
+   flex row so an action can ride at the end of the rule line, and it is the only place a heading
+   appears — the panels below carry no header of their own. */
+.church-section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.church-section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.church-page > .church-section-title:first-of-type { margin-top: 0; }
+.church-section-title a { color: var(--primary); font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; text-decoration: none; }
+.church-section-title a:hover { text-decoration: underline; }
+
 .church-dashboard-summary {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 18px;
 }
 
 .church-dashboard-summary > div {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   border: 1px solid var(--border);
   border-radius: 11px;
   background: var(--panel);
@@ -18,13 +36,13 @@
 
 .church-dashboard-summary span {
   color: var(--text-muted);
-  font-size: .76rem;
+  font-size: 13px;
 }
 
 .church-dashboard-summary strong {
   overflow: hidden;
   color: var(--text);
-  font-size: .98rem;
+  font-size: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -32,45 +50,41 @@
 .church-dashboard-summary > div.attention { border-color: color-mix(in srgb,#e6b85c 50%,var(--border)); }
 .church-dashboard-summary > div.attention strong { color: #e6b85c; }
 
+/* theme-overrides.css pins every <small> in a workspace panel to 12px with !important, so the only way
+   to lift the page's own chips and meta lines is to answer !important with !important. */
+.church-page small { font-size: 13px !important; }
+
+/* Four tools, so the grid steps between two and four columns and never leaves a card alone on a row. */
+@media (min-width: 1650px) {
+  .church-section-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 .church-section-card small {
   display: inline-flex;
   margin-top: 10px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--primary);
-  font-size: .72rem;
   padding: 5px 8px;
 }
 .church-section-card small.attention { background: color-mix(in srgb,#e6b85c 14%,transparent); color:#e6b85c; }
 
 .church-recent-activity {
-  margin-top: 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--panel);
   padding: 18px;
 }
 
-.church-recent-activity > header,
-.church-recent-activity > header > div,
-.church-recent-list > a {
-  display: flex;
-  align-items: center;
-}
-
-.church-recent-activity > header { justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-.church-recent-activity > header > div { gap: 8px; }
-.church-recent-activity h2 { margin: 0; font-size: 1rem; }
-.church-recent-activity > header > a { color: var(--primary); font-size: .8rem; text-decoration: none; }
+.church-recent-list > a { display: flex; align-items: center; gap: 11px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 11px 12px; text-decoration: none; }
 .church-recent-list { display: grid; gap: 7px; }
-.church-recent-list > a { gap: 11px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: 11px 12px; text-decoration: none; }
 .church-recent-list > a:hover { border-color: var(--primary); }
 .church-recent-list > a > span { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border-radius: 9px; background: color-mix(in srgb,var(--primary) 13%,transparent); color: var(--primary); }
 .church-recent-list > a > span.announcement { background: color-mix(in srgb,#e6b85c 14%,transparent); color: #e6b85c; }
 .church-recent-list > a > div { min-width: 0; flex: 1; }
 .church-recent-list strong,.church-recent-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.church-recent-list strong { font-size: .86rem; }
-.church-recent-list small,.church-recent-list time,.church-recent-empty { color: var(--text-muted); font-size: .73rem; }
+.church-recent-list strong { font-size: 14px; }
+.church-recent-list small,.church-recent-list time,.church-recent-empty { color: var(--text-muted); font-size: 13px; }
 .church-recent-list small { margin-top: 4px; }
 .church-recent-list time { flex: 0 0 auto; }
 .church-recent-empty { margin: 0; padding: 16px 0; text-align: center; }

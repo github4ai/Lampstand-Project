@@ -40,6 +40,7 @@ export default function ChurchPage() {
 
   return <section className="church-page">
     <header className="church-header"><span><BrandMark size={27} monochrome /></span><div><h1>Church</h1><p>Local tools for church prayer, fellowship, care, and service.</p></div></header>
+    <h2 className="church-section-title">Status</h2>
     <section className="church-dashboard-summary">
       <div><span>Next prayer meeting</span><strong>{upcomingTuesday()}</strong></div>
       <div><span>Working drafts</span><strong>{Number(prayerInProgress) + Number(announcementInProgress)}</strong></div>
@@ -48,14 +49,15 @@ export default function ChurchPage() {
       <div><span>WhatsApp groups</span><strong>{savedGroups.length}</strong></div>
       <div className={unresolvedGroups ? 'attention' : ''}><span>Need valid group</span><strong>{unresolvedGroups}</strong></div>
     </section>
+    <h2 className="church-section-title">Tools</h2>
     <div className="church-section-grid">
       <Link to="/church/prayer-points" className="church-section-card"><span><HeartHandshake size={25} /></span><div><h2>Prayer Points</h2><p>Record, organize, follow, and pray for current prayer points.</p>{prayerInProgress && <small>Draft in progress</small>}</div></Link>
       <Link to="/church/announcements" className="church-section-card"><span><Megaphone size={25} /></span><div><h2>Announcements</h2><p>Prepare, approve, and share church announcements.</p>{announcementInProgress && <small>Draft in progress</small>}</div></Link>
       <Link to="/church/posting-history" className="church-section-card"><span><History size={25} /></span><div><h2>Posting History</h2><p>Find past prayer points, announcements, drafts, and posted messages.</p>{unresolvedGroups > 0 && <small className="attention">{unresolvedGroups} {unresolvedGroups === 1 ? 'record needs' : 'records need'} a group</small>}</div></Link>
       <Link to="/church/groups" className="church-section-card"><span><UsersRound size={25} /></span><div><h2>WhatsApp Groups</h2><p>Manage reusable group names for Church posts.</p><small>{savedGroups.length} saved {savedGroups.length === 1 ? 'group' : 'groups'}</small></div></Link>
     </div>
+    <h2 className="church-section-title">Recent activity{' '}<Link to="/church/posting-history">View all</Link></h2>
     <section className="church-recent-activity">
-      <header><div><History size={18} /><h2>Recent Church Activity</h2></div><Link to="/church/posting-history">View all</Link></header>
       {recentActivity.length === 0 ? <p className="church-recent-empty">Saved Prayer Points and Announcements will appear here.</p> : <div className="church-recent-list">{recentActivity.map((item) => <Link to="/church/posting-history" key={`${item.kind}-${String(item.id)}`}>
         <span className={item.kind === 'Prayer Points' ? 'prayer' : 'announcement'}>{item.kind === 'Prayer Points' ? <HeartHandshake size={17} /> : <Megaphone size={17} />}</span>
         <div><strong>{String(item.title)}</strong><small>{item.kind}{item.targetGroup ? ` · ${String(item.targetGroup)}` : ''}</small></div>
