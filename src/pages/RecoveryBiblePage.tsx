@@ -87,7 +87,7 @@ function RecoveryBiblePage() {
           )
         }
       }
-    }).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to load Bible books.'))
+    }).catch((reason: unknown) => { if (controller.signal.aborted) return; setError(reason instanceof Error ? reason.message : 'Unable to load Bible books.') })
     return () => controller.abort()
   }, [location.search])
 
@@ -107,7 +107,7 @@ function RecoveryBiblePage() {
       setSelectedStudyNote(null)
     }).catch((reason: unknown) => {
       if ((reason as Error).name !== 'AbortError') setError(reason instanceof Error ? reason.message : 'Unable to load this chapter.')
-    }).finally(() => setLoading(false))
+    }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
   }, [bookId, chapterNumber, books, location.search])
 

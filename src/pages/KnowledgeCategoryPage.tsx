@@ -31,6 +31,8 @@ import {
   getKnowledgeCategory,
 } from '../services/knowledge'
 
+import { isAborted } from '../utils/abortError'
+
 import type {
   KnowledgeCategory,
   KnowledgeDocument,
@@ -40,13 +42,6 @@ import type {
 function getErrorMessage(
   error: unknown,
 ): string {
-  if (
-    error instanceof DOMException &&
-    error.name === 'AbortError'
-  ) {
-    return ''
-  }
-
   if (error instanceof Error) {
     return error.message
   }
@@ -313,30 +308,41 @@ function KnowledgeCategoryPage() {
 
         setError('')
 
+        const signal = controller?.signal
+
         try {
           const result =
             await getKnowledgeCategory(
               decodedCategoryName,
-              controller?.signal,
+              signal,
             )
+
+          if (signal?.aborted) {
+            return
+          }
 
           setCategory(result)
         } catch (
           requestError
         ) {
-          const message =
+          // A cancelled request is not a failed one; clearing the flags would
+          // show the error or empty state while the replacement load is running.
+          if (isAborted(signal, requestError)) {
+            return
+          }
+
+          setError(
             getErrorMessage(
               requestError,
-            )
-
-          if (message) {
-            setError(message)
-          }
+            ),
+          )
         } finally {
-          if (isRefresh) {
-            setRefreshing(false)
-          } else {
-            setLoading(false)
+          if (!signal?.aborted) {
+            if (isRefresh) {
+              setRefreshing(false)
+            } else {
+              setLoading(false)
+            }
           }
         }
       },

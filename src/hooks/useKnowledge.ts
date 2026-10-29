@@ -8,6 +8,8 @@ import {
   getKnowledgeLibrary,
 } from '../services/knowledge'
 
+import { isAborted } from '../utils/abortError'
+
 import type {
   KnowledgeLibrary,
 } from '../services/knowledge'
@@ -23,13 +25,6 @@ interface UseKnowledgeResult {
 function getErrorMessage(
   error: unknown,
 ): string {
-  if (
-    error instanceof DOMException &&
-    error.name === 'AbortError'
-  ) {
-    return ''
-  }
-
   if (error instanceof Error) {
     return error.message
   }
@@ -79,11 +74,17 @@ export function useKnowledge():
 
         setError('')
 
+        const signal = controller?.signal
+
         try {
           const library =
             await getKnowledgeLibrary(
-              controller?.signal,
+              signal,
             )
+
+          if (signal?.aborted) {
+            return false
+          }
 
           setData(library)
 
@@ -91,21 +92,26 @@ export function useKnowledge():
         } catch (
           requestError
         ) {
-          const message =
+          // A cancelled load is not a failed one. Clearing the flags here would
+          // paint "unavailable" while the replacement request is still in flight.
+          if (isAborted(signal, requestError)) {
+            return false
+          }
+
+          setError(
             getErrorMessage(
               requestError,
-            )
-
-          if (message) {
-            setError(message)
-          }
+            ),
+          )
 
           return false
         } finally {
-          if (isRefresh) {
-            setRefreshing(false)
-          } else {
-            setLoading(false)
+          if (!signal?.aborted) {
+            if (isRefresh) {
+              setRefreshing(false)
+            } else {
+              setLoading(false)
+            }
           }
         }
       },

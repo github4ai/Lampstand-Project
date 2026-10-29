@@ -42,7 +42,7 @@ function LifeStudyPage() {
 
   useEffect(() => {
     const controller = new AbortController()
-    getLifeStudyBooks(controller.signal).then(({ books }) => setBooks(books)).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to load Life-Study books.'))
+    getLifeStudyBooks(controller.signal).then(({ books }) => setBooks(books)).catch((reason: unknown) => { if (controller.signal.aborted) return; setError(reason instanceof Error ? reason.message : 'Unable to load Life-Study books.') })
     return () => controller.abort()
   }, [])
 
@@ -62,7 +62,7 @@ function LifeStudyPage() {
               : messages[0].number,
         )
       }
-    }).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to load messages.'))
+    }).catch((reason: unknown) => { if (controller.signal.aborted) return; setError(reason instanceof Error ? reason.message : 'Unable to load messages.') })
     return () => controller.abort()
   }, [bookSlug])
 
@@ -70,7 +70,7 @@ function LifeStudyPage() {
     if (!messages.length) return
     const controller = new AbortController()
     setLoading(true); setError(''); setSelectedIds([]); window.speechSynthesis?.cancel(); setReading(false); setPaused(false)
-    getLifeStudyMessage(bookSlug, messageNumber, controller.signal).then(setMessage).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : 'Unable to load this message.')).finally(() => setLoading(false))
+    getLifeStudyMessage(bookSlug, messageNumber, controller.signal).then(setMessage).catch((reason: unknown) => { if (controller.signal.aborted) return; setError(reason instanceof Error ? reason.message : 'Unable to load this message.') }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
   }, [bookSlug, messageNumber, messages.length])
 
