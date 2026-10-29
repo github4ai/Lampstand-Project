@@ -9,11 +9,44 @@ Lampstand Project is a local-first Windows workspace for family learning, minist
 3. Select your profile. The visible workspaces depend on permissions assigned by the owner.
 4. Check the status indicator at the bottom of the sidebar. **Backend connected** means local app services are ready.
 
+## Text size
+
+Labels, lists and buttons across the app have a readable minimum size, and entry fields are set a step larger, so nothing renders as micro-print. Three things keep their own scale: the **Recovery Bible** reader has a text-size control on its own page, the **HWMR** reader has a zoom control, and projector slides follow the audience text size you choose in Presentation Studio rather than anything on this computer. Where a name is too long for its row - a processor model in **This computer**, a conversation title - the full text appears when you rest the pointer on it.
+
+## Appearance
+
+Settings → **Appearance and reading** holds two choices. **Colour mode** is **Use device setting**, **Light** or **Dark**; the first follows Windows, so a laptop set to a light theme shows the app in white panels and dark text. Following the device is live: change the Windows theme and the app changes with it, without closing or reloading anything. Choosing **Light** or **Dark** pins the app instead, whatever Windows does. Whichever you choose, every part of the app changes together - the side panel, the page behind it, the tables, cards, buttons, status chips and entry fields - so a light page never keeps a dark strip down one side. **Accent colour** (Cyan, Blue, Teal, Purple, Gold, Green, Burgundy) recolours the highlights, links and the selected destination in the side panel straight away, and each accent has a separate value for light and dark so a Gold highlight stays readable on either background; the choice is remembered on this device.
+
+Readability is measured, not assumed: body text, labels and status chips keep at least the contrast a printed page needs, and the amber *Pending* and green *Indexed* marks on the Documents page are dark enough to read on their own tinted background. Reader paper - the Recovery Bible, Life-Study, HWMR and Ministry Books pages, and the projector preview - stays the same warm off-white in both colour modes on purpose, because it is meant to look like a page rather than a dashboard.
+
+## The side panel
+
+Every workspace is reached from the panel on the left. Destinations are grouped under **Meeting** (Presentation, Church, Ministry), **Study** (Knowledge, Documents, School, Language Tools), **Assistant** (Chat, Agents, Media Studio, History) and **App** (Settings, Help & Guides). A profile only sees the destinations its permissions allow, so the same group can look shorter for a student than for the owner.
+
+The assistant picker and the saved-conversation list belong to chat, so they appear only while you are on the **Chat** page; other pages give that space to the destinations. The panel collapses to an icon rail with the button beside the app name, and it remembers that choice.
+
+Pinned at the bottom is **This computer**:
+
+- **GPU** — the graphics card, how much of its memory is in use, and, on NVIDIA cards, how hard it is working.
+- **CPU** — the processor and its current load. The first reading after the app opens says *measuring*; the figure needs two samples to compare.
+- **RAM** — memory in use across the whole computer.
+- **Lampstand** — how much memory the app itself is holding.
+
+The figures refresh every few seconds while the app is in front, and each bar turns amber then red as it fills. Rest the pointer on a row for the full hardware name and the exact numbers. A card that is not NVIDIA reports its name from the display driver and shows no bars rather than guessing. **No reading from the gateway** means the local services are not answering — the same condition the status card below reports.
+
+The readout is a diagnostic, not a control: nothing in it changes how Lampstand behaves, and a busy machine does not stop a projection already on air.
+
 ## Main workspaces
 
 ### Chat and Agents
 
-Choose an assistant in the sidebar and start a conversation. Responses can use indexed documents and show their sources. Start a new conversation when changing subjects to avoid carrying unrelated context forward.
+Choose an assistant in the sidebar and start a conversation. Three are available: **General Assistant** for everyday questions and writing, **Ministry Assistant** for Bible study, HWMR, Life-Study, hymns and ministry materials, and **School Assistant** for school subjects. The Agents page lists what each one does, how much of its material is already indexed, and takes you straight into a chat with it.
+
+**Ministry Assistant** works from what is on this computer. A reference such as *John 3:16* is answered straight from the Recovery Bible. A topic is answered from the ministry libraries, and where the exact wording matters the reply names the book and passage it came from, listed as sources you can open under the answer. The buttons under the composer — **All Ministry**, **Recovery Bible**, **HWMR**, **Life-Study**, **Ministry Books**, **Hymnal** — choose which of those shelves it reads, so a Bible question and a hymn question need not return the same mixture. When a shelf holds nothing on the subject, it says so and which one you picked instead of quoting something nearby, and if the local language model is not running you still get the matching passages listed.
+
+**General Assistant** answers from the language model alone and never quotes your documents — that is its purpose, for writing, rewriting and planning. **Web** under the composer searches the internet instead of your library and needs a search key in Settings → AI Services; without it, Chat tells you exactly that.
+
+Start a new conversation when changing subjects to avoid carrying unrelated context forward. **New conversation** in the side panel opens Chat with a fresh session for the assistant you have picked. If the conversation on screen is still untouched — nothing sent in it yet — it keeps that one and says so instead of stacking identical empty sessions. The button waits while an answer is still being written, so stop that answer first. If it tells you no assistant is connected, the AI service has not answered, or your profile cannot open Chat; the status card at the bottom of the panel re-checks the connection.
 
 ### Knowledge and Documents
 
@@ -119,7 +152,13 @@ Use **Read Lessons** to select a subject, material, and exact lesson or chapter.
 - results and answer review;
 - highlights and annotations on lesson content.
 
+**Quiz, Flashcards and the Revision sheet write their questions from the lessons you tick.** Pressing Start asks the local model to compose about ten questions from the indexed text of exactly those lessons, so Chapter 19 and Chapter 3 give different questions and each answer is explained in the lesson's own words. Allow a short pause: the button reads **Writing questions from your selection…** while it works. The questions and their choices are shuffled, so **More Questions** gives a fresh round from the same lessons.
+
+If the local model is not running, or the lessons you chose have no readable indexed text, the banner at the top of the page says so and the activity starts with the subject practice set instead. A quiz score is saved to **Results** only when you press **Check answers**.
+
 The School Assistant should answer only from the selected or indexed School material. If the requested lesson is unclear, identify the subject and lesson number.
+
+**Explain a lesson** on the dashboard and **Create notes from selected lesson** under **Create notes** open the Chat page with the School Assistant already selected and your question waiting in the box, so you can read it and edit it before sending.
 
 ### Church
 
@@ -131,7 +170,7 @@ Prepare Prayer Points and Announcements, select an approved WhatsApp group, and 
 
 - Translate typed text between supported languages.
 - Hear pronunciation using a local Windows voice or the configured online fallback.
-- Transcribe audio with Local Whisper.
+- Transcribe audio with Voice Studio when it is running, otherwise with Local Whisper.
 - Translate documents while preserving supported layout and folder structure.
 
 #### Translation model fallbacks
@@ -141,6 +180,17 @@ In **Hybrid** provider mode, Language Tools first tries the configured Ollama tr
 If local translation does not succeed, Lampstand tries configured cloud providers in this order: **Gemini**, **OpenAI**, then **Anthropic**. Only providers with a saved API key are attempted. **Local** mode never sends translation text to a cloud provider; **Cloud** mode skips Ollama.
 
 The result identifies the provider and model used. If every available provider fails, check **Settings → AI Services**, confirm Ollama is running or add a permitted cloud-provider key, and try again.
+
+#### Voice Studio
+
+[Voice Studio](https://github.com/debpalash/VoiceStudio) is a separate, optional program you install yourself. When it is running on the same computer, Lampstand uses it for two jobs:
+
+- **Audio transcription** in Language Tools. Recorded or uploaded audio is transcribed locally by Voice Studio, and the result line reads **Processed by voice studio**. When Voice Studio is not running, the same recording goes to Local Whisper instead, so nothing changes for you apart from that line.
+- **Speech audio** in Media Studio. The **Speech** provider turns **Ready** while Voice Studio is running, and **Create speech** on a Language Tools result produces a spoken English file you can play, download and project.
+
+The four status names across the top of Language Tools tell you which of these are answering before you press a button. **Voice Studio** reads *Ready*, *Offline* (installed but not running) or *Not installed*. Voice Studio is not bundled with Lampstand and is not part of the installer.
+
+Voice Studio does not replace pronunciation. **Pronunciation** on the Language Tools page still uses the voices installed in Windows, with Microsoft online voices as the fallback you can switch off, because Voice Studio's speech engine has been verified only for English. The same limit applies to speech audio: choose English there.
 
 ### Media Studio
 
@@ -153,6 +203,12 @@ Create images, speech, music, songs, instrumental audio, and video through insta
 - Add an annotation to a selection; selecting an existing highlight reopens its note.
 - Scripture links open the Recovery Bible. Use the return control to go back to the same reading location.
 - Full-page mode collapses the main sidebar for distraction-free reading.
+
+## Help & Guides
+
+The guide buttons sit directly under the page title. **User Manual**, **Installation Guide** and **Documentation** open inside the app at a comfortable reading width, and **Download this guide** saves the guide you are reading as a file.
+
+Below the guide is **Quick tips** - the short how-to cards for things that are easy to miss. It starts folded so the guide has the whole page. The button at the right-hand end of that bar says **Show 23 tips**; press it to open the cards, grouped under Getting started, Reading & study, Building slides, On the projector and Sound & language, and **Hide tips** to fold them away again. Typing in **Search the tips** filters the cards by title or wording and opens the list for you.
 
 ## Profiles and access
 
@@ -172,6 +228,7 @@ Every install — the downloaded Setup file or an update the app starts for you 
 - **No search results:** verify that the document is indexed and that the correct category, subcollection, and subject were selected.
 - **Scanned PDF has no answers:** run OCR and re-index it.
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
+- **Voice Studio Offline in Language Tools:** the program is installed but not running. Start Voice Studio, or select **AI services** in Settings to start it with your other local models. Transcription still works through Local Whisper while it is closed.
 - **Newly added document is not searchable:** open **Documents** and run **Index knowledge**.
 - **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the screen chosen in the **Preview** group of the control rail; if the output was blanked, take any slide live to bring it back.
 - **The projector shows a verse you did not queue:** a verse reference on the audience screen was clicked. Use **Return to** *slide title* in the console, or take any slide live.
