@@ -486,7 +486,7 @@ async function startLocalServices(root) {
   startupLog(`Knowledge index: ${knowledgeIndexDir}`)
   try {
     const { createAiosServer } = await import(pathToFileURL(server).href)
-    gatewayServer = createAiosServer()
+    gatewayServer = createAiosServer({ readAppMemory: readApplicationMemory })
     await new Promise((resolve, reject) => {
       gatewayServer.once('error', (error) => error.code === 'EADDRINUSE' ? resolve() : reject(error))
       gatewayServer.listen(API_PORT, '127.0.0.1', resolve)
@@ -495,6 +495,11 @@ async function startLocalServices(root) {
   } catch (error) {
     startupLog(`Gateway failed: ${error instanceof Error ? error.stack || error.message : String(error)}`)
   }
+}
+
+/** The gateway shares the browser process, so one process's own footprint would hide the window. */
+function readApplicationMemory() {
+  return { bytes: app.getAppMetrics().reduce((total, metric) => total + (metric.memory?.workingSetSize ?? 0) * 1024, 0), scope: 'app' }
 }
 
 function createWindow(root) {

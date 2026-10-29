@@ -95,6 +95,31 @@ describe('ComfyUI image generation', () => {
       .rejects.toThrow('currently supports English')
   })
 
+  it('generates speech through Voice Studio and keeps its file path off the public job', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'lampstand-speech-'))
+    const speechConfig = { ...config, mediaJobsFile: join(directory, 'media-jobs.json'),
+      ttsUrl: 'http://tts', voiceStudioUrl: 'http://voicestudio',
+      voiceStudioSpeechModel: 'omnivoice', voiceStudioSpeechVoice: 'default' }
+    const fetcher = vi.fn(async (url) => String(url) === 'http://voicestudio/health'
+      ? new Response(JSON.stringify({ status: 'ok' }), { status: 200 })
+      : new Response(new Uint8Array([1, 2, 3, 4]), { status: 200, headers: { 'Content-Type': 'audio/mpeg' } }))
+    try {
+      const queued = await createMediaGeneration({ kind: 'audio', audioMode: 'speech', language: 'en', prompt: 'Welcome' }, speechConfig, fetcher)
+      let completed = await getMediaGeneration(queued.id, speechConfig, fetcher)
+      for (let attempt = 0; attempt < 100 && completed?.status !== 'completed'; attempt += 1) {
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 10))
+        completed = await getMediaGeneration(queued.id, speechConfig, fetcher)
+      }
+      expect(completed).toMatchObject({ status: 'completed', url: `/media/audio/${queued.id}` })
+      expect(completed.audioFile).toBeUndefined()
+      const speechCall = fetcher.mock.calls.find(([url]) => String(url).endsWith('/v1/audio/speech'))
+      expect(JSON.parse(speechCall[1].body)).toMatchObject({ model: 'omnivoice', input: 'Welcome', voice: 'default', response_format: 'mp3' })
+      expect(await readFile(join(directory, 'media-audio', `${queued.id}.mp3`))).toEqual(Buffer.from([1, 2, 3, 4]))
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+
   it('lists and cancels active queue jobs for recovery controls', async () => {
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ prompt_id: 'cancel-me' }), { status: 200 }))
     const queued = await createMediaGeneration({ kind: 'image', prompt: 'Queue recovery', project: 'Sunday', quality: 'high' }, config, fetcher)

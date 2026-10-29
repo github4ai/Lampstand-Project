@@ -39,7 +39,7 @@ function storeJob(job, config) {
 }
 
 function publicJob(job) {
-  const { providerId: _providerId, providerUrl: _providerUrl, ...result } = job
+  const { providerId: _providerId, providerUrl: _providerUrl, audioFile: _audioFile, ...result } = job
   return result
 }
 
@@ -214,23 +214,55 @@ async function callGradio(name, data, config, fetcher) {
   return parseGradioResult(await response.text())
 }
 
+async function voiceStudioReady(config, fetcher) {
+  try {
+    const response = await fetcher(`${config.voiceStudioUrl}/health`, { signal: AbortSignal.timeout(1800) })
+    return response.ok
+  } catch { return false }
+}
+
+function speechAudioDir(config) {
+  return join(dirname(config.mediaJobsFile), 'media-audio')
+}
+
+async function runVoiceStudioSpeech(job, config, fetcher) {
+  const response = await fetcher(`${config.voiceStudioUrl}/v1/audio/speech`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: config.voiceStudioSpeechModel, input: job.prompt,
+      voice: config.voiceStudioSpeechVoice, response_format: 'mp3' }),
+    signal: AbortSignal.timeout(300000),
+  })
+  if (!response.ok) throw new Error(`Voice Studio returned ${response.status}.`)
+  const audio = Buffer.from(await response.arrayBuffer())
+  if (!audio.length) throw new Error('Voice Studio returned no audio.')
+  mkdirSync(speechAudioDir(config), { recursive: true })
+  const file = join(speechAudioDir(config), `${job.id}.mp3`)
+  writeFileSync(file, audio)
+  Object.assign(job, { status: 'completed', progress: 100, audioFile: file, url: `/media/audio/${job.id}` })
+}
+
+async function runGradioSpeech(job, request, config, fetcher) {
+  await callGradio('handle_load_kokoro', [], config, fetcher)
+  const info = await requestJson(`${config.ttsUrl}/gradio_api/info`,
+    { signal: AbortSignal.timeout(15000) }, fetcher)
+  const parameters = info.named_endpoints?.['/generate_unified_tts']?.parameters
+  if (!Array.isArray(parameters)) throw new Error('Ultimate TTS Studio API information is unavailable.')
+  const data = parameters.map((parameter) => parameter.parameter_has_default ? parameter.parameter_default : null)
+  const set = (name, value) => { const index = parameters.findIndex((parameter) => parameter.parameter_name === name); if (index >= 0) data[index] = value }
+  set('text_input', request.prompt.trim())
+  set('tts_engine', 'Kokoro TTS')
+  set('audio_format', 'wav')
+  set('kokoro_voice', 'af_heart')
+  const [audio] = await callGradio('generate_unified_tts', data, config, fetcher)
+  if (!audio?.url) throw new Error('Ultimate TTS Studio did not return an audio file.')
+  Object.assign(job, { status: 'completed', providerUrl: audio.url, url: `/media/audio/${job.id}` })
+}
+
 async function runSpeechJob(job, request, config, fetcher) {
   try {
     job.status = 'processing'
-    await callGradio('handle_load_kokoro', [], config, fetcher)
-    const info = await requestJson(`${config.ttsUrl}/gradio_api/info`,
-      { signal: AbortSignal.timeout(15000) }, fetcher)
-    const parameters = info.named_endpoints?.['/generate_unified_tts']?.parameters
-    if (!Array.isArray(parameters)) throw new Error('Ultimate TTS Studio API information is unavailable.')
-    const data = parameters.map((parameter) => parameter.parameter_has_default ? parameter.parameter_default : null)
-    const set = (name, value) => { const index = parameters.findIndex((parameter) => parameter.parameter_name === name); if (index >= 0) data[index] = value }
-    set('text_input', request.prompt.trim())
-    set('tts_engine', 'Kokoro TTS')
-    set('audio_format', 'wav')
-    set('kokoro_voice', 'af_heart')
-    const [audio] = await callGradio('generate_unified_tts', data, config, fetcher)
-    if (!audio?.url) throw new Error('Ultimate TTS Studio did not return an audio file.')
-    Object.assign(job, { status: 'completed', providerUrl: audio.url, url: `/media/audio/${job.id}` })
+    if (await voiceStudioReady(config, fetcher)) await runVoiceStudioSpeech(job, config, fetcher)
+    else await runGradioSpeech(job, request, config, fetcher)
   } catch (error) {
     Object.assign(job, { status: 'failed', error: error instanceof Error ? error.message : 'Speech generation failed.' })
   }
@@ -284,6 +316,12 @@ export function cancelMediaGeneration(id, config) {
 export async function proxyAudioFile(id, config, response, allowedOrigin, fetcher = fetch) {
   loadJobs(config)
   const job = jobs.get(id)
+  if (job?.audioFile && existsSync(job.audioFile)) {
+    response.writeHead(200, { 'Content-Type': 'audio/mpeg',
+      'Content-Disposition': `inline; filename="${job.id}.mp3"`, 'Access-Control-Allow-Origin': allowedOrigin, Vary: 'Origin' })
+    await pipeNodeStream(createReadStream(job.audioFile), response)
+    return
+  }
   if (!job?.providerUrl) throw new Error('Generated audio is unavailable.')
   const upstream = await fetcher(job.providerUrl, { signal: AbortSignal.timeout(30000) })
   if (!upstream.ok || !upstream.body) throw new Error('Generated audio is unavailable from Ultimate TTS Studio.')

@@ -422,6 +422,11 @@ function outlineKind(value) {
 }
 
 export async function readKnowledgeOutline(categoryValue, documentValue, config) {
+  const { category, document, sections } = await buildKnowledgeOutline(categoryValue, documentValue, config)
+  return { category: category.name, document: document.stem, sections }
+}
+
+async function buildKnowledgeOutline(categoryValue, documentValue, config) {
   const { category, document, chunks } = await loadViewerDocument(categoryValue, documentValue, config)
   const sections = []
   const seen = new Set()
@@ -495,7 +500,26 @@ export async function readKnowledgeOutline(categoryValue, documentValue, config)
     const name = document.name.replace(/\.[^.]+$/, '').replaceAll('_', ' ')
     add(name, 1, outlineKind(name))
   }
-  return { category: category.name, document: document.stem, sections }
+  return { category, document, chunks, sections }
+}
+
+const lessonPageOf = (chunk) => {
+  const value = chunk?.page ?? chunk?.metadata?.page
+  return Number.isFinite(Number(value)) ? Number(value) : null
+}
+
+export async function readKnowledgeLessons(categoryValue, documentValue, sectionIds, config, { chunksPerLesson = 6, charactersPerLesson = 4000 } = {}) {
+  const { document, chunks, sections } = await buildKnowledgeOutline(categoryValue, documentValue, config)
+  const requested = [...new Set((Array.isArray(sectionIds) ? sectionIds : []).map((value) => String(value)))]
+  const lessons = requested.map((sectionId) => sections.find((section) => section.id === sectionId))
+    .filter(Boolean)
+    .sort((a, b) => a.chunk_id - b.chunk_id)
+    .map((section) => {
+      const from = section.chunk_id - 1
+      const text = chunks.slice(from, Math.min(from + chunksPerLesson, chunks.length)).map((item) => String(item?.text ?? '')).join('\n').trim()
+      return { id: section.id, label: section.label, chunk_id: section.chunk_id, page: lessonPageOf(chunks[from]), text: text.slice(0, charactersPerLesson) }
+    })
+  return { document: document.stem, lessons }
 }
 
 function sourceParts(relativePathValue) {

@@ -6,6 +6,7 @@ const config = {
   wanUrl: 'http://wangp', ttsUrl: 'http://speech', ptermPath: '',
   comfyPinokioApp: 'comfy.git', wanPinokioApp: 'wan.git', ttsPinokioApp: 'tts.git',
   ollamaExecutable: '', whisperPython: '',
+  voiceStudioUrl: 'http://voicestudio', voiceStudioExecutable: 'Z:\\missing-voicestudio.exe',
 }
 
 beforeEach(() => resetAiServicesState())
@@ -16,7 +17,8 @@ describe('AI service manager', () => {
     const status = await getAiServicesStatus(config, fetcher)
     expect(status.enabled).toBe(true)
     expect(status.allReady).toBe(true)
-    expect(status.providers.map((provider) => provider.id)).toEqual(['ollama', 'whisper', 'comfy', 'wangp', 'speech'])
+    expect(status.providers.map((provider) => provider.id)).toEqual(['ollama', 'whisper', 'comfy', 'wangp', 'speech', 'voicestudio'])
+    expect(fetcher).toHaveBeenCalledWith('http://voicestudio/health', expect.anything())
   })
 
   it('unloads large models while leaving providers available in standby', async () => {
@@ -32,7 +34,7 @@ describe('AI service manager', () => {
     const fetcher = vi.fn(async () => ({ ok: false }))
     const status = await getAiServicesStatus({ ...config, whisperPython: 'Z:\\missing-whisper-python.exe' }, fetcher)
     const configured = Object.fromEntries(status.providers.map((provider) => [provider.id, provider.configured]))
-    expect(configured).toEqual({ ollama: false, whisper: false, comfy: true, wangp: true, speech: true })
+    expect(configured).toEqual({ ollama: false, whisper: false, comfy: true, wangp: true, speech: true, voicestudio: false })
   })
 
   it('returns actionable errors when unavailable services cannot be started', async () => {

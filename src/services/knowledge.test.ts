@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { formatCount, formatFileSize, formatKnowledgeDate, getKnowledgeDocument } from './knowledge'
+import { formatCount, formatFileSize, formatKnowledgeDate, generateSchoolLessonQuestions, getKnowledgeDocument } from './knowledge'
 
 describe('formatFileSize', () => {
   it('handles empty and invalid sizes', () => {
@@ -91,5 +91,56 @@ describe('getKnowledgeDocument', () => {
       message: 'Document was not found.',
       status: 404,
     })
+  })
+})
+
+describe('generateSchoolLessonQuestions', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('posts the selected lessons and keeps only well-formed questions', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({
+        questions: [
+          { question: 'What does a seed need?', choices: ['Water', 'Darkness', 'Ice', 'Salt'], answer: 0, explanation: 'The lesson names water.' },
+          { question: 'A question with broken choices', choices: 'not an array', answer: 0, explanation: '' },
+        ],
+        reason: '',
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await generateSchoolLessonQuestions({ document: 'OBEEnglish_LevelC', sections: ['2-1'], count: 8 })
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:9656/school/questions',
+      expect.objectContaining({ method: 'POST' }),
+    )
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
+      document: 'OBEEnglish_LevelC', sections: ['2-1'], count: 8,
+    })
+    expect(result.questions).toHaveLength(1)
+    expect(result.reason).toBe('')
+  })
+
+  it('carries the fallback reason when the local model is off', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ questions: [], reason: 'model-unavailable' }), { status: 200 }),
+    ))
+
+    await expect(
+      generateSchoolLessonQuestions({ document: 'reader', sections: ['2-1'] }),
+    ).resolves.toMatchObject({ questions: [], reason: 'model-unavailable' })
+  })
+
+  it('raises an API error when the gateway cannot answer', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ detail: 'No text provider succeeded.' }), { status: 503, headers: { 'Content-Type': 'application/json' } }),
+    ))
+
+    await expect(
+      generateSchoolLessonQuestions({ document: 'reader', sections: ['2-1'] }),
+    ).rejects.toMatchObject({ name: 'KnowledgeApiError', message: 'No text provider succeeded.', status: 503 })
   })
 })

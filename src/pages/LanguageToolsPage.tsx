@@ -94,6 +94,13 @@ const voiceTestPhrases: Record<SupportedLanguage, string> = {
   kok: 'नमस्कार. उच्चाराचो आवाज तयार आसा.',
 }
 
+const providerChips: Array<{ id: keyof LanguageProviderStatus['providers']; label: string; optional?: boolean }> = [
+  { id: 'ollama', label: 'Ollama Translation' },
+  { id: 'voiceStudio', label: 'Voice Studio' },
+  { id: 'whisper', label: 'Local Whisper' },
+  { id: 'openai', label: 'OpenAI', optional: true },
+]
+
 function matchingSpeechVoices(voices: SpeechSynthesisVoice[], language: SupportedLanguage) {
   const locale = speechLocales[language].toLowerCase()
   const exact = voices.filter((voice) => voice.lang.toLowerCase() === locale)
@@ -755,11 +762,11 @@ function LanguageToolsPage() {
     icon={<Languages size={25} />} statusBar={<span>Translation and transcription are processed by your configured AIOS providers.</span>}
     className="language-tools-page">
     <div className="language-provider-status" aria-label="Language provider status">
-      {(['ollama', 'whisper', 'openai'] as const).map((provider) => {
-        const status = providerStatus?.providers[provider]
-        return <span className={status?.available ? 'available' : 'unavailable'} key={provider}>
-          <i />{provider === 'ollama' ? 'Ollama Translation' : provider === 'whisper' ? 'Local Whisper' : 'OpenAI'}
-          <small>{provider === 'openai' && !status?.configured ? 'Optional cloud provider' : !providerStatus ? 'Status unavailable' : status?.available ? 'Ready' : status?.configured ? 'Offline' : 'Not configured'}</small>
+      {providerChips.map((chip) => {
+        const status = providerStatus?.providers[chip.id]
+        return <span className={status?.available ? 'available' : 'unavailable'} key={chip.id}>
+          <i />{chip.label}
+          <small>{chip.optional && !status?.configured ? 'Optional cloud provider' : !providerStatus ? 'Status unavailable' : status?.available ? 'Ready' : status?.configured ? 'Offline' : 'Not installed'}</small>
         </span>
       })}
     </div>

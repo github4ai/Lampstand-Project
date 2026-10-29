@@ -244,6 +244,37 @@ export async function updateKnowledgeSource(input: { relativePath: string; name:
   return response.json() as Promise<{ relativePath: string; status: 'saved' }>
 }
 
+export interface SchoolLessonQuestion {
+  question: string
+  choices: string[]
+  answer: number
+  explanation: string
+}
+
+export interface SchoolLessonQuestionResult {
+  questions: SchoolLessonQuestion[]
+  reason: string
+}
+
+export async function generateSchoolLessonQuestions(
+  input: { document: string; sections: string[]; count?: number; category?: string },
+  signal?: AbortSignal,
+): Promise<SchoolLessonQuestionResult> {
+  const response = await fetch(`${AIOS_API_BASE_URL}/school/questions`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input), signal,
+  })
+  if (!response.ok) throw new KnowledgeApiError(await parseErrorMessage(response), response.status)
+  const result = await response.json() as { questions?: unknown; reason?: unknown }
+  const questions = Array.isArray(result.questions)
+    ? result.questions.filter((item): item is SchoolLessonQuestion =>
+        !!item && typeof item === 'object'
+        && typeof (item as SchoolLessonQuestion).question === 'string'
+        && Array.isArray((item as SchoolLessonQuestion).choices)
+        && (item as SchoolLessonQuestion).choices.every((choice) => typeof choice === 'string'))
+    : []
+  return { questions, reason: typeof result.reason === 'string' ? result.reason : '' }
+}
+
 export interface KnowledgeHealth {
   checkedAt: string
   sources: number

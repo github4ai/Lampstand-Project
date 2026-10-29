@@ -23,6 +23,13 @@ function importPython(env, aiRoot) {
   return resolve(candidates.find((candidate) => existsSync(candidate)) || candidates[0])
 }
 
+// VoiceStudio is an optional, separately installed app; its per-user install is the common one.
+function voiceStudioExecutable(env) {
+  const candidates = [env.VOICESTUDIO_EXE?.trim(), join(env.LOCALAPPDATA || '', 'Programs', 'VoiceStudio', 'VoiceStudio.exe'),
+    join(env.PROGRAMFILES || '', 'VoiceStudio', 'VoiceStudio.exe')].filter(Boolean)
+  return resolve(candidates.find((candidate) => existsSync(candidate)) || candidates[0])
+}
+
 export function loadConfig(env = process.env) {
   const aiRoot = resolve(env.AIOS_AI_ROOT?.trim() || join(process.cwd(), '..'))
   const knowledgeDir = resolve(env.AIOS_KNOWLEDGE_DIR?.trim() || join(aiRoot, 'Knowledge'))
@@ -53,6 +60,11 @@ export function loadConfig(env = process.env) {
     aceStepEncoder: env.ACE_STEP_ENCODER?.trim() || 'qwen_0.6b_ace15.safetensors',
     aceStepVae: env.ACE_STEP_VAE?.trim() || 'ace_1.5_vae.safetensors',
     ttsUrl: cleanUrl(env.ULTIMATE_TTS_URL, 'http://127.0.0.1:7860'),
+    voiceStudioUrl: cleanUrl(env.VOICESTUDIO_URL, 'http://127.0.0.1:3900'),
+    voiceStudioExecutable: voiceStudioExecutable(env),
+    voiceStudioTranscriptionModel: env.VOICESTUDIO_TRANSCRIPTION_MODEL?.trim() || 'whisper-1',
+    voiceStudioSpeechModel: env.VOICESTUDIO_SPEECH_MODEL?.trim() || 'omnivoice',
+    voiceStudioSpeechVoice: env.VOICESTUDIO_SPEECH_VOICE?.trim() || 'default',
     ptermPath: env.AIOS_PTERM_PATH?.trim() || '',
     comfyPinokioApp: env.COMFYUI_PINOKIO_APP?.trim() || 'comfy.git',
     wanPinokioApp: env.WANGP_PINOKIO_APP?.trim() || 'wan.git',

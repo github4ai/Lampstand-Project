@@ -40,6 +40,7 @@ export interface LanguageProviderStatus {
   mode: string
   providers: {
     ollama: { configured: boolean; available: boolean }
+    voiceStudio: { configured: boolean; available: boolean }
     whisper: { configured: boolean; available: boolean }
     openai: { configured: boolean; available: boolean }
   }

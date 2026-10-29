@@ -288,6 +288,13 @@ async function transcribeAt(url, file, language, model, headers, provider, fetch
   return { text: result.text.trim(), language, durationSeconds: result.duration, provider: provider.toLowerCase() }
 }
 
+// Both speak OpenAI's transcription contract, so Voice Studio is tried first and the
+// bundled Whisper server remains the fallback when it is not running.
+const localTranscriptionTargets = (config) => [
+  { url: `${config.voiceStudioUrl}/v1/audio/transcriptions`, model: config.voiceStudioTranscriptionModel, provider: 'Voice Studio' },
+  { url: `${config.whisperUrl}/v1/audio/transcriptions`, model: config.whisperModel, provider: 'Local Whisper' },
+]
+
 export async function transcribeWithProviders(file, language, config, fetcher = fetch) {
   const errors = []
   const providers = config.providerMode === 'local' ? ['local']
@@ -296,8 +303,14 @@ export async function transcribeWithProviders(file, language, config, fetcher = 
   for (const provider of providers) {
     try {
       if (provider === 'local') {
-        return await transcribeAt(`${config.whisperUrl}/v1/audio/transcriptions`, file, language,
-          config.whisperModel, {}, 'Local Whisper', fetcher)
+        for (const target of localTranscriptionTargets(config)) {
+          try {
+            return await transcribeAt(target.url, file, language, target.model, {}, target.provider, fetcher)
+          } catch (error) {
+            errors.push(error instanceof Error ? error.message : String(error))
+          }
+        }
+        continue
       }
       if (!config.openaiApiKey) throw new Error('OPENAI_API_KEY is not configured.')
       return await transcribeAt(`${config.openaiUrl}/audio/transcriptions`, file, language,

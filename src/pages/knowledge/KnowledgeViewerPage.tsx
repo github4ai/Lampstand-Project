@@ -364,7 +364,7 @@ function KnowledgeViewerPage() {
       question: `Using this passage from ${data.chunk.source} (chunk ${data.chunk.chunk}${data.chunk.page !== null ? `, page ${data.chunk.page}` : ''}), help me understand:\n\n${data.chunk.text}`,
       agentId: data.category.toLocaleLowerCase() === 'ministry' ? 'ministry' : 'general',
     }))
-    navigate('/')
+    navigate('/chat')
   }
 
   function renderChunkText(text: string) {

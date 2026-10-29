@@ -1,10 +1,12 @@
 import { createServer } from 'node:http'
+import { existsSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { getAgent, listAgents } from './agents.mjs'
 import { loadConfig } from './config.mjs'
 import { generateTextWithProviders, transcribeWithProviders, translateWithProviders } from './providers.mjs'
 import { cancelMediaGeneration, createMediaGeneration, getMediaGeneration, listMediaGenerations, listWanVideos, proxyAudioFile, proxyComfyFile, proxyWanFile } from './media.mjs'
 import { getAiServicesStatus, repairAiServices, startAiServices, unloadAiModels } from './services.mjs'
+import { createResourceSampler } from './resources.mjs'
 import { getKnowledgeIndexStatus, inspectKnowledgeHealth, listKnowledgeSources, listKnowledgeSubcollections, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, startKnowledgeIndex, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
 import { pipeWebStream } from './streaming.mjs'
 import { importConfiguredHymnal, readHymnalLibrary } from './hymnal-library.mjs'
@@ -19,7 +21,7 @@ import { listMinistryBookChapters, readMinistryBookChapter, readMinistryBooksLib
 import { importMinistryExports, readMinistryLibraryStatus } from './ministry-import.mjs'
 import { createOnlinePronunciation, supportsOnlinePronunciation } from './pronunciation.mjs'
 import { translateDocument } from './document-translation.mjs'
-import { answerSchoolQuestion, searchLocalKnowledge } from './knowledge-search.mjs'
+import { answerMinistryQuestion, answerSchoolQuestion, generateSchoolLessonQuestions, searchLocalKnowledge } from './knowledge-search.mjs'
 import { loadProviderPreferences, publicProviderPreferences, saveProviderPreferences } from './provider-preferences.mjs'
 import { searchWeb, webSearchPrompt } from './web-search.mjs'
 
@@ -97,23 +99,6 @@ function sendNdjson(response, events, origin = '') {
   response.end()
 }
 
-async function proxyLegacyJson(path, input, response, origin = '') {
-  const upstream = await fetch(`${config.legacyApiUrl}${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/x-ndjson' },
-    body: JSON.stringify(input),
-    signal: AbortSignal.timeout(300000),
-  })
-  const allowedOrigin = config.allowedOrigins.includes(origin) ? origin : config.allowedOrigins[0]
-  response.writeHead(upstream.status, {
-    'Content-Type': upstream.headers.get('content-type') || 'application/x-ndjson; charset=utf-8',
-    'Access-Control-Allow-Origin': allowedOrigin,
-    Vary: 'Origin',
-  })
-  if (!upstream.body) return response.end()
-  await pipeWebStream(upstream.body, response)
-}
-
 async function readJson(request, limit = 1024 * 1024) {
   const chunks = []
   let size = 0
@@ -185,7 +170,8 @@ export async function proxyLegacy(request, response, origin, fetcher = fetch) {
   await pipeWebStream(upstream.body, response)
 }
 
-export function createAiosServer() {
+export function createAiosServer({ readAppMemory } = {}) {
+  const resourceSampler = createResourceSampler(readAppMemory ? { readAppMemory } : {})
   return createServer(async (request, response) => {
     const origin = request.headers.origin || ''
     if (request.method === 'OPTIONS') return send(response, 204, {}, origin)
@@ -201,6 +187,10 @@ export function createAiosServer() {
             anthropic: { configured: Boolean(config.anthropicApiKey) },
           },
         }, origin)
+      }
+
+      if (request.method === 'GET' && request.url === '/system/resources') {
+        return send(response, 200, await resourceSampler.snapshot(), origin)
       }
 
       if (request.method === 'GET' && request.url === '/agents') {
@@ -265,7 +255,28 @@ export function createAiosServer() {
             { type: 'done', grounded: true, completed: true },
           ], origin)
         }
-        return await proxyLegacyJson('/ask/stream', input, response, origin)
+        if (agentId === 'ministry') {
+          const question = String(input.question || '').trim()
+          if (!question) return send(response, 400, { detail: 'A question is required.' }, origin)
+          const ministry = await answerMinistryQuestion(question, config, input?.ministry_source)
+          if (!ministry.grounded) return sendNdjson(response, [
+            { type: 'metadata', agent_id: 'ministry', category: 'Ministry', model: ministry.model, grounded: false, source_count: 0, sources: [] },
+            { type: 'chunk', content: ministry.text },
+            { type: 'done', grounded: false, completed: true },
+          ], origin)
+          let result
+          try {
+            result = await generateTextWithProviders(ministry.prompt, config)
+          } catch {
+            const excerpts = ministry.sources.slice(0, 3).map((source, index) => `[${index + 1}] ${source.citation}`).join('\n')
+            result = { model: 'Local Ministry Library', text: `I found relevant material in the indexed Ministry library, but the local language model is not running. Open these sources for the exact wording:\n\n${excerpts}` }
+          }
+          return sendNdjson(response, [
+            { type: 'metadata', agent_id: 'ministry', category: 'Ministry', model: result.model, grounded: true, source_count: ministry.sources.length, sources: ministry.sources },
+            { type: 'chunk', content: result.text },
+            { type: 'done', grounded: true, completed: true },
+          ], origin)
+        }
       }
 
       if (request.method === 'GET' && request.url.startsWith('/knowledge/search?')) {
@@ -278,14 +289,16 @@ export function createAiosServer() {
 
 
       if (request.method === 'GET' && request.url === '/language/providers') {
-        const [ollama, whisper] = await Promise.all([
+        const [ollama, whisper, voiceStudio] = await Promise.all([
           providerAvailable(`${config.ollamaUrl}/api/tags`),
           providerAvailable(`${config.whisperUrl}/health`),
+          providerAvailable(`${config.voiceStudioUrl}/health`),
         ])
         return send(response, 200, {
           mode: config.providerMode,
           providers: {
             ollama: { configured: true, available: ollama },
+            voiceStudio: { configured: existsSync(config.voiceStudioExecutable), available: voiceStudio },
             whisper: { configured: true, available: whisper },
             gemini: { configured: Boolean(config.geminiApiKey), available: Boolean(config.geminiApiKey) },
             openai: { configured: Boolean(config.openaiApiKey), available: Boolean(config.openaiApiKey) },
@@ -303,16 +316,17 @@ export function createAiosServer() {
       }
 
       if (request.method === 'GET' && request.url === '/media/providers') {
-        const [comfy, aceStep, speech, wan] = await Promise.all([
+        const [comfy, aceStep, gradioSpeech, voiceStudio, wan] = await Promise.all([
           providerAvailable(`${config.comfyUrl}/system_stats`),
           aceStepAvailable(),
           providerAvailable(`${config.ttsUrl}/gradio_api/info`),
+          providerAvailable(`${config.voiceStudioUrl}/health`),
           providerAvailable(config.wanUrl),
         ])
         return send(response, 200, { providers: {
           comfy: { configured: true, available: comfy },
           aceStep: { configured: true, available: aceStep },
-          speech: { configured: true, available: speech },
+          speech: { configured: true, available: gradioSpeech || voiceStudio },
           wan: { configured: true, available: wan },
         } }, origin)
       }
@@ -368,6 +382,10 @@ export function createAiosServer() {
 
       if (request.method === 'PATCH' && request.url === '/knowledge/source') {
         return send(response, 200, await updateKnowledgeSource(await readJson(request), config), origin)
+      }
+
+      if (request.method === 'POST' && request.url === '/school/questions') {
+        return send(response, 200, await generateSchoolLessonQuestions(await readJson(request), config), origin)
       }
 
       if (request.method === 'GET' && request.url === '/knowledge/health') {

@@ -4,6 +4,7 @@ import { translateWithProviders, transcribeWithProviders } from './providers.mjs
 const config = {
   providerMode: 'hybrid', ollamaUrl: 'http://ollama', ollamaModel: 'local-model',
   whisperUrl: 'http://whisper', whisperModel: 'whisper-1', openaiUrl: 'https://api.openai.com/v1',
+  voiceStudioUrl: 'http://voicestudio', voiceStudioTranscriptionModel: 'whisper-1',
   openaiApiKey: 'test-key', openaiTextModel: 'cloud-model', openaiTranscriptionModel: 'cloud-audio',
   geminiUrl: 'https://generativelanguage.googleapis.com/v1beta', geminiApiKey: '', geminiTextModel: 'gemini-test',
   anthropicUrl: 'https://api.anthropic.com/v1', anthropicApiKey: '', anthropicTextModel: 'claude-test',
@@ -27,12 +28,22 @@ describe('hybrid language providers', () => {
     expect(fetcher).toHaveBeenCalledTimes(3)
   })
 
-  it('uses the local Whisper-compatible transcription endpoint first', async () => {
+  it('uses the Voice Studio transcription endpoint before local Whisper', async () => {
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ text: 'Test transcript' }), { status: 200 }))
     const file = new File(['audio'], 'sample.wav', { type: 'audio/wav' })
     const result = await transcribeWithProviders(file, 'ta', config, fetcher)
-    expect(result).toMatchObject({ text: 'Test transcript', language: 'ta', provider: 'local whisper' })
-    expect(fetcher.mock.calls[0][0]).toBe('http://whisper/v1/audio/transcriptions')
+    expect(result).toMatchObject({ text: 'Test transcript', language: 'ta', provider: 'voice studio' })
+    expect(fetcher.mock.calls[0][0]).toBe('http://voicestudio/v1/audio/transcriptions')
+  })
+
+  it('falls back to local Whisper when Voice Studio is unavailable', async () => {
+    const fetcher = vi.fn()
+      .mockRejectedValueOnce(new TypeError('fetch failed'))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ text: 'Test transcript' }), { status: 200 }))
+    const file = new File(['audio'], 'sample.wav', { type: 'audio/wav' })
+    const result = await transcribeWithProviders(file, 'ta', config, fetcher)
+    expect(result).toMatchObject({ text: 'Test transcript', provider: 'local whisper' })
+    expect(fetcher).toHaveBeenCalledTimes(2)
   })
 
   it('uses Gemini as the first cloud fallback when it is configured', async () => {

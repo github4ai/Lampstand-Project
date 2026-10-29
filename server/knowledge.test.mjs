@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { inspectKnowledgeHealth, listKnowledgeSources, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
+import { inspectKnowledgeHealth, listKnowledgeSources, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLessons, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
 
 const temporaryFolders = []
 
@@ -151,6 +151,29 @@ describe('knowledge document formats', () => {
     const outline = await readKnowledgeOutline('Ministry', 'reader', config)
     expect(outline.sections.map((item) => [item.label, item.chunk_id])).toEqual([
       ['Lesson 1', 2], ['Chapter 2 — Growing Up', 3],
+    ])
+  })
+
+  it('returns the indexed text of the lessons selected for an activity', async () => {
+    const config = await testConfig()
+    await saveKnowledgeUpload(uploadForm('reader.pdf', 'reader'), config)
+    const chunksFolder = join(config.knowledgeIndexDir, 'Ministry', 'Chunks')
+    await mkdir(chunksFolder, { recursive: true })
+    await writeFile(join(chunksFolder, 'reader_chunks.json'), JSON.stringify([
+      { text: 'Cover page' },
+      { text: 'Lesson 1\nLearning Together\nPlants turn sunlight into food.', page: 3 },
+      { text: 'Chapter 2: Growing Up\nSeeds need water to sprout.', page: 5 },
+      { text: 'Chapter 3: Harvest\nGrain is stored in the barn.', page: 7 },
+    ]))
+    const outline = await readKnowledgeOutline('Ministry', 'reader', config)
+    const first = outline.sections.find((section) => section.chunk_id === 2)
+    const second = outline.sections.find((section) => section.chunk_id === 3)
+
+    const lessons = await readKnowledgeLessons('Ministry', 'reader', [second.id, first.id, first.id], config, { chunksPerLesson: 1 })
+    expect(lessons.document).toBe('reader')
+    expect(lessons.lessons).toMatchObject([
+      { id: first.id, chunk_id: 2, page: 3, text: 'Lesson 1\nLearning Together\nPlants turn sunlight into food.' },
+      { id: second.id, chunk_id: 3, page: 5, text: 'Chapter 2: Growing Up\nSeeds need water to sprout.' },
     ])
   })
 })

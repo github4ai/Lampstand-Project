@@ -16,6 +16,8 @@ const definitions = (config) => [
   { id: 'comfy', label: 'Standard image and audio', url: `${config.comfyUrl}/system_stats`, pinokioApp: config.comfyPinokioApp },
   { id: 'wangp', label: 'Maximum image, music, and video', url: config.wanUrl, pinokioApp: config.wanPinokioApp },
   { id: 'speech', label: 'Speech generation', url: `${config.ttsUrl}/gradio_api/info`, pinokioApp: config.ttsPinokioApp },
+  { id: 'voicestudio', label: 'Voice Studio (speech and transcription)', url: `${config.voiceStudioUrl}/health`,
+    executable: config.voiceStudioExecutable, args: [] },
 ]
 
 async function isAvailable(url, fetcher) {
