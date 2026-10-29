@@ -15,7 +15,7 @@
 }
 
 .knowledge-state-page h2 {
-  color: #e4eaf5;
+  color: var(--text);
   font-size: 18px;
 }
 
@@ -44,14 +44,14 @@
 }
 
 .knowledge-empty-state h2 {
-  color: #d6deed;
+  color: var(--text);
   font-size: 16px;
 }
 
 .knowledge-empty-state p,
 .knowledge-empty-documents {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size:12px;
   line-height: 1.5;
 }
 
@@ -59,7 +59,7 @@
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: #17243a;
+  background: var(--panel-light);
 }
 
 .knowledge-artifact-panel-heading {
@@ -71,7 +71,7 @@
 
 .knowledge-artifact-panel-heading h2 {
   margin: 0;
-  color: #e3e9f5;
+  color: var(--text);
   font-size: 13px;
 }
 
@@ -86,7 +86,7 @@
   gap: 9px;
   padding: 9px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
 }
 
 .knowledge-artifact-file-icon {
@@ -96,8 +96,8 @@
   flex: 0 0 31px;
   place-items: center;
   border-radius: 8px;
-  background: rgba(79, 124, 255, 0.1);
-  color: #9fb2f5;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  color: var(--primary);
 }
 
 .knowledge-artifact-file-copy {
@@ -112,23 +112,23 @@
 
 .knowledge-artifact-file-copy strong {
   overflow: hidden;
-  color: #dce4f2;
-  font-size: 10px;
+  color: var(--text);
+  font-size:12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .knowledge-artifact-file-copy span {
   margin-top: 3px;
-  color: #8997ad;
-  font-size: 8px;
+  color: var(--text-muted);
+  font-size:12px;
 }
 
 .knowledge-artifact-file-copy small {
   margin-top: 4px;
   overflow: hidden;
-  color: #68768c;
-  font-size: 7px;
+  color: var(--text-muted);
+  font-size:12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -148,13 +148,13 @@
 
 .knowledge-category-status dt {
   color: var(--text-muted);
-  font-size: 9px;
+  font-size:12px;
 }
 
 .knowledge-category-status dd {
   margin: 0;
-  color: #d7dfed;
-  font-size: 9px;
+  color: var(--text);
+  font-size:12px;
   text-align: right;
 }
 
@@ -165,8 +165,8 @@
 }
 
 .knowledge-document-details summary {
-  color: #93a8ef;
-  font-size: 10px;
+  color: var(--primary);
+  font-size:12px;
   font-weight: 700;
   cursor: pointer;
 }

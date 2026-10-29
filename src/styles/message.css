@@ -49,7 +49,7 @@
   display: block;
   margin-bottom: 8px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size:12px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -125,7 +125,7 @@
   background: rgba(79, 124, 255, 0.18);
 }
 
-.message-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.message-actions button{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-muted);font-size:10px;cursor:pointer}.message-actions button:hover{border-color:var(--border);background:rgba(255,255,255,.04);color:#dcecff}.message.user .message-actions{justify-content:flex-end}.chat-starters{display:flex;width:min(100%,980px);flex-wrap:wrap;align-items:center;gap:8px;margin:0 auto 20px;padding:0 48px}.chat-starters>strong{width:100%;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.chat-starters button{padding:9px 12px;border:1px solid rgba(56,189,248,.22);border-radius:10px;background:rgba(56,189,248,.06);color:#bae6fd;font-size:11px;cursor:pointer}.chat-starters button:hover{background:rgba(56,189,248,.12)}@media(max-width:700px){.chat-starters{padding:0}}
+.message-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.message-actions button{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer}.message-actions button:hover{border-color:var(--border);background:rgba(255,255,255,.04);color:#dcecff}.message.user .message-actions{justify-content:flex-end}.chat-starters{display:flex;width:min(100%,980px);flex-wrap:wrap;align-items:center;gap:8px;margin:0 auto 20px;padding:0 48px}.chat-starters>strong{width:100%;color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.chat-starters button{padding:9px 12px;border:1px solid rgba(56,189,248,.22);border-radius:10px;background:rgba(56,189,248,.06);color:#bae6fd;font-size:12px;cursor:pointer}.chat-starters button:hover{background:rgba(56,189,248,.12)}@media(max-width:700px){.chat-starters{padding:0}}
 
 .sources-panel li strong {
   color: #dce4f5;
@@ -147,11 +147,11 @@
 .sources-panel li span {
   margin-top: 3px;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size:12px;
 }
 
 .sources-panel li small {
   margin-top: 4px;
   color: #748197;
-  font-size: 10px;
+  font-size:12px;
 }

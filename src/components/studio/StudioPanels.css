@@ -6,7 +6,7 @@
   gap: 8px;
   margin: 12px 0 8px;
   color: #8ea6b9;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -79,7 +79,7 @@
   border-radius: 999px;
   background: #10202f;
   color: #a8c2d4;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -152,7 +152,7 @@
 
 .media-row .media-meta small {
   color: #8ea6b9;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .media-row .media-actions {
@@ -171,7 +171,7 @@
   border-radius: 8px;
   background: #123046;
   color: #bfe9fb;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -237,7 +237,7 @@
   align-items: center;
   gap: 6px;
   color: #55d6ff;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -273,7 +273,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -313,7 +313,7 @@
 
 .deck-waiting > strong {
   color: #55d6ff;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -353,7 +353,7 @@
   flex: 0 1 215px;
   min-width: 0;
   color: #9db3c6;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -437,7 +437,7 @@
   gap: 8px;
   margin: 6px 0 0;
   color: #8ea6b9;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
 }
 
 .monitor-keys {
@@ -453,7 +453,7 @@
   border-radius: 7px;
   background: #123046;
   color: #cfe0ec;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -515,7 +515,7 @@
 .web-stage-address {
   margin: 0;
   color: #7f9db2;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   word-break: break-all;
 }
@@ -582,7 +582,7 @@
   border-radius: 7px;
   background: #123046;
   color: #cfe0ec;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -658,7 +658,7 @@
 .swatch-picker small {
   margin-left: auto;
   color: #7f95ab;
-  font-size: 10px;
+  font-size:12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -666,7 +666,7 @@
 .font-picker p {
   margin: 4px 6px;
   color: #8fa8c2;
-  font-size: 11px;
+  font-size:12px;
   line-height: 1.4;
 }
 
@@ -722,7 +722,7 @@
   border-radius: 7px;
   background: #123046;
   color: #cfe0ec;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-align: right;
 }
@@ -735,7 +735,7 @@
 
 .size-unit {
   color: #8fa8c2;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 

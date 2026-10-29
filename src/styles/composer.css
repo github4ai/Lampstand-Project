@@ -23,7 +23,7 @@
 .error-message span {
   margin-top: 4px;
   color: #d8a3a1;
-  font-size: 10px;
+  font-size:12px;
 }
 
 .ministry-source-picker {
@@ -151,6 +151,6 @@
   width: min(100%, 980px);
   margin: 8px auto 0;
   color: #6f7b90;
-  font-size: 11px;
+  font-size:12px;
   text-align: center;
 }

@@ -20,7 +20,7 @@ body{overflow-x:hidden}
 
 /* Many older pages used fixed white text. These rules make their primary copy readable. */
 :root[data-theme="light"] :where(h1,h2,h3,h4,h5,h6),
-:root[data-theme="light"] :where(.settings-header h1,.settings-panel-title h2,.settings-row strong,.settings-master-control strong,.settings-provider-grid strong,.school-header h1,.school-card h2,.school-recent h2,.school-library h2,.hymnal-sheet-header h2,.hymnal-shape-guide strong){color:var(--text)}
+:root[data-theme="light"] :where(.settings-header h1,.settings-panel-title h2,.settings-row strong,.settings-master-control strong,.settings-provider-grid strong,.school-header h1,.hymnal-sheet-header h2,.hymnal-shape-guide strong){color:var(--text)}
 :root[data-theme="light"] :where(p,small,.settings-panel-title p,.settings-row small){text-shadow:none}
 :root[data-theme="light"] :where(.settings-panel,.settings-provider-grid>div,.settings-user-list article,.settings-device-identity,.settings-enrollment,.settings-member-invite){background:var(--panel)}
 :root[data-theme="light"] :where(.settings-header>span,.settings-check-all,.settings-backup-actions button,.school-notice){background:color-mix(in srgb,var(--primary) 8%,var(--panel));color:var(--primary);border-color:color-mix(in srgb,var(--primary) 30%,var(--border))}
@@ -147,7 +147,7 @@ body{overflow-x:hidden}
   .workspace-navigation-link.active,.school-profile nav button.active,
   .language-tools-tabs button.active,.media-kind-tabs button.active,
   .source-tabs button.active,.queue-item.active,.settings-accent-choice button.active
-){border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--primary)!important;box-shadow:inset 3px 0 var(--primary)!important}
+){border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--link, var(--primary))!important;box-shadow:inset 3px 0 var(--primary)!important}
 :where(
   .settings-header>span,.agents-heading>span,.agent-workspace-avatar,
   .school-header-icon,.presentation-icon,.workspace-layout-icon,
@@ -183,7 +183,7 @@ body{overflow-x:hidden}
   .panel-card,.presentation-builder,.presentation-console,.presentation-queue,
   .presentation-rack,.rack-module,.settings-panel,.settings-custom-roles,
   .settings-custom-role-list article,.school-profile,.school-stat,.school-action-card,
-  .school-card,.school-recent,.school-library,.church-card,.church-tool-card,
+  .church-card,.church-tool-card,
   .ministry-card,.ministry-continue,.hymnal-toolbar,.bible-toolbar
 ){background:var(--panel)!important;color:var(--text)!important;border-color:var(--border)!important;box-shadow:none!important}
 :root[data-theme="light"] :where(
@@ -245,7 +245,7 @@ body{overflow-x:hidden}
 :root[data-theme="light"] .sidebar :where(.brand p,.agent-description,.workspace-navigation-link,.command-palette-trigger,.category-section label){color:var(--text-muted)}
 :root[data-theme="light"] .sidebar :where(.command-palette-trigger,.status-card,.category-section select,.sidebar-collapse-button,.sidebar-profile-switcher select){border-color:var(--border);background:var(--panel);color:var(--text)}
 :root[data-theme="light"] .sidebar .workspace-navigation-link:hover{border-color:var(--primary-border);background:var(--primary-soft);color:var(--text)}
-:root[data-theme="light"] .sidebar .workspace-navigation-link.active{border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--primary)!important;box-shadow:inset 3px 0 var(--primary)!important}
+:root[data-theme="light"] .sidebar .workspace-navigation-link.active{border-color:var(--primary)!important;background:var(--primary-soft)!important;color:var(--link, var(--primary))!important;box-shadow:inset 3px 0 var(--primary)!important}
 
 /* Studio shell: one calm, structured visual language for every workspace and
    every theme. Reader paper and projector output intentionally remain exempt. */
@@ -261,7 +261,7 @@ body{overflow-x:hidden}
   min-height:38px;
   border-radius:var(--radius-sm);
 }
-.sidebar .workspace-navigation-link{margin-block:2px;padding:8px 11px;border:1px solid transparent}
+.sidebar .workspace-navigation-link{min-height:34px;margin-block:1px;padding:6px 11px;border:1px solid transparent}
 .sidebar .workspace-navigation-link.active{box-shadow:none!important}
 .workspace-panel{background:var(--bg);overflow-x:hidden}
 .workspace-panel>:where(
@@ -291,7 +291,8 @@ body{overflow-x:hidden}
   border:1px solid var(--primary-border)!important;
   background:var(--primary-soft)!important;color:var(--primary)!important;
 }
-:where(.settings-panel,.agent-workspace-card,.school-card,.school-recent,.school-library,
+/* School material keeps the paper treatment of the readers, so its cards are exempt here. */
+:where(.settings-panel,.agent-workspace-card,
   .school-profile,.school-stat,.church-card,.church-tool-card,.church-section-card,
   .ministry-card,.ministry-continue,.hymnal-toolbar,.bible-toolbar,.panel-card,
   .presentation-builder,.presentation-console,.presentation-queue,.presentation-rack,
@@ -331,7 +332,7 @@ body{overflow-x:hidden}
   .language-tools-page,.presentation-workspace,.knowledge-workspace
 ){background:linear-gradient(145deg,#f8f9fd 0%,#f3f5fa 58%,color-mix(in srgb,var(--primary) 4%,#f4f6fb) 100%)!important}
 :root[data-theme="light"] .sidebar .workspace-navigation-link:hover{background:#fff!important;box-shadow:0 5px 18px rgba(38,46,78,.06)}
-:root[data-theme="light"] .sidebar .workspace-navigation-link.active{background:var(--primary-soft)!important;color:var(--primary)!important;border-color:color-mix(in srgb,var(--primary) 18%,transparent)!important}
+:root[data-theme="light"] .sidebar .workspace-navigation-link.active{background:var(--primary-soft)!important;color:var(--link, var(--primary))!important;border-color:color-mix(in srgb,var(--primary) 18%,transparent)!important}
 :root[data-theme="light"] :where(.panel-card,.settings-panel,.agent-workspace-card,
   .school-card,.ministry-card,.church-card,.language-input-panel,.language-result-panel){box-shadow:0 8px 26px rgba(38,46,78,.055)!important}
 

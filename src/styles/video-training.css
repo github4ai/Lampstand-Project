@@ -12,7 +12,7 @@
 .video-training-controls nav { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .video-training-controls nav button { display: flex; align-items: center; gap: 5px; max-width: 260px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--panel); color: var(--text-muted); cursor: pointer; font: inherit; font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .video-training-controls nav button.active { border-color: var(--primary); background: rgba(54, 181, 224, .13); color: var(--text); }
-.video-training-count { padding: 0 6px; color: var(--text-muted); font-size: 11px; }
+.video-training-count { padding: 0 6px; color: var(--text-muted); font-size:12px; }
 .video-training-upload { display: flex; gap: 8px; margin-top: 10px; }
 .video-training-upload button { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border: 1px solid var(--primary); border-radius: 9px; background: rgba(54, 181, 224, .12); color: var(--text); cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
 .video-training-upload button:disabled { cursor: wait; opacity: .7; }

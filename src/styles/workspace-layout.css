@@ -24,7 +24,7 @@
   padding: 24px 30px;
   border-bottom: 1px solid var(--border);
   background:
-    rgba(17, 22, 31, 0.74);
+    color-mix(in srgb, var(--panel) 74%, transparent);
   backdrop-filter: blur(10px);
 }
 
@@ -42,11 +42,11 @@
   flex: 0 0 50px;
   place-items: center;
   border: 1px solid
-    rgba(79, 124, 255, 0.3);
+    var(--primary-border);
   border-radius: 14px;
   background:
-    rgba(79, 124, 255, 0.12);
-  color: #bae6fd;
+    var(--primary-soft);
+  color: var(--primary);
 }
 
 .workspace-layout-title {
@@ -56,7 +56,7 @@
 .workspace-layout-title h1 {
   margin: 0;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--text);
   font-size: 27px;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -91,9 +91,9 @@
   padding: 0 30px;
   border-top: 1px solid var(--border);
   background:
-    rgba(17, 22, 31, 0.88);
+    color-mix(in srgb, var(--panel) 88%, transparent);
   color: var(--text-muted);
-  font-size: 11px;
+  font-size:12px;
 }
 
 @media (max-width: 760px) {

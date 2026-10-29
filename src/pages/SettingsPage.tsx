@@ -9,9 +9,9 @@ import { BIBLE_VOICE_STORAGE_KEY, INDIA_VOICE_PROFILES } from '../utils/bibleVoi
 import { collectWorkspaceBackup, parseWorkspaceBackup, resetPersonalData, restoreWorkspaceBackup as applyWorkspaceBackup, workspaceBackupSize, type WorkspaceBackup } from '../utils/workspaceBackup'
 import { canManageUsers } from '../utils/accessControl'
 import { useAccessControl } from '../hooks/useAccessControl'
+import { applyTheme, type ThemePreference } from '../utils/themeMode'
 const STORAGE_KEY = 'aios-studio-settings-v1'
 
-type ThemePreference = 'system' | 'light' | 'dark'
 type AccentPreference = 'cyan' | 'blue' | 'teal' | 'purple' | 'gold' | 'green' | 'burgundy'
 interface Preferences { compactUi: boolean; reducedMotion: boolean; highContrast: boolean; theme: ThemePreference; accent: AccentPreference }
 
@@ -244,7 +244,7 @@ function SettingsPage() {
     document.documentElement.classList.toggle('compact-ui', preferences.compactUi)
     document.documentElement.classList.toggle('reduced-motion', preferences.reducedMotion)
     document.documentElement.classList.toggle('high-contrast', preferences.highContrast)
-    document.documentElement.dataset.theme = preferences.theme
+    applyTheme(preferences.theme)
     document.documentElement.dataset.accent = preferences.accent
   }, [preferences])
   useEffect(() => {
@@ -266,7 +266,7 @@ function SettingsPage() {
   }
 
   function selectTheme(theme: ThemePreference) {
-    document.documentElement.dataset.theme = theme
+    applyTheme(theme)
     setPreferences((current) => ({ ...current, theme }))
   }
 

@@ -17,7 +17,7 @@
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: #17243a;
+  background: var(--panel-light);
 
   transition:
     transform 160ms ease,
@@ -27,13 +27,13 @@
 
 .knowledge-stat-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(79, 124, 255, 0.35);
-  background: #1f2837;
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  background: var(--surface-muted);
 }
 
 .knowledge-stat-card span {
-  color: #8b99b4;
-  font-size: 11px;
+  color: var(--text-muted);
+  font-size:12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -41,7 +41,7 @@
 
 .knowledge-stat-card strong {
   overflow: hidden;
-  color: #ffffff;
+  color: var(--text);
   font-size: 28px;
   font-weight: 700;
   line-height: 1.1;

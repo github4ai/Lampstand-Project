@@ -2,13 +2,13 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 20px;
-  background: #17243a;
+  background: var(--panel-light);
   margin-bottom: 18px;
 }
 
 .viewer-context-current {
-  border: 2px solid #38bdf8;
-  background: rgba(79, 124, 255, 0.08);
+  border: 2px solid var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .viewer-context-header {
@@ -20,36 +20,36 @@
 
 .viewer-context-header h3 {
   margin: 0;
-  color: white;
+  color: var(--text);
   font-size: 18px;
 }
 
 .viewer-context-header p {
   margin-top: 4px;
-  color: #8ea0b7;
+  color: var(--text-muted);
   font-size: 12px;
 }
 
 .viewer-context-header button {
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
   border-radius: 8px;
-  background: rgba(56, 189, 248, 0.08);
-  color: #bae6fd;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  color: var(--primary);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
 }
 
 .viewer-context-header button:hover {
-  border-color: rgba(56, 189, 248, 0.7);
-  background: rgba(56, 189, 248, 0.15);
+  border-color: color-mix(in srgb, var(--primary) 70%, transparent);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .viewer-context-body {
   white-space: pre-wrap;
   line-height: 1.75;
-  color: #d4dde9;
+  color: var(--text);
   font-size: 14px;
 }

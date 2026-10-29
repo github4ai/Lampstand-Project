@@ -6,7 +6,7 @@
   padding: 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: #17243a;
+  background: var(--panel-light);
   color: inherit;
   text-decoration: none;
   box-shadow: var(--shadow);
@@ -19,12 +19,12 @@
 
 .knowledge-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(79, 124, 255, 0.42);
-  background: #202938;
+  border-color: color-mix(in srgb, var(--primary) 42%, transparent);
+  background: var(--panel-light);
 }
 
 .knowledge-card:focus-visible {
-  outline: 2px solid rgba(100, 140, 255, 0.88);
+  outline: 2px solid color-mix(in srgb, var(--primary) 88%, transparent);
   outline-offset: 2px;
 }
 
@@ -50,8 +50,8 @@
   flex: 0 0 38px;
   place-items: center;
   border-radius: 10px;
-  background: rgba(79, 124, 255, 0.12);
-  color: #a9bcff;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
 }
 
 .knowledge-card-title > div:last-child {
@@ -61,7 +61,7 @@
 .knowledge-card-title h2 {
   margin: 0;
   overflow: hidden;
-  color: #edf2fb;
+  color: var(--text);
   font-size: 16px;
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -71,7 +71,7 @@
 .knowledge-card-title p {
   margin: 4px 0 0;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size:12px;
   line-height: 1.4;
 }
 
@@ -83,26 +83,26 @@
   justify-content: center;
   padding: 0 9px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size:12px;
   font-weight: 700;
 }
 
 .knowledge-status-badge.ready {
-  border: 1px solid rgba(54, 194, 117, 0.28);
-  background: rgba(54, 194, 117, 0.09);
-  color: #8ce6b4;
+  border: 1px solid color-mix(in srgb, var(--success) 28%, transparent);
+  background: color-mix(in srgb, var(--success) 9%, transparent);
+  color: var(--success);
 }
 
 .knowledge-status-badge.empty {
-  border: 1px solid rgba(245, 200, 76, 0.25);
-  background: rgba(245, 200, 76, 0.08);
-  color: #f6d98a;
+  border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  color: var(--warning);
 }
 
 .knowledge-status-badge.partial {
-  border: 1px solid rgba(245, 200, 76, 0.25);
-  background: rgba(245, 200, 76, 0.08);
-  color: #f6d98a;
+  border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  color: var(--warning);
 }
 
 .knowledge-assistant-owner {
@@ -110,10 +110,10 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
   border-radius: 9px;
-  background: rgba(56, 189, 248, 0.055);
-  color: #7dd3fc;
+  background: color-mix(in srgb, var(--primary) 5.5%, transparent);
+  color: var(--primary);
 }
 
 .knowledge-assistant-owner > span,
@@ -123,14 +123,14 @@
 }
 
 .knowledge-assistant-owner strong {
-  color: #dceeff;
-  font-size: 10px;
+  color: var(--text);
+  font-size:12px;
 }
 
 .knowledge-assistant-owner small {
   margin-top: 2px;
   color: var(--text-muted);
-  font-size: 9px;
+  font-size:12px;
 }
 
 .knowledge-card-metrics {
@@ -148,13 +148,13 @@
   min-width: 0;
   padding: 10px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
 }
 
 .knowledge-card-metrics dt {
   margin-bottom: 5px;
   color: var(--text-muted);
-  font-size: 9px;
+  font-size:12px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -162,7 +162,7 @@
 .knowledge-card-metrics dd {
   margin: 0;
   overflow: hidden;
-  color: #e5ebf7;
+  color: var(--text);
   font-size: 14px;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -180,8 +180,8 @@
   min-width: 0;
   align-items: center;
   gap: 7px;
-  color: #aeb9cd;
-  font-size: 11px;
+  color: var(--text-muted);
+  font-size:12px;
 }
 
 .knowledge-document-preview span {
@@ -191,14 +191,14 @@
 }
 
 .knowledge-more-documents {
-  color: #8290a7;
-  font-size: 10px;
+  color: var(--text-muted);
+  font-size:12px;
 }
 
 .knowledge-card-open {
   margin-top: auto;
-  color: #bae6fd;
-  font-size: 11px;
+  color: var(--primary);
+  font-size:12px;
   font-weight: 700;
 }
 
@@ -218,7 +218,7 @@
   padding: 15px;
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: #17243a;
+  background: var(--panel-light);
 }
 
 .knowledge-document-row-main {
@@ -235,8 +235,8 @@
   flex: 0 0 36px;
   place-items: center;
   border-radius: 9px;
-  background: rgba(79, 124, 255, 0.11);
-  color: #bae6fd;
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+  color: var(--primary);
 }
 
 .knowledge-document-row-copy {
@@ -252,19 +252,19 @@
 .knowledge-document-row-copy strong,
 .knowledge-document-row-copy a {
   overflow: hidden;
-  color: #e3e9f5;
+  color: var(--text);
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .knowledge-document-open { text-decoration: none; }
-.knowledge-document-open:hover { color: #7dd3fc; text-decoration: underline; }
+.knowledge-document-open:hover { color: var(--primary); text-decoration: underline; }
 
 .knowledge-document-row-copy span {
   margin-top: 4px;
   color: var(--text-muted);
-  font-size: 9px;
+  font-size:12px;
 }
 
 .knowledge-document-row-metrics {
@@ -285,14 +285,14 @@
 .knowledge-document-row-metrics span {
   margin-bottom: 3px;
   color: var(--text-muted);
-  font-size: 8px;
+  font-size:12px;
   text-transform: uppercase;
 }
 
 .knowledge-document-row-metrics strong {
   overflow: hidden;
-  color: #dfe6f3;
-  font-size: 11px;
+  color: var(--text);
+  font-size:12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -304,20 +304,20 @@
   justify-content: center;
   padding: 0 8px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size:12px;
   font-weight: 700;
 }
 
 .knowledge-document-status.ready {
-  border: 1px solid rgba(54, 194, 117, 0.28);
-  background: rgba(54, 194, 117, 0.09);
-  color: #8ce6b4;
+  border: 1px solid color-mix(in srgb, var(--success) 28%, transparent);
+  background: color-mix(in srgb, var(--success) 9%, transparent);
+  color: var(--success);
 }
 
 .knowledge-document-status.incomplete {
-  border: 1px solid rgba(245, 200, 76, 0.25);
-  background: rgba(245, 200, 76, 0.08);
-  color: #f6d98a;
+  border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent);
+  background: color-mix(in srgb, var(--warning) 8%, transparent);
+  color: var(--warning);
 }
 
 @media (max-width: 880px) {
