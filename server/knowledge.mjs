@@ -120,8 +120,6 @@ export async function listKnowledgeSources(config) {
 
 export async function readKnowledgeLibrary(config) {
   const sources = await listKnowledgeSources(config)
-  const health = await inspectKnowledgeHealth(config)
-  const pending = new Set(health.pending.map((path) => path.toLowerCase()))
   const grouped = new Map()
 
   async function artifactDetails(source) {
@@ -167,11 +165,11 @@ export async function readKnowledgeLibrary(config) {
     }
   }
 
-  for (const source of sources) {
-    if (!grouped.has(source.category)) grouped.set(source.category, [])
+  // One artifact lookup per source, all in flight together: the walk has already
+  // returned and each lookup is a couple of stats plus one chunk file.
+  const documents = await Promise.all(sources.map(async (source) => {
     const artifacts = await artifactDetails(source)
-    const indexed = !pending.has(source.relativePath.toLowerCase()) && artifacts.chunks !== null
-    grouped.get(source.category).push({
+    return {
       id: source.relativePath,
       name: source.name,
       relative_path: source.relativePath,
@@ -182,13 +180,20 @@ export async function readKnowledgeLibrary(config) {
       chunk_file: artifacts.chunk_file,
       embedding_file: artifacts.embedding_file,
       faiss_files: artifacts.faiss_files,
-      indexed,
+      // A chunk file that cannot be read is what the health report calls
+      // "pending"; this listing does not need the source hashes to know it.
+      indexed: artifacts.chunks !== null,
       modified_at: source.modifiedAt,
-    })
+    }
+  }))
+
+  for (const document of documents) {
+    if (!grouped.has(document.category)) grouped.set(document.category, [])
+    grouped.get(document.category).push(document)
   }
 
   const metadataByCategory = new Map()
-  for (const name of grouped.keys()) {
+  await Promise.all([...grouped.keys()].map(async (name) => {
     const metadataRoot = resolve(config.knowledgeIndexDir, name, 'Metadata')
     try {
       const entries = await readdir(metadataRoot, { withFileTypes: true })
@@ -199,7 +204,7 @@ export async function readKnowledgeLibrary(config) {
       }))
       metadataByCategory.set(name, files)
     } catch { metadataByCategory.set(name, []) }
-  }
+  }))
 
   const categories = [...grouped.entries()].map(([name, documents]) => {
     const faissFiles = documents.flatMap((document) => document.faiss_files)
