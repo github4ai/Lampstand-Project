@@ -1,12 +1,12 @@
 const { app, BrowserWindow, dialog, ipcMain, screen, session, shell } = require('electron')
 const { autoUpdater } = require('electron-updater')
 const { createServer } = require('node:http')
-const { appendFileSync, createReadStream, existsSync, mkdirSync, statSync } = require('node:fs')
+const { appendFileSync, createReadStream, existsSync, mkdirSync, rmSync, statSync } = require('node:fs')
 const { cp, mkdir, readFile, rename, rm, writeFile } = require('node:fs/promises')
 const { createHash } = require('node:crypto')
 const { extname, join, normalize } = require('node:path')
 const { pathToFileURL } = require('node:url')
-const { spawn } = require('node:child_process')
+const { spawn, spawnSync } = require('node:child_process')
 
 const REQUESTED_WEB_PORT = process.env.LAMPSTAND_WEB_PORT
   ? Number(process.env.LAMPSTAND_WEB_PORT)
@@ -34,6 +34,8 @@ let updateState = { status: 'idle', currentVersion: app.getVersion(), availableV
 let libraryUpdateState = { status: 'idle', installedVersion: null, availableVersion: null, percent: 0, message: 'Ready to check library updates.', manifestUrl: '' }
 
 function libraryStateFile() { return join(app.getPath('userData'), 'data', 'library-update.json') }
+/** Which processes this launch started, so quitting stops those and only those. */
+function servicesStateFile() { return join(app.getPath('userData'), 'data', 'services-started.json') }
 function libraryOverrideRoot() { return join(app.getPath('userData'), 'data', 'library-overrides') }
 function localKnowledgeRoot() { return join(app.getPath('userData'), 'data', 'knowledge') }
 function localKnowledgeIndexRoot() { return join(app.getPath('userData'), 'data', 'knowledge-index') }
@@ -436,9 +438,44 @@ function startupLog(message) {
   appendFileSync(join(directory, 'desktop-startup.log'), `${new Date().toISOString()} ${message}\n`, 'utf8')
 }
 
+/**
+ * The bundled knowledge copy is the slow part of boot and only the Knowledge and Documents pages
+ * wait on it, so it runs behind the window instead of in front of it.
+ */
+function seedBundledLibraries(root, knowledgeDir, knowledgeIndexDir) {
+  const seed = async () => {
+    const startedAt = Date.now()
+    for (const [bundled, target] of [[join(root, 'data', 'knowledge'), knowledgeDir], [join(root, 'data', 'knowledge-index'), knowledgeIndexDir]]) {
+      if (existsSync(bundled)) await cp(bundled, target, { recursive: true, force: false, errorOnExist: false })
+    }
+    startupLog(`Bundled library copy finished in ${Date.now() - startedAt} ms`)
+  }
+  seed().catch((error) => startupLog(`Bundled library copy failed: ${error instanceof Error ? error.message : String(error)}`))
+}
+
+/**
+ * Quit stops only the processes this launch recorded as its own. A pid recorded here is killed only
+ * while the process holding it is still the same program, because Windows hands out pids again.
+ */
+function stopStartedServices() {
+  const stateFile = servicesStateFile()
+  if (!existsSync(stateFile)) return
+  const script = join(resourceRoot(), 'scripts', 'stop-services.ps1')
+  if (existsSync(script)) spawnSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-StateFile', stateFile], { windowsHide: true, timeout: 20000 })
+  else { try { rmSync(stateFile) } catch { /* a stale record is harmless */ } }
+}
+
 async function startLocalServices(root) {
+  // One place decides which Python owns the transcription server, and the gateway is told the same
+  // answer through the environment, so the app never points at two different environments.
+  const { resolveWhisperPython } = await import(pathToFileURL(join(root, 'server', 'config.mjs')).href)
+  const whisperPython = resolveWhisperPython(process.env, root)
+  if (whisperPython) process.env.WHISPER_PYTHON = whisperPython
+  const portOf = (url, fallback) => { try { return Number(new URL(url).port) || fallback } catch { return fallback } }
+  const whisperPort = portOf(process.env.WHISPER_URL || 'http://127.0.0.1:8000', 8000)
+  const ollamaPort = portOf(process.env.OLLAMA_URL || 'http://127.0.0.1:11434', 11434)
   const script = join(root, 'scripts', 'desktop-services.ps1')
-  if (existsSync(script)) serviceProcess = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-StudioRoot', root], { cwd: root, windowsHide: true, stdio: 'ignore' })
+  if (existsSync(script)) serviceProcess = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', script, '-StudioRoot', root, '-StateFile', servicesStateFile(), '-WhisperPython', whisperPython, '-WhisperPort', String(whisperPort), '-OllamaPort', String(ollamaPort)], { cwd: root, windowsHide: true, stdio: 'ignore' })
   const server = join(root, 'server', 'index.mjs')
   const userData = app.getPath('userData')
   const adjacentAiRoot = join(root, '..')
@@ -446,12 +483,7 @@ async function startLocalServices(root) {
   const developmentIndex = existsSync(join(adjacentAiRoot, 'Index')) ? join(adjacentAiRoot, 'Index') : 'I:\\AI\\Index'
   const knowledgeDir = existsSync(developmentKnowledge) ? developmentKnowledge : localKnowledgeRoot()
   const knowledgeIndexDir = existsSync(developmentIndex) ? developmentIndex : localKnowledgeIndexRoot()
-  if (app.isPackaged) {
-    const bundledKnowledge = join(root, 'data', 'knowledge')
-    if (existsSync(bundledKnowledge)) await cp(bundledKnowledge, knowledgeDir, { recursive: true, force: false, errorOnExist: false })
-    const bundledKnowledgeIndex = join(root, 'data', 'knowledge-index')
-    if (existsSync(bundledKnowledgeIndex)) await cp(bundledKnowledgeIndex, knowledgeIndexDir, { recursive: true, force: false, errorOnExist: false })
-  }
+  if (app.isPackaged) seedBundledLibraries(root, knowledgeDir, knowledgeIndexDir)
   const overrides = libraryOverrideRoot()
   // The Python runtime that owns the index builder sits beside the knowledge folder, not inside
   // the installed app, so the gateway has to be told where it is.
@@ -461,6 +493,7 @@ async function startLocalServices(root) {
     AIOS_API_PORT: String(API_PORT),
     AIOS_ALLOWED_ORIGINS: `http://localhost:${webPort},http://127.0.0.1:${webPort}`,
     AIOS_MEDIA_JOBS_FILE: join(userData, 'data', 'media-jobs.json'),
+    AIOS_SERVICES_STATE_FILE: servicesStateFile(),
     AIOS_PROVIDER_PREFERENCES_FILE: join(userData, 'data', 'provider-settings.json'),
     AIOS_HYMNAL_LIBRARY_FILE: preferOverride(join('data', 'hymnal-library.json'), join(root, 'data', 'hymnal-library.json')),
     AIOS_HWMR_LIBRARY_FILE: preferOverride(join('data', 'hwmr-library.json'), join(root, 'data', 'hwmr-library.json')),
@@ -529,8 +562,10 @@ app.whenReady().then(async () => {
     configureMediaPermissions()
     if (DEV_URL) webPort = Number(new URL(DEV_URL).port) || 80
     else await startWebServer(root)
-    await startLocalServices(resources)
     createWindow(root)
+    // The window is on screen before the gateway and the everyday services finish coming up; a slow
+    // model server never holds the operator out of the app.
+    await startLocalServices(resources).catch((error) => startupLog(`Local services failed: ${error instanceof Error ? error.stack || error.message : String(error)}`))
   } catch (error) {
     dialog.showErrorBox('Lampstand Project could not start', error instanceof Error ? error.message : String(error))
     app.quit()
@@ -541,5 +576,6 @@ app.on('window-all-closed', () => app.quit())
 app.on('before-quit', () => {
   if (gatewayServer) gatewayServer.close()
   if (serviceProcess && !serviceProcess.killed) serviceProcess.kill()
+  stopStartedServices()
   if (webServer) webServer.close()
 })

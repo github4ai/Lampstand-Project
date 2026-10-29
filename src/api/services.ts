@@ -4,7 +4,7 @@ export interface AiServiceStatus {
   enabled: boolean
   allReady: boolean
   automaticResourceManagement: boolean
-  providers: Array<{ id: string; label: string; available: boolean; configured?: boolean }>
+  providers: Array<{ id: string; label: string; available: boolean; configured?: boolean; startable?: boolean }>
   started?: string[]
   errors?: Array<{ id: string; message: string }>
   preferences?: ProviderPreferences
@@ -30,6 +30,13 @@ async function request(path: string, method = 'GET', signal?: AbortSignal): Prom
 
 export const getAiServicesStatus = (signal?: AbortSignal) => request('/services/status', 'GET', signal)
 export const startAiServices = () => request('/services/start', 'POST')
+export async function startAiService(id: string): Promise<AiServiceStatus> {
+  const response = await fetch(`${AIOS_API_BASE_URL}/services/start`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }),
+  })
+  if (!response.ok) throw new Error(await response.text() || 'Unable to start that AI service.')
+  return response.json() as Promise<AiServiceStatus>
+}
 export const repairAiServices = () => request('/services/repair', 'POST')
 export const unloadAiModels = () => request('/services/unload', 'POST')
 

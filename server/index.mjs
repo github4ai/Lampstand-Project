@@ -5,7 +5,7 @@ import { getAgent, listAgents } from './agents.mjs'
 import { loadConfig } from './config.mjs'
 import { generateTextWithProviders, transcribeWithProviders, translateWithProviders } from './providers.mjs'
 import { cancelMediaGeneration, createMediaGeneration, getMediaGeneration, listMediaGenerations, listWanVideos, proxyAudioFile, proxyComfyFile, proxyWanFile } from './media.mjs'
-import { getAiServicesStatus, repairAiServices, startAiServices, unloadAiModels } from './services.mjs'
+import { getAiServicesStatus, repairAiServices, startAiService, startAiServices, unloadAiModels } from './services.mjs'
 import { createResourceSampler } from './resources.mjs'
 import { getKnowledgeIndexStatus, inspectKnowledgeHealth, listKnowledgeSources, listKnowledgeSubcollections, readKnowledgeCategory, readKnowledgeContext, readKnowledgeDocument, readKnowledgeLibrary, readKnowledgeOutline, readKnowledgePreview, readKnowledgeViewer, saveKnowledgeUpload, startKnowledgeIndex, trashKnowledgeSource, updateKnowledgeSource } from './knowledge.mjs'
 import { pipeWebStream } from './streaming.mjs'
@@ -572,7 +572,9 @@ export function createAiosServer({ readAppMemory } = {}) {
       }
 
       if (request.method === 'POST' && request.url === '/services/start') {
-        return send(response, 202, await startAiServices(config), origin)
+        const body = await readJson(request).catch(() => ({}))
+        const id = typeof body?.id === 'string' ? body.id.trim() : ''
+        return send(response, 202, id ? await startAiService(config, id) : await startAiServices(config), origin)
       }
 
       if (request.method === 'POST' && request.url === '/services/repair') {

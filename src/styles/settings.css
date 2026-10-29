@@ -184,3 +184,7 @@
 .settings-page .settings-panel{padding:16px 18px}
 .settings-page .settings-row{padding:12px 0}
 .settings-page .settings-panel-title{padding-bottom:12px}
+
+.settings-page .settings-service-start{width:26px;min-width:26px;min-height:26px;border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.1);color:#bae6fd}
+.settings-page .settings-service-start:hover{border-color:rgba(56,189,248,.6)}
+.settings-page .settings-service-start:disabled{cursor:wait;opacity:.55}

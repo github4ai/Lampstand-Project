@@ -1,4 +1,10 @@
-param([Parameter(Mandatory = $true)][string]$StudioRoot)
+param(
+  [Parameter(Mandatory = $true)][string]$StudioRoot,
+  [string]$StateFile = '',
+  [string]$WhisperPython = '',
+  [int]$WhisperPort = 8000,
+  [int]$OllamaPort = 11434
+)
 $ErrorActionPreference = 'SilentlyContinue'
 
 function Test-Port([int]$Port) {
@@ -8,15 +14,29 @@ function Test-Port([int]$Port) {
   finally { $client.Dispose() }
 }
 
-function Start-Background([int]$Port, [string]$File, [string[]]$Arguments, [string]$WorkingDirectory) {
-  if ((Test-Port $Port) -or -not (Test-Path -LiteralPath $File)) { return }
-  Start-Process -FilePath $File -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -WindowStyle Hidden | Out-Null
+$script:started = @()
+
+function Start-Background([string]$Id, [int]$Port, [string]$File, [string[]]$Arguments, [string]$WorkingDirectory) {
+  # A port already answering belongs to somebody else, so it is never recorded and never stopped.
+  if (-not $File -or (Test-Port $Port) -or -not (Test-Path -LiteralPath $File)) { return }
+  $process = Start-Process -FilePath $File -ArgumentList $Arguments -WorkingDirectory $WorkingDirectory -WindowStyle Hidden -PassThru
+  if ($process) {
+    $script:started += [ordered]@{
+      id = $Id
+      pid = $process.Id
+      name = [IO.Path]::GetFileNameWithoutExtension($File)
+      port = $Port
+    }
+  }
 }
 
+# Which Python runs the transcription server is decided by the app, once, and handed in here.
 $ollama = Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'
-$python = Join-Path $env:LOCALAPPDATA 'Programs\Python\Python311\python.exe'
-$installedWhisper = Join-Path $env:APPDATA 'lampstand-studio\ai\whisper\.venv\Scripts\python.exe'
-$sourceWhisper = Join-Path $StudioRoot '.venv-whisper\Scripts\python.exe'
-$whisperPython = if (Test-Path -LiteralPath $installedWhisper) { $installedWhisper } elseif (Test-Path -LiteralPath $sourceWhisper) { $sourceWhisper } else { $python }
-Start-Background 11434 $ollama @('serve') $StudioRoot
-Start-Background 8000 $whisperPython @('-m','uvicorn','whisper_server.app:app','--host','127.0.0.1','--port','8000') $StudioRoot
+Start-Background 'ollama' $OllamaPort $ollama @('serve') $StudioRoot
+Start-Background 'whisper' $WhisperPort $WhisperPython @('-m','uvicorn','whisper_server.app:app','--host','127.0.0.1','--port',$WhisperPort) $StudioRoot
+
+if ($StateFile) {
+  $directory = Split-Path -Parent $StateFile
+  if ($directory -and -not (Test-Path -LiteralPath $directory)) { New-Item -ItemType Directory -Force -Path $directory | Out-Null }
+  [ordered]@{ startedAt = (Get-Date).ToString('o'); services = @($script:started) } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $StateFile -Encoding UTF8
+}

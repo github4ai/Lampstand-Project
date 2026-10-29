@@ -30,12 +30,31 @@ function voiceStudioExecutable(env) {
   return resolve(candidates.find((candidate) => existsSync(candidate)) || candidates[0])
 }
 
+/**
+ * One order for which Python runs the transcription server, because the desktop launcher and the
+ * gateway used to pick different environments: an explicit choice, then the interpreter the
+ * installer laid down, then the one in the source tree, then the system Python. Empty means none of
+ * them exist, and the transcription server is simply not started.
+ */
+export function resolveWhisperPython(env = process.env, projectRoot = process.cwd()) {
+  const scripts = process.platform === 'win32' ? ['Scripts', 'python.exe'] : ['bin', 'python']
+  const candidates = [
+    env.WHISPER_PYTHON?.trim(),
+    join(env.APPDATA || '', 'lampstand-studio', 'ai', 'whisper', '.venv', ...scripts),
+    join(projectRoot, '.venv-whisper', ...scripts),
+    join(env.LOCALAPPDATA || '', 'Programs', 'Python', 'Python311', process.platform === 'win32' ? 'python.exe' : 'python'),
+  ].filter(Boolean)
+  return candidates.find((candidate) => existsSync(candidate)) || ''
+}
+
 export function loadConfig(env = process.env) {
   const aiRoot = resolve(env.AIOS_AI_ROOT?.trim() || join(process.cwd(), '..'))
   const knowledgeDir = resolve(env.AIOS_KNOWLEDGE_DIR?.trim() || join(aiRoot, 'Knowledge'))
+  const projectRoot = resolve(process.cwd())
   return {
-    projectRoot: resolve(process.cwd()),
+    projectRoot,
     mediaJobsFile: resolve(env.AIOS_MEDIA_JOBS_FILE?.trim() || join(process.cwd(), 'data', 'media-jobs.json')),
+    servicesStateFile: resolve(env.AIOS_SERVICES_STATE_FILE?.trim() || join(process.cwd(), 'data', 'services-started.json')),
     host: env.AIOS_API_HOST?.trim() || '127.0.0.1',
     port: Number(env.AIOS_API_PORT || 9656),
     providerMode: env.AIOS_PROVIDER_MODE?.trim() || 'hybrid',
@@ -66,11 +85,12 @@ export function loadConfig(env = process.env) {
     voiceStudioSpeechModel: env.VOICESTUDIO_SPEECH_MODEL?.trim() || 'omnivoice',
     voiceStudioSpeechVoice: env.VOICESTUDIO_SPEECH_VOICE?.trim() || 'default',
     ptermPath: env.AIOS_PTERM_PATH?.trim() || '',
+    pinokioHome: env.PINOKIO_HOME?.trim() || '',
     comfyPinokioApp: env.COMFYUI_PINOKIO_APP?.trim() || 'comfy.git',
     wanPinokioApp: env.WANGP_PINOKIO_APP?.trim() || 'wan.git',
     ttsPinokioApp: env.TTS_PINOKIO_APP?.trim() || 'Ultimate-TTS-Studio.git',
     ollamaExecutable: env.OLLAMA_EXE?.trim() || join(env.LOCALAPPDATA || '', 'Programs', 'Ollama', 'ollama.exe'),
-    whisperPython: env.WHISPER_PYTHON?.trim() || '',
+    whisperPython: resolveWhisperPython(env, projectRoot),
     legacyApiUrl: cleanUrl(env.AIOS_LEGACY_API_URL, 'http://127.0.0.1:9655'),
     openaiUrl: cleanUrl(env.OPENAI_BASE_URL, 'https://api.openai.com/v1'),
     openaiApiKey: env.OPENAI_API_KEY?.trim() || '',

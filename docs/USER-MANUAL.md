@@ -9,6 +9,17 @@ Lampstand Project is a local-first Windows workspace for family learning, minist
 3. Select your profile. The visible workspaces depend on permissions assigned by the owner.
 4. Check the status indicator at the bottom of the sidebar. **Backend connected** means local app services are ready.
 
+## Local AI services
+
+Lampstand does the AI work on your own computer, and it looks after the programs that do it.
+
+- **They start when you open the app.** The translation model and the transcription server are launched for you as Lampstand opens, quietly in the background. The window appears straight away instead of waiting for them: on **Settings → AI Services**, a tile reads *Starting* until that service answers its own port, then reads *Ready* by itself - the page re-checks every few seconds while it is open.
+- **One switch, or one service at a time.** The master switch starts everything or puts everything into standby. Each tile that is installed but stopped also carries its own start button, so before a meeting you can bring up only the picture, music and video engine and leave the rest down.
+- **No Pinokio window needed.** The heavy image, video and music programs are started directly by Lampstand, which runs the copy already installed on this computer on the fixed port the app expects. Pinokio is only needed to install or update those programs, never to use them from Lampstand. If a program cannot be found, the tile says so plainly rather than appearing to work.
+- **They close with the app.** Quitting Lampstand shuts down only the services this launch started itself, which returns the graphics card memory and the RAM to the computer. Anything you had already started yourself, or that another program started, is left running untouched.
+- **Standby instead of closing.** Turning the master switch off unloads the large models without closing anything, so a service is ready to answer again without a cold start.
+- **A computer with nothing installed.** The app still opens and the reading, presentation and projector work is unaffected. The service tiles read *Not configured*, and any AI action tells you what is missing instead of failing silently. A permitted cloud key saved on the same page covers translation, transcription and chat where local models are absent.
+
 ## Text size
 
 Labels, lists and buttons across the app have a readable minimum size, and entry fields are set a step larger, so nothing renders as micro-print. Three things keep their own scale: the **Recovery Bible** reader has a text-size control on its own page, the **HWMR** reader has a zoom control, and projector slides follow the audience text size you choose in Presentation Studio rather than anything on this computer. Where a name is too long for its row - a processor model in **This computer**, a conversation title - the full text appears when you rest the pointer on it.
@@ -246,8 +257,9 @@ Every install — the downloaded Setup file or an update the app starts for you 
 - **Knowledge shows *Loading Knowledge Library…* and stays there, or says *Knowledge Library is unavailable*:** the local service has not returned the list. Use **Settings → AI Services** and select the wrench (Repair services), then reopen Knowledge. The list normally appears within a second of opening the page.
 - **No search results:** verify that the document is indexed and that the correct category, subcollection, and subject were selected.
 - **Scanned PDF has no answers:** run OCR and re-index it.
-- **Ollama or Whisper offline:** install or start the optional service in Settings.
-- **Voice Studio Offline in Language Tools:** the program is installed but not running. Start Voice Studio, or select **AI services** in Settings to start it with your other local models. Transcription still works through Local Whisper while it is closed.
+- **Ollama or Whisper offline:** both are started for you when the app opens. If a tile still reads *Starting* or *Offline*, press the start button on that tile, or the master switch to bring up everything. If it reads *Not configured*, that program is not installed on this computer.
+- **An image, music or video job does not start:** its tile in **Settings → AI Services** has a start button, and the program launches without opening Pinokio. A large model can take a minute or two to answer after starting; the tile turns *Ready* when it does.
+- **Voice Studio Offline in Language Tools:** the program is installed but not running. Press the start button on its tile in **Settings → AI Services**, or start Voice Studio itself. Transcription still works through Local Whisper while it is closed.
 - **Newly added document is not searchable:** open **Documents** and run **Index knowledge**.
 - **Pronounce plays nothing:** read the line under the translation — it names the voice that answered or says why none could. A language with no Windows voice needs **Online fallback for missing voices** ticked, and that route needs this computer to be online and to have Python installed; without either, install the voice from **Manage Windows voices** and press **Refresh voices**. See [Pronunciation](#pronunciation).
 - **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the screen chosen in the **Preview** group of the control rail; if the output was blanked, take any slide live to bring it back.

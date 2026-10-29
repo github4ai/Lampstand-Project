@@ -23,7 +23,7 @@ body{overflow-x:hidden}
 :root[data-theme="light"] :where(.settings-header h1,.settings-panel-title h2,.settings-row strong,.settings-master-control strong,.settings-provider-grid strong,.school-header h1,.hymnal-sheet-header h2,.hymnal-shape-guide strong){color:var(--text)}
 :root[data-theme="light"] :where(p,small,.settings-panel-title p,.settings-row small){text-shadow:none}
 :root[data-theme="light"] :where(.settings-panel,.settings-provider-grid>div,.settings-user-list article,.settings-device-identity,.settings-enrollment,.settings-member-invite){background:var(--panel)}
-:root[data-theme="light"] :where(.settings-header>span,.settings-check-all,.settings-backup-actions button,.school-notice){background:color-mix(in srgb,var(--primary) 8%,var(--panel));color:var(--primary);border-color:color-mix(in srgb,var(--primary) 30%,var(--border))}
+:root[data-theme="light"] :where(.settings-header>span,.settings-check-all,.settings-service-start,.settings-backup-actions button,.school-notice){background:color-mix(in srgb,var(--primary) 8%,var(--panel));color:var(--primary);border-color:color-mix(in srgb,var(--primary) 30%,var(--border))}
 :root[data-theme="light"] :where(.settings-panel-title,.workspace-layout-header){color:var(--primary)}
 :root[data-theme="light"] :where(.settings-add-user button,.settings-switch-profile,.settings-member-invite>button){color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,var(--panel))}
 :root[data-theme="light"] :where(.school-profile nav button.active,.school-card form>button){color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,var(--panel));border-color:var(--primary)}

@@ -5,6 +5,7 @@
   "description": "A private, local-first AI workspace for family, ministry, church, school, and creative work.",
   "main": "desktop/main.cjs",
   "author": "Lampstand Project",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "api": "node --env-file-if-exists=.env.local server/index.mjs",

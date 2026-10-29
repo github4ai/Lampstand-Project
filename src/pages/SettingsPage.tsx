@@ -1,6 +1,6 @@
 import { Activity, Check, CheckCircle2, Clipboard, Cloud, Download, KeyRound, Palette, Power, RefreshCw, RotateCcw, Server, Settings, Trash2, Upload, Volume2, Wrench } from 'lucide-react'
 import { type ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { getAiServicesStatus, repairAiServices, saveProviderPreferences, startAiServices, unloadAiModels, type AiServiceStatus, type ProviderPreferences } from '../api/services'
+import { getAiServicesStatus, repairAiServices, saveProviderPreferences, startAiService, startAiServices, unloadAiModels, type AiServiceStatus, type ProviderPreferences } from '../api/services'
 import { AIOS_API_BASE_URL } from '../config/api'
 import AccessSettingsPanel from '../components/Settings/AccessSettingsPanel'
 import RemoteAccessPanel from '../components/Settings/RemoteAccessPanel'
@@ -34,6 +34,7 @@ function SettingsPage() {
   const [lastApiCheck, setLastApiCheck] = useState<Date | null>(null)
   const [services, setServices] = useState<AiServiceStatus | null>(null)
   const [managingServices, setManagingServices] = useState(false)
+  const [startingService, setStartingService] = useState('')
   const [serviceError, setServiceError] = useState('')
   const [providerMode, setProviderMode] = useState<ProviderPreferences['mode']>('hybrid')
   const [geminiApiKey, setGeminiApiKey] = useState('')
@@ -203,6 +204,18 @@ function SettingsPage() {
       setServiceError(error instanceof Error ? error.message : 'Unable to repair AI services.')
     } finally {
       setManagingServices(false)
+    }
+  }, [])
+
+  const startOneService = useCallback(async (id: string) => {
+    setStartingService(id)
+    setServiceError('')
+    try {
+      setServices(await startAiService(id))
+    } catch (error) {
+      setServiceError(error instanceof Error ? error.message : 'Unable to start that AI service.')
+    } finally {
+      setStartingService('')
     }
   }, [])
 
@@ -412,7 +425,7 @@ function SettingsPage() {
         <h2 className="settings-section-title">Services and models</h2>
         {canManage && <section className="settings-panel settings-ai-services">
           <div className="settings-panel-title"><Activity size={19} /><div><h2>AI Services</h2>
-            <p>One switch starts every local dependency. Large GPU models are managed automatically.</p></div></div>
+            <p>One switch starts every local dependency, or start one service from its own tile. Large GPU models are managed automatically.</p></div></div>
           <div className="settings-master-control">
             <div><strong>{!services ? 'Checking services...' : services.errors?.length ? 'AI Services need attention' : services.enabled ? services.allReady ? 'AI Services ready' : 'AI Services starting' : 'AI Services on standby'}</strong>
               <small>{services?.enabled ? 'AIOS loads only the model required for your current task.' : 'Large models are unloaded; background services can remain idle.'}</small>
@@ -437,6 +450,13 @@ function SettingsPage() {
               return <div key={provider.id} className={providerError ? 'has-error' : undefined} title={providerError?.message}>
                 <span className={provider.available ? 'settings-service-dot online' : provider.configured === false ? 'settings-service-dot unconfigured' : 'settings-service-dot'} />
                 <p><strong>{provider.label}</strong><small>{provider.available ? 'Ready' : providerError?.message || (provider.configured === false ? 'Not configured' : services.enabled ? 'Starting' : 'Offline')}</small></p>
+                {!provider.available && provider.startable ? (
+                  <button type="button" className="settings-service-start icon-btn" title={`Start ${provider.label}`}
+                    aria-label={`Start ${provider.label}`} disabled={Boolean(startingService)}
+                    onClick={() => void startOneService(provider.id)}>
+                    {startingService === provider.id ? <RefreshCw className="spin" size={13} /> : <Power size={13} />}
+                  </button>
+                ) : null}
               </div>
             }) : <p className="settings-service-placeholder">Waiting for service status...</p>}
           </div>
