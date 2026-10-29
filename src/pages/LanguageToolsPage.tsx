@@ -174,6 +174,7 @@ function LanguageToolsPage() {
   const [onlinePronunciation, setOnlinePronunciation] = useState(() => localStorage.getItem(LANGUAGE_ONLINE_PRONUNCIATION_KEY) !== 'false')
   const [konkaniPronunciationStyle, setKonkaniPronunciationStyle] = useState<KonkaniPronunciationStyle>(() => (localStorage.getItem(KONKANI_PRONUNCIATION_STYLE_KEY) as KonkaniPronunciationStyle) || 'devanagari-marathi')
   const [selectedResultText, setSelectedResultText] = useState('')
+  const [pronunciationError, setPronunciationError] = useState('')
   const [downloadingPronunciation, setDownloadingPronunciation] = useState(false)
   const [downloadingHistoryId, setDownloadingHistoryId] = useState('')
   const recorderRef = useRef<MediaRecorder | null>(null)
@@ -182,6 +183,8 @@ function LanguageToolsPage() {
   const recordingChunksRef = useRef<Blob[]>([])
   const fallbackAudioRef = useRef<HTMLAudioElement | null>(null)
   const fallbackAudioUrlRef = useRef('')
+  const speechWatchdogRef = useRef<number | null>(null)
+  const speechStartedRef = useRef(false)
   const pauseBatchRef = useRef(false)
 
   useEffect(() => {
@@ -210,6 +213,7 @@ function LanguageToolsPage() {
   useEffect(() => () => {
     requestControllerRef.current?.abort()
     recorderRef.current?.stream.getTracks().forEach((track) => track.stop())
+    if (speechWatchdogRef.current !== null) window.clearTimeout(speechWatchdogRef.current)
     window.speechSynthesis?.cancel()
     fallbackAudioRef.current?.pause()
     if (fallbackAudioUrlRef.current) URL.revokeObjectURL(fallbackAudioUrlRef.current)
@@ -392,7 +396,7 @@ function LanguageToolsPage() {
     if (!result.trim() || downloadingPronunciation) return
     const language = tool === 'translation' ? targetLanguage : audioLanguage
     if (!onlinePronunciation || !onlineFallbackLanguages.has(language)) return
-    setDownloadingPronunciation(true); setError('')
+    setDownloadingPronunciation(true); setPronunciationError('')
     try {
       const payload = await pronunciationPayload(result, language)
       const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
@@ -404,7 +408,7 @@ function LanguageToolsPage() {
       URL.revokeObjectURL(url)
       setPronunciationVoice(`${response.voice} · ${response.provider}`)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Unable to download pronunciation audio.')
+      setPronunciationError(cause instanceof Error ? cause.message : 'Unable to download pronunciation audio.')
     } finally {
       setDownloadingPronunciation(false)
     }
@@ -417,7 +421,7 @@ function LanguageToolsPage() {
   async function downloadHistoryPronunciation(item: LanguageHistoryItem) {
     const language = historyLanguage(item)
     if (!language || !item.result.trim() || downloadingHistoryId) return
-    setDownloadingHistoryId(item.id); setError('')
+    setDownloadingHistoryId(item.id); setPronunciationError('')
     try {
       const payload = await pronunciationPayload(item.result, language)
       const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
@@ -429,7 +433,7 @@ function LanguageToolsPage() {
       URL.revokeObjectURL(url)
       setPronunciationVoice(`${response.voice} · ${response.provider}`)
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Unable to download pronunciation audio.')
+      setPronunciationError(cause instanceof Error ? cause.message : 'Unable to download pronunciation audio.')
     } finally {
       setDownloadingHistoryId('')
     }
@@ -454,12 +458,19 @@ function LanguageToolsPage() {
   }
 
   function stopPronunciation() {
+    if (speechWatchdogRef.current !== null) window.clearTimeout(speechWatchdogRef.current)
+    speechWatchdogRef.current = null
+    speechStartedRef.current = false
     window.speechSynthesis?.cancel()
     fallbackAudioRef.current?.pause()
     fallbackAudioRef.current = null
     if (fallbackAudioUrlRef.current) URL.revokeObjectURL(fallbackAudioUrlRef.current)
     fallbackAudioUrlRef.current = ''
     setSpeaking(false)
+  }
+
+  function languageName(code: SupportedLanguage) {
+    return languages.find((item) => item.code === code)?.label || code
   }
 
   function effectivePronunciationVoice(language: SupportedLanguage) {
@@ -488,7 +499,7 @@ function LanguageToolsPage() {
   }
 
   async function playOnlineFallback(value: string, language: SupportedLanguage) {
-    setError(''); setSpeaking(true)
+    setPronunciationError(''); setSpeaking(true)
     try {
       const payload = await pronunciationPayload(value, language)
       const response = await createPronunciation(payload.text, language, speechRate, payload.voice)
@@ -498,73 +509,91 @@ function LanguageToolsPage() {
       fallbackAudioRef.current = audio
       setPronunciationVoice(`${response.voice} · ${response.provider}`)
       audio.onended = stopPronunciation
-      audio.onerror = () => { stopPronunciation(); setError('The online pronunciation audio could not be played.') }
+      audio.onerror = () => { stopPronunciation(); setPronunciationError('The online pronunciation audio could not be played.') }
       await audio.play()
     } catch (cause) {
       stopPronunciation()
-      setError(cause instanceof Error ? cause.message : 'Online pronunciation is unavailable.')
+      setPronunciationError(cause instanceof Error ? cause.message : 'Online pronunciation is unavailable.')
     }
   }
 
-  async function pronounceResult() {
-    if (!result.trim() || !('speechSynthesis' in window)) {
-      setError('Pronunciation is not supported by this browser.')
-      return
-    }
-    if (speaking) {
-      stopPronunciation(); return
-    }
-    const language = tool === 'translation' ? targetLanguage : audioLanguage
-    const preferredVoice = effectivePronunciationVoice(language)
-    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice)
-    if (preferredOnline && onlinePronunciation) {
-      await playOnlineFallback(result, language)
-      return
-    }
-    const payload = await pronunciationPayload(result, language)
-    const locale = language === 'kok' && konkaniPronunciationStyle === 'goan-roman' ? 'en-IN' : speechLocales[language]
-    const utterance = new SpeechSynthesisUtterance(payload.text)
-    utterance.lang = locale
-    const matchingVoice = window.speechSynthesis.getVoices().find((voice) => voice.name === payload.voice) || findSpeechVoice(window.speechSynthesis.getVoices(), language, payload.voice)
-    if (!matchingVoice) {
-      const languageName = languages.find((item) => item.code === language)?.label || language
-      if (onlinePronunciation && onlineFallbackLanguages.has(language)) {
-        await playOnlineFallback(result, language)
-        return
-      }
-      setPronunciationVoice(`No ${languageName} voice installed`)
-      setError(onlineFallbackLanguages.has(language) ? `Online pronunciation is off and no local ${languageName} voice is installed.` : `Install the Windows ${languageName} speech voice to use pronunciation.`)
-      return
-    }
-    utterance.voice = matchingVoice
-    setPronunciationVoice(matchingVoice.name)
-    utterance.rate = speechRate
-    utterance.onend = () => setSpeaking(false)
-    utterance.onerror = () => { setSpeaking(false); setError(`A ${languages.find((item) => item.code === language)?.label} pronunciation voice is not installed in Windows.`) }
-    setError(''); setSpeaking(true); window.speechSynthesis.speak(utterance)
-  }
-
-  async function pronounceText(value: string, language: SupportedLanguage) {
-    if (!value.trim()) return
-    const preferredVoice = effectivePronunciationVoice(language)
-    const preferredOnline = (onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice)
-    if (preferredOnline && onlinePronunciation) { await playOnlineFallback(value, language); return }
-    const payload = await pronunciationPayload(value, language)
-    const voice = window.speechSynthesis.getVoices().find((item) => item.name === payload.voice) || findSpeechVoice(window.speechSynthesis.getVoices(), language, payload.voice)
-    if (!voice) {
-      if (onlinePronunciation && onlineFallbackLanguages.has(language)) await playOnlineFallback(value, language)
-      return
-    }
+  /** @returns false when Windows has no installed voice for this language. */
+  function speakLocally(payload: { text: string; voice?: string }, language: SupportedLanguage, spokenText: string) {
+    const installed = window.speechSynthesis?.getVoices() || []
+    const voice = installed.find((item) => item.name === payload.voice) || findSpeechVoice(installed, language, payload.voice)
+    if (!voice) return false
     window.speechSynthesis.cancel()
     const utterance = new SpeechSynthesisUtterance(payload.text)
     utterance.lang = language === 'kok' && konkaniPronunciationStyle === 'goan-roman' ? 'en-IN' : speechLocales[language]
     utterance.voice = voice
     utterance.rate = speechRate
-    utterance.onend = () => setSpeaking(false)
-    utterance.onerror = () => setSpeaking(false)
-    setPronunciationVoice(voice.name)
+    speechStartedRef.current = false
+    const acknowledge = () => {
+      speechStartedRef.current = true
+      if (speechWatchdogRef.current !== null) { window.clearTimeout(speechWatchdogRef.current); speechWatchdogRef.current = null }
+    }
+    utterance.onstart = acknowledge
+    utterance.onboundary = acknowledge
+    utterance.onend = stopPronunciation
+    utterance.onerror = () => { stopPronunciation(); setPronunciationError(`Windows could not play the ${languageName(language)} voice.`) }
+    setPronunciationError('')
+    setPronunciationVoice(`${voice.name} · Windows voice`)
     setSpeaking(true)
     window.speechSynthesis.speak(utterance)
+    // Windows can list a voice it never delivers; without this the button stays on Stop in silence.
+    speechWatchdogRef.current = window.setTimeout(() => {
+      speechWatchdogRef.current = null
+      if (speechStartedRef.current) return
+      stopPronunciation()
+      if (onlinePronunciation && onlineFallbackLanguages.has(language)) void playOnlineFallback(spokenText, language)
+      else setPronunciationError(`Windows did not play the ${languageName(language)} voice. Turn on online voices, or reinstall the voice from Windows language settings.`)
+    }, 3000)
+    return true
+  }
+
+  function pronunciationFailure(language: SupportedLanguage) {
+    if (onlinePronunciation && onlineFallbackLanguages.has(language)) return ''
+    return onlineFallbackLanguages.has(language)
+      ? `Online voices are off and Windows has no ${languageName(language)} voice installed.`
+      : `Turn on online voices or install the Windows ${languageName(language)} voice to hear pronunciation.`
+  }
+
+  async function pronounceResult() {
+    if (!result.trim()) return
+    if (speaking) { stopPronunciation(); return }
+    const language = tool === 'translation' ? targetLanguage : audioLanguage
+    const preferredVoice = effectivePronunciationVoice(language)
+    setPronunciationError('')
+    if ((onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice) && onlinePronunciation) {
+      await playOnlineFallback(result, language)
+      return
+    }
+    try {
+      if (speakLocally(await pronunciationPayload(result, language), language, result)) return
+    } catch (cause) {
+      setPronunciationError(cause instanceof Error ? cause.message : 'The text could not be prepared for pronunciation.')
+      return
+    }
+    const failure = pronunciationFailure(language)
+    if (!failure) { await playOnlineFallback(result, language); return }
+    setPronunciationVoice('')
+    setPronunciationError(failure)
+  }
+
+  async function pronounceText(value: string, language: SupportedLanguage) {
+    if (!value.trim()) return
+    const preferredVoice = effectivePronunciationVoice(language)
+    setPronunciationError('')
+    if ((onlineFallbackVoices[language] ?? []).some((item) => item.name === preferredVoice) && onlinePronunciation) { await playOnlineFallback(value, language); return }
+    try {
+      if (speakLocally(await pronunciationPayload(value, language), language, value)) return
+    } catch (cause) {
+      setPronunciationError(cause instanceof Error ? cause.message : 'The text could not be prepared for pronunciation.')
+      return
+    }
+    const failure = pronunciationFailure(language)
+    if (!failure) { await playOnlineFallback(value, language); return }
+    setPronunciationError(failure)
   }
 
   function refreshSpeechVoices() {
@@ -576,17 +605,8 @@ function LanguageToolsPage() {
   }
 
   function testSpeechVoice(language: SupportedLanguage, voice: SpeechSynthesisVoice) {
-    window.speechSynthesis.cancel()
-    const utterance = new SpeechSynthesisUtterance(voiceTestPhrases[language])
-    utterance.lang = speechLocales[language]
-    utterance.voice = voice
-    utterance.rate = speechRate
-    setPronunciationVoice(voice.name)
-    setSpeaking(true)
-    utterance.onend = () => setSpeaking(false)
-    utterance.onerror = () => { setSpeaking(false); setError('Windows could not play this pronunciation voice.') }
-    setError('')
-    window.speechSynthesis.speak(utterance)
+    if (speakLocally({ text: voiceTestPhrases[language], voice: voice.name }, language, voiceTestPhrases[language])) return
+    setPronunciationError(`Windows no longer lists the ${languageName(language)} voice. Use Refresh voices.`)
   }
 
   function testFallbackVoice(language: SupportedLanguage) {
@@ -800,6 +820,7 @@ function LanguageToolsPage() {
         <label className="language-auto-pronounce"><input type="checkbox" checked={autoPronounce} onChange={(event) => toggleAutoPronounce(event.target.checked)} /> Speak translations automatically</label>
       </div></div>
       {voiceRefreshNotice && <p role="status">{voiceRefreshNotice}</p>}
+      {pronunciationError && <p className="language-pronunciation-error" role="alert">{pronunciationError}</p>}
       <details className="language-voice-details"><summary>View and test all pronunciation voices</summary><div className="language-voice-list">{languages.map((language) => {
           const voice = findSpeechVoice(speechVoices, language.code, voicePreferences[language.code])
           const fallback = !voice && onlinePronunciation && onlineFallbackLanguages.has(language.code)
@@ -866,6 +887,7 @@ function LanguageToolsPage() {
         </div>}</header>
         {result && <div className="language-result-meta">{resultProvider && <span>Processed by {resultProvider}{resultModel ? ` · ${resultModel}` : ''}</span>}{typeof resultDuration === 'number' && <span>Audio duration {formatRecordingTime(Math.round(resultDuration))}</span>}<span>{result.length.toLocaleString()} characters</span></div>}
         {result && pronunciationVoice && <p className="language-pronunciation-status"><Volume2 size={13} /> Pronunciation voice: {pronunciationVoice}</p>}
+        {pronunciationError && <p className="language-pronunciation-error language-pronunciation-error-result" role="alert">{pronunciationError}</p>}
         {tool === 'document' ? documentMode === 'folder' ? <div className={batchProgress.total ? 'language-document-result language-batch-result' : 'language-result-content empty'}>{batchProgress.total ? <><FileText size={38} /><strong>{batchProgress.completed === batchProgress.total ? 'Folder translation complete' : batchPaused ? 'Folder translation paused' : batchProgress.current}</strong><span>{batchProgress.completed} of {batchProgress.total} documents processed</span><progress max={batchProgress.total} value={batchProgress.completed} /><span>{batchProgress.completed === batchProgress.total ? `${batchTranslated} translated · ${batchSkipped} skipped · ${batchFailed} failed · saved in ${destinationFolder?.name}` : batchPaused ? `Resume will continue with document ${batchProgress.completed + 1}.` : 'Keep AIOS Studio open until processing finishes.'}</span>{batchProgress.issues.length > 0 && <details><summary>{batchProgress.issues.length} skipped or failed documents</summary><ul>{batchProgress.issues.map((issue) => <li key={issue.path}><strong>{issue.path}</strong><span>{issue.kind === 'skipped' ? 'Skipped' : 'Failed'} · {issue.reason}</span></li>)}</ul></details>}{batchProgress.completed > 0 && <button className="language-report-download" type="button" onClick={downloadBatchReport}><Download size={15} /> Download processing report</button>}</> : 'Choose source and destination folders to begin.'}</div> : <div className={documentResult ? 'language-document-result' : 'language-result-content empty'}>{documentResult ? <><FileText size={38} /><strong>{documentResult.filename}</strong><span>{documentResult.segments} formatted text sections translated</span><span>{documentResult.fidelity === 'native' ? 'Native document structure retained' : 'Best-effort page layout retained'}</span><div className="language-document-result-actions"><a href={documentResult.url} download={documentResult.filename}><Download size={16} /> Download</a><button type="button" onClick={() => void addTranslatedDocumentToKnowledge()}><Upload size={16} /> Add to Knowledge</button></div>{knowledgeSaveStatus && <small>{knowledgeSaveStatus}</small>}</> : 'Your translated document will be available here.'}</div> : <div className={result ? 'language-result-content' : 'language-result-content empty'} onMouseUp={captureResultSelection} onKeyUp={captureResultSelection}>{result || 'Your translated or transcribed text will appear here.'}</div>}
         {transliteration && <div className="language-transliteration"><strong>Pronunciation in English letters</strong><p>{transliteration}</p></div>}
         {result && <p className="language-selection-help">Select any part of the result to pronounce only that text.</p>}

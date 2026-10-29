@@ -1,5 +1,7 @@
 """AIOS Studio runtime corrections loaded automatically by local Python."""
 
+import sys
+
 try:
     from AIOS.Search.embedding_search import EmbeddingSearch
 
@@ -29,4 +31,5 @@ try:
 
     EmbeddingSearch.search = search_per_document
 except Exception as error:
-    print(f"AIOS Studio search correction was not loaded: {error}")
+    # stdout carries the pronunciation audio byte stream, so diagnostics go to stderr.
+    print(f"AIOS Studio search correction was not loaded: {error}", file=sys.stderr)

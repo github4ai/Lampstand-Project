@@ -19,7 +19,7 @@ import { listRecoveryBibleBooks, readRecoveryBibleBookMatter, readRecoveryBibleB
 import { listLifeStudyBooks, listLifeStudyMessages, readLifeStudyMessage, searchLifeStudy } from './life-study.mjs'
 import { listMinistryBookChapters, readMinistryBookChapter, readMinistryBooksLibrary, searchMinistryBooks } from './ministry-books.mjs'
 import { importMinistryExports, readMinistryLibraryStatus } from './ministry-import.mjs'
-import { createOnlinePronunciation, supportsOnlinePronunciation } from './pronunciation.mjs'
+import { createOnlinePronunciation, onlinePronunciationLanguages, pronunciationReadiness, supportsOnlinePronunciation } from './pronunciation.mjs'
 import { translateDocument } from './document-translation.mjs'
 import { answerMinistryQuestion, answerSchoolQuestion, generateSchoolLessonQuestions, searchLocalKnowledge } from './knowledge-search.mjs'
 import { loadProviderPreferences, publicProviderPreferences, saveProviderPreferences } from './provider-preferences.mjs'
@@ -294,6 +294,7 @@ export function createAiosServer({ readAppMemory } = {}) {
           providerAvailable(`${config.whisperUrl}/health`),
           providerAvailable(`${config.voiceStudioUrl}/health`),
         ])
+        const voiceReadiness = pronunciationReadiness()
         return send(response, 200, {
           mode: config.providerMode,
           providers: {
@@ -303,7 +304,7 @@ export function createAiosServer({ readAppMemory } = {}) {
             gemini: { configured: Boolean(config.geminiApiKey), available: Boolean(config.geminiApiKey) },
             openai: { configured: Boolean(config.openaiApiKey), available: Boolean(config.openaiApiKey) },
             anthropic: { configured: Boolean(config.anthropicApiKey), available: Boolean(config.anthropicApiKey) },
-            pronunciation: { configured: true, available: true, languages: ['mr', 'te', 'ml'] },
+            pronunciation: { configured: voiceReadiness.ready, available: voiceReadiness.ready, languages: onlinePronunciationLanguages(), reason: voiceReadiness.reason },
           },
         }, origin)
       }

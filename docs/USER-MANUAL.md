@@ -94,7 +94,7 @@ Presentation Studio (sidebar: **Presentation**) builds the running order for a m
 
 **Load a source.** The source rack has nine tabs:
 
-- **Recovery Bible** — type words into **Find a phrase** and the app lists every verse that uses that exact wording, in the order typed, with the phrase marked in the verse. Pick a result and that verse goes into the verse basket, even if it is in a book or chapter you have not opened. To browse instead, choose **Old Testament** or **New Testament**, then the book and chapter abbreviations, and tick the verses. Ticked verses stay in the basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
+- **Recovery Bible** — type words into **Find a phrase** and the app lists every verse that uses that exact wording, in the order typed, with the phrase marked in the verse. Pick a result and that verse goes into the verse basket, even if it is in a book or chapter you have not opened. To browse instead, choose **Old Testament** or **New Testament**, then the book and chapter abbreviations, and tick the verses. The verse list is as tall as your window allows — up to about ten verses at a time on a full-size screen, and it scrolls — so a long chapter can be read through without dragging the panel. Ticked verses stay in the basket when you change books or chapters, so a single slide can carry verses from several places. Type the **Display heading** the slide should carry.
 - **Hymnal** — search by number or title, then set **Lyrics** (text only or with chords), **Columns** (1, 2, or 3), and **Chorus** (once, or after every stanza). With chords you can also transpose with **Key**. The line under the hymn title says whether the complete hymn fits one slide or needs more columns.
 - **HWMR** — add the week outline, one day (Morning Nourishment verses with its message and Today's Reading), or the weekly hymn. The day and outline slides are laid out the way the reading page is, with each printed reference above its verse, and every Scripture reference in them is clickable.
 - **Ministry Books** — type words into **Find a phrase** to search inside the books; each result names the book and the section and shows the passage found, and picking it opens that section in the picker below. Choose the book and section directly to add a whole section as one slide.
@@ -138,6 +138,8 @@ A page taken straight from the panel is not in your order, so **Live** names it 
 
 **Audience settings** sit in the **Output** group of that rail and take effect on the next slide you take live; they are remembered between meetings. From left to right: the eye shows or hides the slide title on the projector, **AA** sets the audience text size, the sun and moon choose a light or dark projection theme, the overlapping circles or the barred circle fade the next slide in or cut straight to it, and **Fade speed** — only live while a fade is chosen — sets how long that fade takes. The screen picker is in the **Preview** group: choose the projector there when more than one display is connected, and press the re-scan button beside it after a projector or cable is plugged in or unplugged.
 
+**The preview is the room's slide, not a sketch of it.** Change the text size or the light/dark theme and the preview pane redraws at once — bigger or smaller words, and the dark projection background with the light words, verse headings and footnotes that go with them. Hiding the title with the eye drops its line out of the preview too, exactly as it does on the projector. So a size can be chosen by looking at the console before anything goes on air; what the preview shows at that moment is what the audience will see.
+
 **Presenter notes** sit below the preview behind a **Presenter notes** button. The preview always shows the whole slide at its projection shape; the notes stay folded away until you need them, and the button tells you when the current slide already has notes written. Notes are private to this screen and never reach the projector.
 
 **During the meeting**, a slide that is longer than the window scrolls with the mouse wheel, `↑`/`↓`, `Page Up`/`Page Down`, `Space`, `Home` or `End`. Selecting text on the audience screen opens a small highlight toolbar, so a word can be marked while it is being read. The **meeting timer** in the console tracks elapsed time and can be paused or reset.
@@ -180,6 +182,22 @@ In **Hybrid** provider mode, Language Tools first tries the configured Ollama tr
 If local translation does not succeed, Lampstand tries configured cloud providers in this order: **Gemini**, **OpenAI**, then **Anthropic**. Only providers with a saved API key are attempted. **Local** mode never sends translation text to a cloud provider; **Cloud** mode skips Ollama.
 
 The result identifies the provider and model used. If every available provider fails, check **Settings → AI Services**, confirm Ollama is running or add a permitted cloud-provider key, and try again.
+
+#### Pronunciation
+
+**Pronounce** under a translation, **Pronounce selection** for highlighted words, the speaker button on a saved item and **Download speech MP3** all ask for a voice in the same order:
+
+1. A voice **installed in Windows** for that language. Windows ships few, and almost none for Indian languages, so this is often not available.
+2. Otherwise **Microsoft's online neural voice**, when **Online fallback for missing voices** is ticked under the **Pronunciation** heading. This sends only the words you ask about, when you ask — nothing is sent while you type.
+
+The line under the result names whichever voice answered, so you can always tell where the sound came from. When nothing plays, the same place says why, in one of four forms:
+
+- *Online voices are off and Windows has no … voice installed* — tick **Online fallback for missing voices**, or install the voice with **Manage Windows voices** and press **Refresh voices**.
+- *Windows did not play the … voice* — Windows listed a voice it could not deliver. If online voices are on, the app switches to the online voice by itself; if they are off, it tells you to turn them on.
+- *The online voice service is unreachable* — this computer has no route to Microsoft's voice service. Check the connection and try again, or choose a Windows voice.
+- *Online voices need Python, which is not installed on this computer* — on a machine without the local AI stack, the online route cannot start at all. Pressing **Pronounce** says so plainly and points at the Windows voices instead of failing silently.
+
+A language with neither a Windows voice nor the online route simply has no voice to offer; the app states that rather than going quiet.
 
 #### Voice Studio
 
@@ -231,6 +249,7 @@ Every install — the downloaded Setup file or an update the app starts for you 
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
 - **Voice Studio Offline in Language Tools:** the program is installed but not running. Start Voice Studio, or select **AI services** in Settings to start it with your other local models. Transcription still works through Local Whisper while it is closed.
 - **Newly added document is not searchable:** open **Documents** and run **Index knowledge**.
+- **Pronounce plays nothing:** read the line under the translation — it names the voice that answered or says why none could. A language with no Windows voice needs **Online fallback for missing voices** ticked, and that route needs this computer to be online and to have Python installed; without either, install the voice from **Manage Windows voices** and press **Refresh voices**. See [Pronunciation](#pronunciation).
 - **Nothing appears on the projector:** the audience window opens with the first **Take live**. Confirm the screen chosen in the **Preview** group of the control rail; if the output was blanked, take any slide live to bring it back.
 - **The projector shows a verse you did not queue:** a verse reference on the audience screen was clicked. Use **Return to** *slide title* in the console, or take any slide live.
 - **A phrase search finds nothing:** the Bible phrase box needs the words in the order typed, so a shorter phrase usually works. The Recovery Version wording differs from other versions in places — *kingdom of the heavens*, not *kingdom of heaven* — so search the wording the Recovery Version actually prints.
