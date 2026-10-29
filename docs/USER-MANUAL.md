@@ -225,6 +225,7 @@ Every install — the downloaded Setup file or an update the app starts for you 
 ## Common problems
 
 - **Backend unavailable:** reopen the app, then use **Settings → AI Services** and select the wrench (Repair services).
+- **Knowledge shows *Loading Knowledge Library…* for several seconds:** normal when the app has just started — the list is gathered from the local service, and it can take five to ten seconds on a busy machine. Wait for the categories to appear. Only *Knowledge Library is unavailable* or *Backend unavailable* after the loading message means something is wrong.
 - **No search results:** verify that the document is indexed and that the correct category, subcollection, and subject were selected.
 - **Scanned PDF has no answers:** run OCR and re-index it.
 - **Ollama or Whisper offline:** install or start the optional service in Settings.
