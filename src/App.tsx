@@ -47,6 +47,7 @@ import {
 
 import { canAccess, createInitialAccessState, loadOrCreateAccessState, type WorkspaceId } from './utils/accessControl'
 import { isProfileUnlocked } from './utils/pinSecurity'
+import { applyTheme } from './utils/themeMode'
 
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
@@ -118,7 +119,7 @@ function App() {
         stored.reducedMotion === true,
       )
       document.documentElement.classList.toggle('high-contrast', stored.highContrast === true)
-      document.documentElement.dataset.theme = stored.theme ?? 'system'
+      applyTheme(stored.theme ?? 'system')
       document.documentElement.dataset.accent = stored.accent ?? 'cyan'
     } catch {
       localStorage.removeItem('aios-studio-settings-v1')
@@ -244,7 +245,7 @@ function App() {
   )
 
   useEffect(() => {
-    if (location.pathname !== '/') return
+    if (location.pathname !== '/' && location.pathname !== '/chat') return
     try {
       const handoff = JSON.parse(localStorage.getItem('aios-studio-chat-handoff-v1') ?? 'null') as { question?: string; agentId?: string } | null
       if (!handoff?.question) return
@@ -354,17 +355,49 @@ function App() {
     agentsError || chatError || persistenceError
 
   function handleNewConversation() {
-    startNewChat()
-
     navigate('/chat')
+
+    if (!selectedAgent) {
+      addToast({
+        title: 'No assistant connected',
+        message: agentsLoading
+          ? 'Loading the assistants from the AI service. Try again in a moment.'
+          : 'Pick an assistant in Chat, or use the status card at the bottom of the side panel to reconnect.',
+        variant: 'error',
+        duration: 5000,
+      })
+
+      return
+    }
+
+    const activeConversation =
+      conversations.find(
+        (conversation) =>
+          conversation.id === activeConversationId,
+      )
+
+    const alreadyFresh =
+      activeConversation?.agentId === selectedAgent.id &&
+      !activeConversation?.messages.some((message) => message.role === 'user')
+
+    if (alreadyFresh) {
+      addToast({
+        title: 'You are already in a new conversation',
+        message: `Ask ${selectedAgent.name} a question, or open History to resume an earlier chat.`,
+        variant: 'success',
+        duration: 3000,
+      })
+
+      return
+    }
+
+    startNewChat()
 
     addToast({
       title:
         'New conversation started',
       message:
-        selectedAgent
-          ? `Using ${selectedAgent.name}.`
-          : 'Ready for your next question.',
+        `Using ${selectedAgent.name}.`,
       variant: 'success',
       duration: 3000,
     })

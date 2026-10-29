@@ -5,6 +5,7 @@ import {
 
 import type {
   KeyboardEvent,
+  ReactNode,
 } from 'react'
 
 import {
@@ -12,7 +13,6 @@ import {
   BookOpen,
   LibraryBig,
   Clock3,
-  Command,
   Copy,
   Database,
   FileJson,
@@ -36,12 +36,14 @@ import {
 
 import {
   NavLink,
+  useLocation,
   useNavigate,
 } from 'react-router-dom'
 
 import { AIOS_API_BASE_URL } from '../../config/api'
 import { APP_NAME, APP_TAGLINE } from '../../config/brand'
 import BrandMark from '../BrandMark'
+import SystemResourcesPanel from './SystemResourcesPanel'
 import type { BackendHealth } from '../../hooks/useBackendHealth'
 
 import type {
@@ -55,7 +57,7 @@ import {
 import type {
   ChatConversation,
 } from '../../types/chat'
-import { ACCESS_CONTROL_STORAGE_KEY, canAccess, type AccessControlState, type LocalUserProfile } from '../../utils/accessControl'
+import { ACCESS_CONTROL_STORAGE_KEY, canAccess, type AccessControlState, type LocalUserProfile, type WorkspaceId } from '../../utils/accessControl'
 import { lockProfile, markProfileUnlocked, verifyPin } from '../../utils/pinSecurity'
 import { clearCloudSession, loadCloudSession, signOutOwner } from '../../utils/remoteAccess'
 
@@ -63,6 +65,55 @@ import {
   exportConversationAsJson,
   exportConversationAsMarkdown,
 } from '../../utils/exportConversation'
+
+type WorkspaceLink = {
+  to: string
+  label: string
+  icon: ReactNode
+  /** Omitted for the two destinations every profile may open. */
+  workspace?: WorkspaceId
+  exact?: boolean
+}
+
+const workspaceGroups: Array<{ id: string; label: string; links: WorkspaceLink[] }> = [
+  {
+    id: 'meeting',
+    label: 'Meeting',
+    links: [
+      { to: '/presentation', label: 'Presentation', icon: <Presentation size={17} />, workspace: 'presentation' },
+      { to: '/church', label: 'Church', icon: <BrandMark size={17} monochrome />, workspace: 'church' },
+      { to: '/ministry', label: 'Ministry', icon: <LibraryBig size={17} />, workspace: 'ministry' },
+    ],
+  },
+  {
+    id: 'study',
+    label: 'Study',
+    links: [
+      { to: '/knowledge', label: 'Knowledge', icon: <Database size={17} />, workspace: 'knowledge' },
+      { to: '/documents', label: 'Documents', icon: <FileText size={17} />, workspace: 'documents' },
+      { to: '/school', label: 'School', icon: <GraduationCap size={17} />, workspace: 'school' },
+      { to: '/language-tools', label: 'Language Tools', icon: <Languages size={17} />, workspace: 'language-tools' },
+    ],
+  },
+  {
+    id: 'assistant',
+    label: 'Assistant',
+    links: [
+      { to: '/chat', label: 'Chat', icon: <MessagesSquare size={17} />, workspace: 'chat', exact: true },
+      { to: '/agents', label: 'Agents', icon: <Bot size={17} />, workspace: 'agents' },
+      { to: '/media', label: 'Media Studio', icon: <WandSparkles size={17} />, workspace: 'media' },
+      { to: '/history', label: 'History', icon: <Clock3 size={17} />, workspace: 'history' },
+    ],
+  },
+  {
+    id: 'app',
+    label: 'App',
+    links: [
+      { to: '/settings', label: 'Settings', icon: <Settings size={17} /> },
+      { to: '/help', label: 'Help & Guides', icon: <BookOpen size={17} /> },
+    ],
+  },
+]
 
 interface SidebarProps {
   accessState: AccessControlState
@@ -127,6 +178,8 @@ function Sidebar({
 }: SidebarProps) {
   const navigate =
     useNavigate()
+  const location = useLocation()
+  const onChatPage = location.pathname === '/' || location.pathname.startsWith('/chat')
   const [signingOut, setSigningOut] = useState(false)
 
   const openCommandPalette =
@@ -339,7 +392,7 @@ function Sidebar({
   function handleNewConversation() {
     onNewConversation()
 
-    navigate('/')
+    navigate('/chat')
   }
 
   async function switchProfile(profileId: string) {
@@ -451,8 +504,14 @@ function Sidebar({
           handleNewConversation
         }
         disabled={
-          isLoading ||
-          !selectedAgent
+          isLoading
+        }
+        title={
+          isLoading
+            ? 'Finish or stop the current response first'
+            : selectedAgent
+              ? `Start a new conversation with ${selectedAgent.name}`
+              : 'Open Chat to choose an assistant'
         }
       >
         New conversation
@@ -476,122 +535,43 @@ function Sidebar({
         </kbd>
       </button>
 
+      <div className="sidebar-body">
       <nav
         className="workspace-navigation"
         aria-label="Lampstand workspace"
       >
-        {canAccess(activeProfile, 'chat') && <NavLink
-          to="/chat"
-          end
-          className={({
-            isActive,
-          }) =>
-            `workspace-navigation-link ${
-              isActive
-                ? 'active'
-                : ''
-            }`
+        {workspaceGroups.map((group) => {
+          const links = group.links.filter((link) => !link.workspace || canAccess(activeProfile, link.workspace))
+
+          if (links.length === 0) {
+            return null
           }
-        >
-          <MessagesSquare
-            size={17}
-          />
 
-          <span>Chat</span>
-        </NavLink>}
+          return (
+            <div className="workspace-navigation-group" key={group.id}>
+              <h2 className="workspace-navigation-title">{group.label}</h2>
 
-        {canAccess(activeProfile, 'knowledge') && <NavLink
-          to="/knowledge"
-          className={({
-            isActive,
-          }) =>
-            `workspace-navigation-link ${
-              isActive
-                ? 'active'
-                : ''
-            }`
-          }
-        >
-          <Database
-            size={17}
-          />
-
-          <span>
-            Knowledge
-          </span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'agents') && <NavLink to="/agents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Bot size={17} /><span>Agents</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'ministry') && <NavLink to="/ministry" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <LibraryBig size={17} /><span>Ministry</span>
-        </NavLink>}
-        {canAccess(activeProfile, 'presentation') && <NavLink to="/presentation" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Presentation size={18} />
-          <span>Presentation</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'school') && <NavLink to="/school" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <GraduationCap size={17} /><span>School</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'church') && <NavLink to="/church" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <BrandMark size={18} monochrome /><span>Church</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'media') && <NavLink to="/media" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <WandSparkles size={17} /><span>Media Studio</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'language-tools') && <NavLink to="/language-tools" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Languages size={17} /><span>Language Tools</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'documents') && <NavLink to="/documents" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <FileText size={17} /><span>Documents</span>
-        </NavLink>}
-
-        {canAccess(activeProfile, 'history') && <NavLink to="/history" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Clock3 size={17} /><span>History</span>
-        </NavLink>}
-
-        <NavLink to="/settings" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <Settings size={17} /><span>Settings</span>
-        </NavLink>
-
-        <NavLink to="/help" className={({ isActive }) => "workspace-navigation-link " + (isActive ? "active" : "")}>
-          <BookOpen size={17} /><span>Help & Guides</span>
-        </NavLink>
-
-        <button
-          type="button"
-          className="workspace-navigation-link workspace-command-link"
-          onClick={
-            openCommandPalette
-          }
-        >
-          <Command size={17} />
-
-          <span>
-            Commands
-          </span>
-        </button>
+              {links.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.exact}
+                  className={({ isActive }) => `workspace-navigation-link ${isActive ? 'active' : ''}`}
+                >
+                  {link.icon}
+                  <span>{link.label}</span>
+                </NavLink>
+              ))}
+            </div>
+          )
+        })}
       </nav>
 
-      <div className="sidebar-profile-switcher">
-        <label htmlFor="lampstand-profile">Profile</label>
-        <select id="lampstand-profile" value={activeProfile.id} onChange={(event) => void switchProfile(event.target.value)}>
-          {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.roleLabel || profile.role}</option>)}
-        </select>
-        {activeProfile.pinHash && <button type="button" className="sidebar-lock-profile" onClick={() => { lockProfile(activeProfile.id); window.location.reload() }}>Lock profile</button>}
-        {loadCloudSession() && <button type="button" className="sidebar-sign-out" disabled={signingOut} onClick={() => void signOut()}><LogOut size={14} /> {signingOut ? 'Signing out...' : 'Sign out'}</button>}
-      </div>
-
+      {onChatPage && (
+        <>
       <div className="category-section">
         <label htmlFor="agent">
-          Assistant
+          Current assistant
         </label>
 
         <select
@@ -951,8 +931,25 @@ function Sidebar({
           )}
         </div>
       </div>
+        </>
+      )}
+      </div>
 
-      <button className="status-card" type="button" onClick={() => void onCheckBackend()} title="Check backend connection">
+      <div className="sidebar-footer">
+        <SystemResourcesPanel />
+
+        <div className="sidebar-profile-switcher">
+          <label htmlFor="lampstand-profile">Profile</label>
+          <select id="lampstand-profile" value={activeProfile.id} onChange={(event) => void switchProfile(event.target.value)}>
+            {accessState.profiles.filter((profile) => !profile.suspended).map((profile) => <option key={profile.id} value={profile.id}>{profile.name} · {profile.roleLabel || profile.role}</option>)}
+          </select>
+          <div className="sidebar-profile-actions">
+            {activeProfile.pinHash && <button type="button" className="sidebar-lock-profile" onClick={() => { lockProfile(activeProfile.id); window.location.reload() }}>Lock profile</button>}
+            {loadCloudSession() && <button type="button" className="sidebar-sign-out" disabled={signingOut} onClick={() => void signOut()}><LogOut size={14} /> {signingOut ? 'Signing out...' : 'Sign out'}</button>}
+          </div>
+        </div>
+
+        <button className="status-card" type="button" onClick={() => void onCheckBackend()} title="Check backend connection">
         <span
           className={`status-dot ${
             backendStatus === 'connected'
@@ -977,6 +974,7 @@ function Sidebar({
           </p>
         </div>
       </button>
+      </div>
     </aside>
   )
 }
